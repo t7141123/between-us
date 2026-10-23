@@ -34,7 +34,9 @@
     "deck_empty": "這個分類目前沒有問題。",
     "load_from_drawer": "從抽屜中點選一題載入",
     "fav_added": "已加入收藏",
-    "fav_removed": "已取消收藏"
+    "fav_removed": "已取消收藏",
+    "privacy_policy": "隱私政策與條款",
+    "version_info": "版本"
   },
   "categories": {
     "vision": {

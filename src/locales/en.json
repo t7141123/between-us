@@ -34,7 +34,9 @@
     "deck_empty": "No questions in this category yet.",
     "load_from_drawer": "Pick a question from the drawer to load",
     "fav_added": "Added to favorites",
-    "fav_removed": "Removed from favorites"
+    "fav_removed": "Removed from favorites",
+    "privacy_policy": "Privacy & Terms",
+    "version_info": "Version"
   },
   "categories": {
     "vision": {

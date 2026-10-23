@@ -13,11 +13,14 @@
       "backgroundColor": "#FAF7F2"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.lovebetweenus.app",
       "buildNumber": "1",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDisplayName": "在我們之間",
+        "CFBundleName": "BetweenUs",
+        "LSRequiresIPhoneOS": true
       }
     },
     "android": {

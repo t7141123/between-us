@@ -13,9 +13,10 @@ import {
   Platform,
   SafeAreaView,
 } from 'react-native';
-import { X, Search, Bookmark } from 'lucide-react-native';
+import { X, Search, Bookmark, ShieldCheck } from 'lucide-react-native';
 import { LocaleKey, QuestionEntry, ThemeColors } from '../types';
 import { I18nService } from '../services/i18n';
+import { InfoModal } from './InfoModal';
 
 interface DrawerModalProps {
   visible: boolean;
@@ -36,6 +37,7 @@ export const DrawerModal: React.FC<DrawerModalProps> = ({
 }) => {
   const [filterFavOnly, setFilterFavOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   const allQuestions = useMemo(() => {
     return I18nService.getQuestions(locale, 'all');
@@ -59,6 +61,7 @@ export const DrawerModal: React.FC<DrawerModalProps> = ({
   const favLabel = I18nService.t(locale, 'drawer_fav', '僅看收藏');
   const searchPlaceholder = I18nService.t(locale, 'search_placeholder', '搜尋問題…');
   const emptyText = I18nService.t(locale, 'deck_empty', '目前沒有符合的題目');
+  const privacyLabel = I18nService.t(locale, 'privacy_policy', '隱私政策與條款');
 
   return (
     <Modal
@@ -160,8 +163,28 @@ export const DrawerModal: React.FC<DrawerModalProps> = ({
               </View>
             }
           />
+          {/* Drawer Footer: Privacy & Terms */}
+          <View style={[styles.drawerFooter, { borderTopColor: colors.line, backgroundColor: colors.paper }]}>
+            <TouchableOpacity
+              onPress={() => setShowInfoModal(true)}
+              style={styles.privacyLinkBtn}
+              activeOpacity={0.7}
+            >
+              <ShieldCheck size={14} color={colors.clay} style={{ marginRight: 6 }} />
+              <Text style={[styles.privacyLinkText, { color: colors.clay }]}>{privacyLabel}</Text>
+            </TouchableOpacity>
+            <Text style={[styles.footerVersionText, { color: colors.muted }]}>v1.0.0</Text>
+          </View>
         </SafeAreaView>
       </View>
+
+      {/* Privacy Policy & Terms Modal */}
+      <InfoModal
+        visible={showInfoModal}
+        locale={locale}
+        colors={colors}
+        onClose={() => setShowInfoModal(false)}
+      />
     </Modal>
   );
 };
@@ -270,5 +293,24 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 13,
+  },
+  drawerFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderTopWidth: 1,
+  },
+  privacyLinkBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  privacyLinkText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  footerVersionText: {
+    fontSize: 12,
   },
 });

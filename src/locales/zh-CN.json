@@ -34,7 +34,9 @@
     "deck_empty": "这个分类目前没有问题。",
     "load_from_drawer": "从抽屉中点选一题载入",
     "fav_added": "已加入收藏",
-    "fav_removed": "已取消收藏"
+    "fav_removed": "已取消收藏",
+    "privacy_policy": "隐私政策与条款",
+    "version_info": "版本"
   },
   "categories": {
     "vision": {

@@ -21,6 +21,7 @@ import { useSound } from './hooks/useSound';
 import { useHaptics } from './hooks/useHaptics';
 import { I18nService } from './services/i18n';
 import { StorageService } from './services/storage';
+import { TelemetryService } from './services/telemetry';
 
 import { HeaderBar } from './components/HeaderBar';
 import { CategorySelect } from './components/CategorySelect';
@@ -42,7 +43,7 @@ export const MainApp: React.FC = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
 
-  // Load initial settings
+  // Load initial settings & track pageview
   useEffect(() => {
     let mounted = true;
     Promise.all([
@@ -52,6 +53,7 @@ export const MainApp: React.FC = () => {
       if (!mounted) return;
       setLocale(savedLocale);
       setFavorites(savedFavs);
+      TelemetryService.track({ eventName: 'pageview', language: savedLocale });
     });
     return () => {
       mounted = false;
@@ -84,13 +86,23 @@ export const MainApp: React.FC = () => {
     playClick();
     triggerImpact();
     if (deck.length === 0) return;
+    TelemetryService.track({
+      eventName: 'next_question',
+      category: currentCategory,
+      language: locale,
+    });
     setCurrentIndex((prev) => (prev + 1) % deck.length);
-  }, [deck.length, playClick, triggerImpact]);
+  }, [deck.length, playClick, triggerImpact, currentCategory, locale]);
 
   const handleToggleFavorite = useCallback(() => {
     if (!currentQuestion) return;
     playClick();
     triggerNotification();
+    TelemetryService.track({
+      eventName: 'toggle_favorite',
+      category: currentQuestion.categoryKey,
+      language: locale,
+    });
 
     setFavorites((prev) => {
       const next = { ...prev };
@@ -110,16 +122,31 @@ export const MainApp: React.FC = () => {
       StorageService.setFavorites(next);
       return next;
     });
-  }, [currentQuestion, playClick, triggerNotification]);
+  }, [currentQuestion, playClick, triggerNotification, locale]);
 
   const handleSelectLocale = useCallback((newLocale: LocaleKey) => {
     setLocale(newLocale);
     StorageService.setLocale(newLocale);
+    TelemetryService.track({ eventName: 'change_language', language: newLocale });
   }, []);
+
+  const handleFlipCard = useCallback(() => {
+    playFlip();
+    TelemetryService.track({
+      eventName: 'flip_card',
+      category: currentQuestion?.categoryKey,
+      language: locale,
+    });
+  }, [playFlip, currentQuestion?.categoryKey, locale]);
 
   const handleSelectFromDrawer = useCallback((item: QuestionEntry) => {
     setIsDrawerOpen(false);
     setCurrentCategory(item.categoryKey);
+    TelemetryService.track({
+      eventName: 'change_category',
+      category: item.categoryKey,
+      language: locale,
+    });
     const questions = I18nService.getQuestions(locale, item.categoryKey);
     setDeck(questions);
     const foundIdx = questions.findIndex((q) => q.text === item.text);
@@ -181,6 +208,11 @@ export const MainApp: React.FC = () => {
           onSelectCategory={(cat) => {
             playClick();
             setCurrentCategory(cat);
+            TelemetryService.track({
+              eventName: 'change_category',
+              category: cat,
+              language: locale,
+            });
           }}
         />
 
@@ -197,9 +229,14 @@ export const MainApp: React.FC = () => {
             onOpenTimer={() => {
               playClick();
               setIsTimerOpen(true);
+              TelemetryService.track({
+                eventName: 'start_timer',
+                category: currentCategory,
+                language: locale,
+              });
             }}
             onNextQuestion={handleNextQuestion}
-            onFlipCard={playFlip}
+            onFlipCard={handleFlipCard}
           />
         </View>
 
