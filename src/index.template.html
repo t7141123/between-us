@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>在我們之間 · Between Us</title>
+<meta name="description" content="雙人對話沙龍：700 個問題、7 個主題，抽卡、翻面、好好說話。">
+<meta property="og:title" content="在我們之間 · Between Us">
+<meta property="og:description" content="雙人對話沙龍：700 個問題、7 個主題，抽卡、翻面、好好說話。">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23F9F7F2'/%3E%3Ccircle cx='50' cy='50' r='22' fill='%23C87D65'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdn.tailwindcss.com">
+<link rel="preconnect" href="https://unpkg.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Sans+TC:wght@400;600&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/canvas-confetti.min.js"></script>
+<style>
+  :root { --clay: #C87D65; --clay-hover: #A65E47; --paper: #F9F7F2; --card: #fffdf9; --ink: #2D282A; --muted: #78726D; --gold: rgba(212,175,55,0.3); }
+  body { background: var(--paper); color: var(--ink); font-family: 'Noto Sans TC', 'Noto Sans SC', sans-serif; }
+  h1,h2,h3,.serif { font-family: 'Cormorant Garamond', 'Noto Serif TC', serif; font-weight: 400; }
+  .serif { font-weight: 400 !important; }
+  a { color: var(--clay); }
+  .btn-clay { background: var(--clay); color: #fff; border-radius: 999px; padding: 0.6rem 1.4rem; font-weight: 600; transition: background 0.2s; }
+  .btn-clay:hover { background: var(--clay-hover); }
+  .chip { border: 1px solid var(--gold); color: var(--ink); border-radius: 999px; padding: 0.35rem 1rem; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+  .chip.active { background: var(--clay); color: #fff; border-color: var(--clay); }
+  .card { background: var(--card); border-radius: 24px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.08); transition: transform 0.6s, box-shadow 0.6s; transform-style: preserve-3d; backface-visibility: hidden; position: relative; }
+  .card.flipped { transform: rotateY(180deg); }
+  .card-face { backface-visibility: hidden; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 24px; padding: 1.75rem; box-sizing: border-box; display: flex; flex-direction: column; }
+  .card-face.front { background: var(--card); z-index: 2; }
+  .card-face.back { background: #f5efe2; z-index: 1; transform: rotateY(180deg); }
+  .timer-modal { backdrop-filter: blur(8px); background: rgba(249,247,242,0.92); }
+  .serif { font-weight: 400; }
+  @media (max-width: 640px) { .card-face { padding: 1.25rem; } }
+</style>
+</head>
+<body class="antialiased selection:bg-clay selection:text-white">
+
+<header class="mx-auto max-w-2xl px-4 py-8 text-center">
+  <h1 class="serif text-4xl md:text-6xl tracking-tight" id="ui-title">在我們之間 · Between Us</h1>
+  <p class="serif text-lg md:text-xl text-muted mt-2" id="ui-subtitle">雙人對話沙龍：700 個問題、7 個主題，抽卡、翻面、好好說話。</p>
+  <div class="flex items-center justify-center gap-3 mt-6">
+    <span class="serif text-sm text-muted" id="ui-language">語言</span>
+    <select id="lang-select" class="serif bg-transparent border border-gold rounded-full px-3 py-1 text-sm outline-none">
+      <option value="zh-TW">繁體中文</option>
+      <option value="zh-CN">简体中文</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+</header>
+
+<main class="mx-auto max-w-2xl px-4">
+
+  <!-- Category chips -->
+  <div class="flex flex-wrap gap-2 justify-center mb-6" id="chip-bar">
+    <button class="chip active" data-cat="all">全部</button>
+  </div>
+
+  <!-- Card deck -->
+  <div class="relative mx-auto max-w-lg mb-10">
+    <div class="card" id="card" role="button" tabindex="0" aria-label="翻牌">
+      <div class="card-face front" id="card-front">
+        <div class="flex justify-between items-start mb-2">
+          <span class="serif text-sm font-semibold text-muted" id="card-tag">價值與未來</span>
+          <span class="serif text-sm text-muted" id="card-no">NO. 1</span>
+        </div>
+        <div class="flex items-center gap-2 mb-4 text-xs text-muted">
+          <button id="btn-bookmark" class="text-muted hover:text-clay transition" aria-pressed="false">
+            <i data-lucide="bookmark" class="w-4 h-4"></i>
+          </button>
+          <span id="card-timer" class="serif text-xs">05:00</span>
+        </div>
+        <h2 class="serif text-2xl md:text-3xl leading-relaxed" id="card-q">問題會在這裡顯示</h2>
+      </div>
+      <div class="card-face back" id="card-back">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 rounded-full bg-clay/10 flex items-center justify-center">
+            <i data-lucide="sparkles" class="w-6 h-6 text-clay"></i>
+          </div>
+          <button id="btn-flipback" class="text-muted hover:text-clay transition" aria-label="翻回題目">
+            <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <h3 class="serif text-lg text-center text-clay mb-3">封面藝術</h3>
+        <p class="serif text-center text-muted text-sm leading-relaxed" id="card-hint">輕輕翻開，看看這題想對你說什麼。</p>
+      </div>
+    </div>
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      <button id="btn-next" class="btn-clay serif px-6 py-2 text-sm" id="ui-next">換一題</button>
+    </div>
+  </div>
+
+  <!-- Drawer -->
+  <div class="fixed inset-0 z-40" id="drawer-overlay" aria-hidden="true" style="display:none;"></div>
+  <div class="fixed right-0 top-0 bottom-0 w-full md:w-96 z-50 bg-card shadow-xl border-l border-gold transform translate-x-full transition-transform duration-420" id="drawer" aria-hidden="true" style="display:none;">
+    <div class="p-5 border-b border-muted/20 flex items-center justify-between">
+      <h3 class="serif text-xl" id="ui-drawer-title">題庫抽屜</h3>
+      <button id="btn-close-drawer" class="text-muted hover:text-ink">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <div class="p-4">
+      <div class="flex gap-2 mb-4">
+        <button class="flex-1 btn-clay serif text-sm py-2 rounded-lg" id="btn-drawer-all">{all}</button>
+        <button class="flex-1 border border-gold bg-transparent text-clay rounded-lg py-2 text-sm serif" id="btn-drawer-fav">{fav}</button>
+      </div>
+      <input type="text" id="drawer-search" placeholder="{search}" class="w-full mb-4 border border-muted/30 rounded-lg px-3 py-2 text-sm outline-none focus:border-clay">
+      <div id="drawer-list" class="space-y-1">
+        <!-- rows injected by JS -->
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Timer modal -->
+<div class="fixed inset-0 z-50 timer-modal flex items-center justify-center" id="timer-modal" aria-hidden="true" style="display:none;">
+  <div class="bg-card p-8 md:p-12 rounded-3xl shadow-2xl border border-gold max-w-md w-full text-center">
+    <h2 class="serif text-3xl text-clay mb-2" id="ui-timer-title">5 分鐘計時器</h2>
+    <div class="text-6xl serif font-bold mb-6" id="timer-display">05:00</div>
+    <div class="flex gap-3 justify-center mb-8">
+      <button id="btn-timer-start" class="btn-clay serif px-6 py-2.5 text-sm">{start}</button>
+      <button id="btn-timer-reset" class="border border-gold bg-transparent text-clay px-6 py-2.5 text-sm serif rounded-lg">{reset}</button>
+    </div>
+    <button id="btn-close-timer" class="text-muted hover:text-ink serif text-sm">{end}</button>
+  </div>
+</div>
+
+<script>
+window.__ALL_LANGS__ = __ALL_LANGS__;
+</script>
+<script src="app.js"></script>
+</body>
+</html>

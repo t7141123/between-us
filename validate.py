@@ -1,69 +1,60 @@
 #!/usr/bin/env python3
-"""Validate the Between Us question bank against the PRD."""
+"""Validate the Between Us multi-language question bank."""
 import json
-import re
 import sys
 
-CATEGORIES = {
-    "vision": "價值與未來",
-    "soul": "心靈與情緒",
-    "finance": "家庭理財",
-    "intimacy": "親密與連結",
-    "fun": "日常與陪伴",
-    "growth": "成長與對話",
-    "faith": "基督信仰",
-}
-BANNED = ["末日", "超能力", "荒島", "平行宇宙", "轉世", "時光機", "外星", "魔法", "平行世界"]
-
-with open(sys.argv[1] if len(sys.argv) > 1 else "questions.json", encoding="utf-8") as f:
-    data = json.load(f)
+LOCALES = ["zh-TW", "zh-CN", "en"]
+CATS = ["vision", "soul", "finance", "intimacy", "fun", "growth", "faith"]
+BANNED = ["末日", "超能力", "荒島", "平行宇宙", "轉世", "時光機", "外星", "魔法", "平行世界", "丧尸", "僵尸"]
 
 errors = []
 total = 0
-seen = {}
-for key, label in CATEGORIES.items():
-    qs = data.get(key)
-    if qs is None:
-        errors.append(f"缺少分類：{key}")
+
+for loc in LOCALES:
+    p = f"src/lang/{loc}/questions.json"
+    try:
+        with open(p, encoding="utf-8") as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        errors.append(f"{loc}: 檔案不存在 {p}")
         continue
-    if not isinstance(qs, list):
-        errors.append(f"{key} 不是陣列：{type(qs)}")
-        continue
-    if not 98 <= len(qs) <= 102:
-        errors.append(f"{label} 題數為 {len(qs)}，應在 98～102 之間")
-    for q in qs:
-        if not isinstance(q, str):
-            errors.append(f"{key} 含非字串項目：{q!r}")
+    seen = {}
+    loc_total = 0
+    for key in CATS:
+        qs = data.get(key)
+        if qs is None:
+            errors.append(f"{loc}/{key}: 缺少分類")
             continue
-        total += 1
-        for bad in BANNED:
-            if bad in q:
-                errors.append(f"禁用詞「{bad}」：{q}")
-        if q in seen:
-            errors.append(f"重複題目（{seen[q]} / {key}）：{q}")
-        seen[q] = key
-        if not q.endswith(("？", "。")):
-            errors.append(f"標點未收尾：{q}")
-        if not 8 <= len(q) <= 60:
-            errors.append(f"長度異常（{len(q)}）：{q}")
-        if "{" in q or "}" in q or re.search(r"[A-Za-z]{4,}", q):
-            errors.append(f"疑似模板或英文殘留：{q}")
+        if len(qs) != 100:
+            errors.append(f"{loc}/{key}: 題數 {len(qs)}，應為 100")
+        for q in qs:
+            if not isinstance(q, str):
+                errors.append(f"{loc}/{key}: 非字串項目 {q!r}")
+                continue
+            loc_total += 1
+            total += 1
+            for bad in BANNED:
+                if bad in q:
+                    errors.append(f"{loc}/{key}: 禁用詞「{bad}」：{q}")
+            if q in seen:
+                errors.append(f"{loc}/{key}: 重複題目：{q}")
+            seen[q] = key
+            if not q.endswith(("？", "。", "?", ".")):
+                errors.append(f"{loc}/{key}: 標點未收尾：{q}")
+            maxlen = 140 if loc == "en" else 60
+            if not 8 <= len(q) <= maxlen:
+                errors.append(f"{loc}/{key}: 長度異常（{len(q)}）：{q}")
+            if "{" in q or "}" in q:
+                errors.append(f"{loc}/{key}: 疑似模板殘留：{q}")
+    print(f"  {loc}: {loc_total} 題")
 
-extra = set(data) - set(CATEGORIES)
-if extra:
-    errors.append(f"未知分類：{sorted(extra)}")
-
-print(f"總題數：{total}")
-for key, label in CATEGORIES.items():
-    qs = data.get(key) or []
-    print(f"  {label:<8} {len(qs):>3} 題")
-if total != 700:
-    errors.append(f"總題數為 {total}，應為 700")
+print(f"總題數（3 語系 × 7 分類 × 100）：{total}")
+if total != 2100:
+    errors.append(f"總題數為 {total}，應為 2100")
 
 if errors:
     print("\n❌ 驗證未通過：")
     for e in errors:
         print(" -", e)
     sys.exit(1)
-
-print("\n✅ 驗證通過：700 題、7 分類每類 100 題、無重複、無禁用主題。")
+print("\n✅ 驗證通過：3 語系、7 分類各 100 題、共 2100 題、無重複、無禁用主題。")
