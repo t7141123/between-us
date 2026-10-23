@@ -1,4 +1,5 @@
 .DS_Store
 .wrangler/cache/
 questions_new.json
-dist/index.html
+dist/
+/app.js

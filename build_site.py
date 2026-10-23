@@ -64,7 +64,9 @@ UI_STRINGS = {
         "card_front_hint": "點擊翻面看提示",
         "card_back_hint": "點擊翻回題目",
         "timer_title": "5 分鐘計時器",
+        "timer_prompt": "給彼此五分鐘，一個人說，另一個人只聽。",
         "timer_start": "開始",
+        "timer_pause": "暫停",
         "timer_reset": "重設",
         "timer_end": "時間到",
         "mute": "靜音",
@@ -73,9 +75,19 @@ UI_STRINGS = {
         "remove_favorite": "移除收藏",
         "language": "語言",
         "next_question": "換一題",
+        "drawer_btn": "從題庫挑",
+        "drawer_title": "題庫抽屜",
+        "drawer_all": "全部",
+        "drawer_fav": "僅看收藏",
+        "back_title": "在我們之間",
+        "back_quote": "慢慢說，慢慢聽。沒有標準答案。",
+        "close": "關閉",
+        "keyboard_hint": "空白鍵：翻牌 ｜ →：換一題 ｜ F：收藏 ｜ T：計時器",
         "shuffle": "重新排序",
         "deck_empty": "這個分類目前沒有問題。",
         "load_from_drawer": "從抽屜中點選一題載入",
+        "fav_added": "已加入收藏",
+        "fav_removed": "已取消收藏",
     },
     "zh-CN": {
         "title": "在我们之间 · Between Us",
@@ -86,7 +98,9 @@ UI_STRINGS = {
         "card_front_hint": "点击翻面看提示",
         "card_back_hint": "点击翻回题目",
         "timer_title": "5 分钟计时器",
+        "timer_prompt": "给彼此五分钟，一个人说，另一个人只听。",
         "timer_start": "开始",
+        "timer_pause": "暂停",
         "timer_reset": "重设",
         "timer_end": "时间到",
         "mute": "静音",
@@ -95,9 +109,19 @@ UI_STRINGS = {
         "remove_favorite": "移除收藏",
         "language": "语言",
         "next_question": "换一题",
+        "drawer_btn": "从题库挑",
+        "drawer_title": "题库抽屉",
+        "drawer_all": "全部",
+        "drawer_fav": "仅看收藏",
+        "back_title": "在我们之间",
+        "back_quote": "慢慢说，慢慢听。没有标准答案。",
+        "close": "关闭",
+        "keyboard_hint": "空格键：翻牌 ｜ →：换一题 ｜ F：收藏 ｜ T：计时器",
         "shuffle": "重新排序",
         "deck_empty": "这个分类目前没有问题。",
         "load_from_drawer": "从抽屉中点选一题载入",
+        "fav_added": "已加入收藏",
+        "fav_removed": "已取消收藏",
     },
     "en": {
         "title": "Between Us · 在我們之間",
@@ -108,7 +132,9 @@ UI_STRINGS = {
         "card_front_hint": "Tap to flip for hint",
         "card_back_hint": "Tap to flip back to question",
         "timer_title": "5-Minute Timer",
+        "timer_prompt": "Five minutes for each other. One speaks, one listens.",
         "timer_start": "Start",
+        "timer_pause": "Pause",
         "timer_reset": "Reset",
         "timer_end": "Time's up",
         "mute": "Mute",
@@ -117,9 +143,19 @@ UI_STRINGS = {
         "remove_favorite": "Remove from favorites",
         "language": "Language",
         "next_question": "Next question",
+        "drawer_btn": "Question Library",
+        "drawer_title": "Question Drawer",
+        "drawer_all": "All",
+        "drawer_fav": "Favorites",
+        "back_title": "Between Us",
+        "back_quote": "Speak slowly, listen gently. There are no right answers.",
+        "close": "Close",
+        "keyboard_hint": "Space: Flip | →: Next | F: Favorite | T: Timer",
         "shuffle": "Shuffle",
         "deck_empty": "No questions in this category yet.",
         "load_from_drawer": "Pick a question from the drawer to load",
+        "fav_added": "Added to favorites",
+        "fav_removed": "Removed from favorites",
     },
 }
 
@@ -140,7 +176,7 @@ def main():
     for loc in LOCALES:
         missing = [c for c in cats if c not in banks[loc]]
         if missing:
-            raise SystemExit(f"{loc} 缺少分類：{missing}")
+            raise SystemExit(f"{loc} missing categories: {missing}")
 
     # Build the language bundle
     bundle = {}
@@ -163,8 +199,14 @@ def main():
     with open(TEMPLATE, encoding="utf-8") as f:
         html = f.read()
 
+    with open(SRC / "app.js", encoding="utf-8") as f:
+        app_js = f.read()
+
     assert "__ALL_LANGS_PAYLOAD__" in html, "__ALL_LANGS_PAYLOAD__ placeholder not found in template"
     html = html.replace("__ALL_LANGS_PAYLOAD__", payload)
+
+    if "__APP_JS_PAYLOAD__" in html:
+        html = html.replace("__APP_JS_PAYLOAD__", app_js)
 
     # Replace static {key} UI placeholders with default-locale (zh-TW) strings
     default_ui = bundle[LOCALES[0]]["ui"]
@@ -175,6 +217,10 @@ def main():
     for out_path in (DIST / "index.html", ROOT / "index.html"):
         with open(out_path, "w", encoding="utf-8") as f:
             f.write(html)
+
+    for js_path in (DIST / "app.js", ROOT / "app.js"):
+        with open(js_path, "w", encoding="utf-8") as f:
+            f.write(app_js)
 
     total = sum(sum(len(banks[loc][c]) for c in cats) for loc in LOCALES)
     print(f"index.html {len(html.encode('utf-8'))} bytes, {total} questions across {len(LOCALES)} languages")
