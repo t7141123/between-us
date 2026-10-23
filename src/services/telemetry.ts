@@ -1,33 +1,50 @@
 /**
- * TelemetryService: Anonymous, privacy-respecting telemetry for app optimization.
- * Tracks feature adoption, platform distribution, and session activity.
+ * TelemetryService: Privacy-first usage and session analytics.
+ * Tracks distinct visitors, device platforms, and active session duration.
+ * Does not track individual card flips or private dialogue content.
  */
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CategoryFilter, LocaleKey } from '../types';
 
+const USER_KEY = '@between_us_user_id';
 const SESSION_KEY = '@between_us_session_id';
 const SESSION_TIMESTAMP_KEY = '@between_us_session_ts';
-const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes inactivity timeout
 
-// Primary and fallback endpoints
 const PRIMARY_ENDPOINT = 'https://between-us.ark-studio.app/api/track';
 const FALLBACK_ENDPOINT = 'https://love-between-us.pages.dev/api/track';
 
-interface EventPayload {
-  eventName: string;
-  category?: CategoryFilter | string;
-  language?: LocaleKey;
-  platform?: string;
-}
-
 export class TelemetryService {
+  private static cachedUserId: string | null = null;
   private static cachedSessionId: string | null = null;
+  private static sessionStartTime = Date.now();
+  private static heartbeatInterval: ReturnType<typeof setInterval> | null = null;
+  private static isInitialized = false;
 
   /**
-   * Generates or retrieves an existing anonymous session ID.
+   * Retrieves or creates a permanent anonymous visitor ID.
    */
-  private static async getSessionId(): Promise<string> {
+  public static async getUserId(): Promise<string> {
+    if (this.cachedUserId) return this.cachedUserId;
+    try {
+      const savedUser = await AsyncStorage.getItem(USER_KEY);
+      if (savedUser) {
+        this.cachedUserId = savedUser;
+        return savedUser;
+      }
+      const newUser = 'u_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36).slice(-4);
+      this.cachedUserId = newUser;
+      await AsyncStorage.setItem(USER_KEY, newUser);
+      return newUser;
+    } catch {
+      return 'u_' + Math.random().toString(36).substring(2, 10);
+    }
+  }
+
+  /**
+   * Retrieves or rotates the current visit session ID.
+   */
+  public static async getSessionId(): Promise<string> {
     if (this.cachedSessionId) return this.cachedSessionId;
 
     try {
@@ -41,69 +58,98 @@ export class TelemetryService {
         return savedSession;
       }
 
-      // Generate random session id
-      const newSession = 's_' + Math.random().toString(36).substring(2, 12) + '_' + Date.now().toString(36);
+      const newSession = 's_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now().toString(36);
       this.cachedSessionId = newSession;
+      this.sessionStartTime = now;
       await AsyncStorage.setItem(SESSION_KEY, newSession);
       await AsyncStorage.setItem(SESSION_TIMESTAMP_KEY, String(now));
       return newSession;
     } catch {
-      return 's_fallback_' + Math.random().toString(36).substring(2, 10);
+      return 's_' + Math.random().toString(36).substring(2, 10);
     }
   }
 
   /**
-   * Tracks an event asynchronously without blocking UI interactions.
+   * Dispatches a session telemetry payload to the server.
    */
-  public static track(payload: EventPayload): void {
-    // Run in background
-    setTimeout(async () => {
+  private static async sendPing(eventName: 'session_start' | 'session_ping'): Promise<void> {
+    try {
+      const userId = await this.getUserId();
+      const sessionId = await this.getSessionId();
+      const duration = Math.max(0, Math.round((Date.now() - this.sessionStartTime) / 1000));
+      const platform = Platform.OS === 'web' ? 'web' : Platform.OS === 'ios' ? 'iOS (App)' : 'Android (App)';
+
+      const body = JSON.stringify({
+        userId,
+        sessionId,
+        eventName,
+        duration,
+        platform,
+      });
+
+      let url = PRIMARY_ENDPOINT;
+      if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        url = '/api/track';
+      }
+
       try {
-        const sessionId = await this.getSessionId();
-        const platform = Platform.OS === 'web' ? 'web' : Platform.OS === 'ios' ? 'iOS (App)' : 'Android (App)';
-
-        const body = JSON.stringify({
-          sessionId,
-          eventName: payload.eventName,
-          category: payload.category || null,
-          language: payload.language || null,
-          platform: payload.platform || platform,
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body,
         });
-
-        // Determine target URL
-        let url = PRIMARY_ENDPOINT;
-        if (Platform.OS === 'web' && typeof window !== 'undefined') {
-          // In browser, use relative path if on same domain
-          url = '/api/track';
-        }
-
-        try {
-          const res = await fetch(url, {
+        if (!res.ok && url !== FALLBACK_ENDPOINT) {
+          await fetch(FALLBACK_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body,
-          });
-          if (!res.ok && url !== FALLBACK_ENDPOINT) {
-            // Try fallback
-            await fetch(FALLBACK_ENDPOINT, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body,
-            });
-          }
-        } catch {
-          // If relative failed, try fallback
-          if (url !== FALLBACK_ENDPOINT) {
-            await fetch(FALLBACK_ENDPOINT, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body,
-            }).catch(() => {});
-          }
+          }).catch(() => {});
         }
       } catch {
-        // Silently ignore telemetry transmission errors
+        if (url !== FALLBACK_ENDPOINT) {
+          await fetch(FALLBACK_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body,
+          }).catch(() => {});
+        }
       }
-    }, 0);
+    } catch {
+      // Silently ignore telemetry transmission failures
+    }
+  }
+
+  /**
+   * Initializes session tracking and heartbeat timer.
+   */
+  public static initSession(): void {
+    if (this.isInitialized) return;
+    this.isInitialized = true;
+    this.sessionStartTime = Date.now();
+
+    // Send initial session start
+    this.sendPing('session_start');
+
+    // Send heartbeat every 30 seconds to track active usage duration
+    if (!this.heartbeatInterval) {
+      this.heartbeatInterval = setInterval(() => {
+        if (Platform.OS === 'web' && typeof document !== 'undefined' && document.hidden) {
+          return; // Pause ping when tab is backgrounded
+        }
+        this.sendPing('session_ping');
+      }, 30000);
+    }
+
+    // Capture exit on web
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      window.addEventListener('beforeunload', () => {
+        this.sendPing('session_ping');
+      });
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          this.sendPing('session_ping');
+        }
+      });
+    }
   }
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>流量與數據分析後台 · 在我們之間</title>
+  <title>訪客與使用數據分析後台 · 在我們之間</title>
   <link rel="icon" href="/icon.png">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <!-- 未登入自動重定向至專屬登入頁 -->
@@ -23,6 +23,7 @@
       --accent-soft: #F4EBE1;
       --accent-hover: #A8473B;
       --success: #2E7D32;
+      --success-soft: #E8F5E9;
       --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }
     body.dark {
@@ -35,6 +36,7 @@
       --accent-soft: #382C28;
       --accent-hover: #F29387;
       --success: #4CAF50;
+      --success-soft: #1B3820;
       --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     }
     * {
@@ -69,14 +71,16 @@
       gap: 12px;
     }
     .brand-icon-box {
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       border-radius: 10px;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
     }
     .brand-icon-img {
       width: 100%;
@@ -138,28 +142,30 @@
       border-color: #E53935;
       color: #D32F2F;
     }
-    body.dark .btn-logout {
-      border-color: #5C2320;
-      color: #EF9A9A;
-    }
-    body.dark .btn-logout:hover {
-      background: #3B1B19;
-      color: #FFCDD2;
-    }
 
-    /* 主要容器 */
+    /* 主內容容器 */
     .main-container {
-      max-width: 1240px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 24px;
     }
 
-    /* 關鍵數據指標卡片 */
+    /* 核心指標卡 */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 16px;
       margin-bottom: 24px;
+    }
+    @media (max-width: 900px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 480px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
     }
     .kpi-card {
       background: var(--card-bg);
@@ -167,24 +173,26 @@
       border-radius: 16px;
       padding: 20px;
       box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justifyContent: space-between;
     }
     .kpi-title {
       font-size: 13px;
+      font-weight: 600;
       color: var(--text-muted);
-      font-weight: 500;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .kpi-value {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 700;
       letter-spacing: -1px;
       color: var(--text-main);
     }
     .kpi-sub {
       font-size: 12px;
-      color: var(--accent);
-      margin-top: 4px;
-      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 6px;
     }
 
     /* 圖表網格 */
@@ -219,7 +227,7 @@
       font-weight: 600;
     }
 
-    /* 嚴格鎖定圖表容器高度，防止無限延展 */
+    /* 圖表容器高度 */
     .chart-canvas-wrapper {
       position: relative;
       width: 100%;
@@ -241,7 +249,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 12px;
+      padding: 10px 14px;
       border-radius: 10px;
       background: var(--bg);
       font-size: 13px;
@@ -255,7 +263,7 @@
     .data-item-badge {
       background: var(--accent-soft);
       color: var(--accent);
-      padding: 2px 8px;
+      padding: 3px 10px;
       border-radius: 12px;
       font-size: 12px;
       font-weight: 600;
@@ -274,31 +282,67 @@
     th {
       color: var(--text-muted);
       font-weight: 600;
-      padding: 10px 12px;
+      padding: 12px 14px;
       border-bottom: 1px solid var(--border);
+      white-space: nowrap;
     }
     td {
-      padding: 12px;
+      padding: 13px 14px;
       border-bottom: 1px solid var(--border);
+      white-space: nowrap;
     }
     tr:last-child td {
       border-bottom: none;
     }
-    .tag {
-      display: inline-block;
-      padding: 2px 8px;
+    .user-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: monospace;
+      font-weight: 600;
+      padding: 3px 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
       border-radius: 6px;
-      font-size: 11px;
+      font-size: 12px;
+    }
+    .device-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 500;
+    }
+    .duration-badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--success-soft);
+      color: var(--success);
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .status-badge.active {
+      color: var(--success);
       font-weight: 600;
     }
-    .tag-flip { background: #E8F5E9; color: #2E7D32; }
-    .tag-page { background: #E3F2FD; color: #1565C0; }
-    .tag-fav { background: #FFF3E0; color: #E65100; }
-    .tag-cat { background: #F3E5F5; color: #7B1FA2; }
-    body.dark .tag-flip { background: #1B3820; color: #81C784; }
-    body.dark .tag-page { background: #152A3E; color: #64B5F6; }
-    body.dark .tag-fav { background: #3E2914; color: #FFB74D; }
-    body.dark .tag-cat { background: #35193B; color: #BA68C8; }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 4px;
+      background: #9E9E9E;
+    }
+    .status-badge.active .status-dot {
+      background: #4CAF50;
+      box-shadow: 0 0 8px #4CAF50;
+    }
   </style>
 </head>
 <body>
@@ -308,7 +352,7 @@
       <div class="brand-icon-box">
         <img src="/icon.png" class="brand-icon-img" alt="在我們之間" onerror="this.src='/favicon.ico'">
       </div>
-      <span class="nav-title">在我們之間 · 數據分析後台</span>
+      <span class="nav-title">在我們之間 · 訪客與使用數據分析</span>
       <span class="nav-badge">即時監控中</span>
     </div>
     <div class="nav-actions">
@@ -325,23 +369,23 @@
     <section class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-title">今日造訪人數</div>
-        <div class="kpi-value" id="kpi-today-sessions">0</div>
-        <div class="kpi-sub">獨立活躍工作階段</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-title">今日翻牌互動</div>
-        <div class="kpi-value" id="kpi-today-flips">0</div>
-        <div class="kpi-sub">深度對話探索次數</div>
+        <div class="kpi-value" id="kpi-today-visitors">0</div>
+        <div class="kpi-sub">今日活躍獨立訪客</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-title">累積獨立訪客</div>
-        <div class="kpi-value" id="kpi-total-sessions">0</div>
-        <div class="kpi-sub">歷史累積使用者</div>
+        <div class="kpi-value" id="kpi-total-visitors">0</div>
+        <div class="kpi-sub">歷史累積不同使用者</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">全站累積互動</div>
-        <div class="kpi-value" id="kpi-total-events">0</div>
-        <div class="kpi-sub">各平台互動總累積</div>
+        <div class="kpi-title">累積造訪次數</div>
+        <div class="kpi-value" id="kpi-total-sessions">0</div>
+        <div class="kpi-sub">總開啟與使用階段數</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">平均使用時間</div>
+        <div class="kpi-value" id="kpi-avg-duration">0 秒</div>
+        <div class="kpi-sub">每位訪客平均停留時長</div>
       </div>
     </section>
 
@@ -350,34 +394,11 @@
       <!-- 趨勢圖 -->
       <div class="chart-panel">
         <div class="panel-header">
-          <h3 class="panel-title">近 14 日造訪人數與翻牌趨勢折線圖</h3>
+          <h3 class="panel-title">近 14 日造訪人數與使用時長趨勢圖</h3>
         </div>
         <div class="chart-canvas-wrapper">
           <canvas id="trendChart"></canvas>
         </div>
-      </div>
-
-      <!-- 分類排行 -->
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h3 class="panel-title">熱門話題主題排行榜</h3>
-        </div>
-        <ul class="data-list" id="category-list">
-          <li class="data-item"><span class="data-item-label">資料載入中…</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- 地理與設備區 -->
-    <div class="charts-grid">
-      <!-- 地理位置 -->
-      <div class="chart-panel">
-        <div class="panel-header">
-          <h3 class="panel-title">使用者地理分佈前 10 大地區</h3>
-        </div>
-        <ul class="data-list" id="country-list">
-          <li class="data-item"><span class="data-item-label">資料載入中…</span></li>
-        </ul>
       </div>
 
       <!-- 設備比例 -->
@@ -391,25 +412,40 @@
       </div>
     </div>
 
-    <!-- 即時動態表格 -->
-    <section class="chart-panel">
+    <!-- 地理分佈 -->
+    <div class="charts-grid" style="grid-template-columns: 1fr;">
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h3 class="panel-title">使用者地理分佈前 10 大地區</h3>
+        </div>
+        <ul class="data-list" id="country-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+          <li class="data-item"><span class="data-item-label">資料載入中…</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 個別訪客使用記錄表格 -->
+    <section class="chart-panel" style="margin-top: 24px;">
       <div class="panel-header">
-        <h3 class="panel-title">最新使用者即時互動動態</h3>
+        <div>
+          <h3 class="panel-title">個別訪客使用記錄明細表</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 3px;">記錄不同訪客、使用之設備與個別實際停留時間</p>
+        </div>
         <span id="last-update" style="font-size: 12px; color: var(--text-muted);">正在更新中…</span>
       </div>
       <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>發生時間</th>
-              <th>互動類型</th>
-              <th>對應主題</th>
-              <th>使用語言</th>
-              <th>地理位置</th>
-              <th>使用設備與系統</th>
+              <th>造訪時間</th>
+              <th>訪客代號</th>
+              <th>使用設備</th>
+              <th>所在地區</th>
+              <th>個別使用時間</th>
+              <th>目前狀態</th>
             </tr>
           </thead>
-          <tbody id="events-tbody">
+          <tbody id="sessions-tbody">
             <tr><td colspan="6" style="text-align:center; padding: 20px;">資料載入中…</td></tr>
           </tbody>
         </table>
@@ -474,22 +510,6 @@
       'GB': '英國'
     };
 
-    const CAT_NAMES = {
-      'vision': '價值與未來',
-      'soul': '靈魂與內心',
-      'finance': '金錢與生活',
-      'intimacy': '親密與浪漫',
-      'fun': '趣味與童心',
-      'growth': '個人成長',
-      'faith': '信念與世界觀'
-    };
-
-    const LANG_NAMES = {
-      'zh-TW': '繁體中文',
-      'zh-CN': '簡體中文',
-      'en': '英文'
-    };
-
     const PLATFORM_NAMES = {
       'web': '電腦瀏覽器',
       'iOS (Web)': '蘋果手機瀏覽器',
@@ -500,6 +520,30 @@
       'Windows': '微軟視窗系統',
       'Linux': 'Linux 系統'
     };
+
+    const PLATFORM_ICONS = {
+      'iOS (Web)': '📱',
+      'Android (Web)': '📱',
+      'iOS (App)': '📱',
+      'Android (App)': '📱',
+      'macOS': '💻',
+      'Windows': '💻',
+      'Linux': '💻',
+      'web': '🌐'
+    };
+
+    function formatDuration(seconds) {
+      const sec = Math.max(0, parseInt(seconds, 10) || 0);
+      if (sec < 60) return `${sec} 秒`;
+      const mins = Math.floor(sec / 60);
+      const remainSec = sec % 60;
+      if (mins < 60) {
+        return remainSec > 0 ? `${mins} 分 ${remainSec} 秒` : `${mins} 分鐘`;
+      }
+      const hours = Math.floor(mins / 60);
+      const remainMin = mins % 60;
+      return `${hours} 小時 ${remainMin} 分`;
+    }
 
     async function loadStats() {
       if (!currentToken) return;
@@ -528,27 +572,12 @@
 
     function renderData(data) {
       // 1. 核心指標數值
-      document.getElementById('kpi-today-sessions').textContent = data.overview.todaySessions.toLocaleString();
-      document.getElementById('kpi-today-flips').textContent = data.overview.todayFlips.toLocaleString();
-      document.getElementById('kpi-total-sessions').textContent = data.overview.totalSessions.toLocaleString();
-      document.getElementById('kpi-total-events').textContent = data.overview.totalEvents.toLocaleString();
+      document.getElementById('kpi-today-visitors').textContent = (data.overview.todayVisitors || 0).toLocaleString();
+      document.getElementById('kpi-total-visitors').textContent = (data.overview.totalVisitors || 0).toLocaleString();
+      document.getElementById('kpi-total-sessions').textContent = (data.overview.totalSessions || 0).toLocaleString();
+      document.getElementById('kpi-avg-duration').textContent = formatDuration(data.overview.avgDurationSeconds || 0);
 
-      // 2. 主題分類排行
-      const catListEl = document.getElementById('category-list');
-      if (data.categories && data.categories.length > 0) {
-        catListEl.innerHTML = data.categories.map(c => `
-          <li class="data-item">
-            <span class="data-item-label">
-              <span>✦</span> ${CAT_NAMES[c.category] || c.category}
-            </span>
-            <span class="data-item-badge">${c.count} 次</span>
-          </li>
-        `).join('');
-      } else {
-        catListEl.innerHTML = '<li class="data-item"><span class="data-item-label">暫無分類數據</span></li>';
-      }
-
-      // 3. 地理分佈
+      // 2. 地理分佈
       const countryListEl = document.getElementById('country-list');
       if (data.countries && data.countries.length > 0) {
         countryListEl.innerHTML = data.countries.map(c => `
@@ -556,14 +585,14 @@
             <span class="data-item-label">
               <span>${getCountryFlag(c.country)}</span> ${COUNTRY_NAMES[c.country] || c.country}
             </span>
-            <span class="data-item-badge">${c.users} 訪客 · ${c.count} 次</span>
+            <span class="data-item-badge">${c.users} 位訪客 · ${c.count} 次</span>
           </li>
         `).join('');
       } else {
         countryListEl.innerHTML = '<li class="data-item"><span class="data-item-label">暫無地理數據</span></li>';
       }
 
-      // 4. 趨勢圖表
+      // 3. 趨勢圖表
       const isDark = document.body.classList.contains('dark');
       const textColor = isDark ? '#A39B91' : '#666';
       const gridColor = isDark ? '#2D2824' : '#E8E2D9';
@@ -576,19 +605,22 @@
           labels: data.dailyTrends.map(d => d.date.slice(5)),
           datasets: [
             {
-              label: '翻牌次數',
-              data: data.dailyTrends.map(d => d.card_flips),
+              label: '造訪人數',
+              data: data.dailyTrends.map(d => d.users),
               borderColor: '#C25B4E',
               backgroundColor: 'rgba(194, 91, 78, 0.12)',
               fill: true,
-              tension: 0.3
+              tension: 0.3,
+              yAxisID: 'y'
             },
             {
-              label: '造訪人數',
-              data: data.dailyTrends.map(d => d.users),
-              borderColor: '#8E877F',
+              label: '總使用時間 (分鐘)',
+              data: data.dailyTrends.map(d => d.total_minutes || 0),
+              borderColor: '#2E7D32',
+              backgroundColor: 'rgba(46, 125, 50, 0.08)',
               borderDash: [5, 5],
-              tension: 0.3
+              tension: 0.3,
+              yAxisID: 'y1'
             }
           ]
         },
@@ -600,12 +632,27 @@
           },
           scales: {
             x: { ticks: { color: textColor }, grid: { color: gridColor } },
-            y: { ticks: { color: textColor, precision: 0 }, grid: { color: gridColor }, beginAtZero: true }
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              ticks: { color: textColor, precision: 0 },
+              grid: { color: gridColor },
+              beginAtZero: true
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              ticks: { color: textColor },
+              grid: { drawOnChartArea: false },
+              beginAtZero: true
+            }
           }
         }
       });
 
-      // 5. 設備分佈圖
+      // 4. 設備分佈圖
       const platformCanvas = document.getElementById('platformChart');
       if (platformChart) platformChart.destroy();
       platformChart = new Chart(platformCanvas, {
@@ -626,37 +673,47 @@
         }
       });
 
-      // 6. 即時動態表格
-      const tbody = document.getElementById('events-tbody');
-      if (data.recentEvents && data.recentEvents.length > 0) {
-        tbody.innerHTML = data.recentEvents.map(e => {
-          let tagClass = 'tag-page';
-          let tagLabel = e.event_name;
-          if (e.event_name === 'flip_card') { tagClass = 'tag-flip'; tagLabel = '翻開卡牌'; }
-          else if (e.event_name === 'next_question') { tagClass = 'tag-page'; tagLabel = '換下一題'; }
-          else if (e.event_name === 'toggle_favorite') { tagClass = 'tag-fav'; tagLabel = '卡牌收藏'; }
-          else if (e.event_name === 'change_category') { tagClass = 'tag-cat'; tagLabel = '切換主題'; }
-          else if (e.event_name === 'start_timer') { tagClass = 'tag-cat'; tagLabel = '開始計時'; }
-          else if (e.event_name === 'change_language') { tagClass = 'tag-page'; tagLabel = '切換語言'; }
-          else if (e.event_name === 'pageview') { tagClass = 'tag-page'; tagLabel = '訪問首頁'; }
+      // 5. 個別訪客使用記錄明細表格
+      const tbody = document.getElementById('sessions-tbody');
+      if (data.sessions && data.sessions.length > 0) {
+        const nowMs = Date.now();
+        tbody.innerHTML = data.sessions.map(s => {
+          const time = new Date(s.first_seen + 'Z').toLocaleString('zh-TW', {
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          const lastActiveMs = new Date(s.last_seen + 'Z').getTime();
+          const isActive = (nowMs - lastActiveMs) < (3 * 60 * 1000); // 3 分鐘內活躍
 
-          const time = new Date(e.created_at + 'Z').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-          const countryName = COUNTRY_NAMES[e.country] || e.country;
-          const loc = (e.city && e.city !== 'Unknown') ? `${getCountryFlag(e.country)} ${countryName} · ${e.city}` : `${getCountryFlag(e.country)} ${countryName}`;
+          const countryName = COUNTRY_NAMES[s.country] || s.country || '未知地區';
+          const loc = (s.city && s.city !== 'Unknown') 
+            ? `${getCountryFlag(s.country)} ${countryName} · ${s.city}` 
+            : `${getCountryFlag(s.country)} ${countryName}`;
+
+          const deviceIcon = PLATFORM_ICONS[s.platform] || '📱';
+          const platformName = PLATFORM_NAMES[s.platform] || s.platform || '未知設備';
+          const userCode = (s.user_id || s.session_id || 'u_guest').slice(-6).toUpperCase();
 
           return `
             <tr>
               <td>${time}</td>
-              <td><span class="tag ${tagClass}">${tagLabel}</span></td>
-              <td>${CAT_NAMES[e.category] || e.category || '全部'}</td>
-              <td>${LANG_NAMES[e.language] || e.language || '-'}</td>
+              <td><span class="user-tag">訪客 #${userCode}</span></td>
+              <td><span class="device-badge">${deviceIcon} ${platformName}</span></td>
               <td>${loc}</td>
-              <td>${PLATFORM_NAMES[e.platform] || e.platform || '-'}</td>
+              <td><span class="duration-badge">${formatDuration(s.duration_seconds)}</span></td>
+              <td>
+                <span class="status-badge ${isActive ? 'active' : ''}">
+                  <span class="status-dot"></span>
+                  ${isActive ? '使用中' : '已結束'}
+                </span>
+              </td>
             </tr>
           `;
         }).join('');
       } else {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">尚無即時數據</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">尚無訪客使用記錄</td></tr>';
       }
     }
 

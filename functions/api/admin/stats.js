@@ -1,6 +1,7 @@
 /**
  * Cloudflare Pages Function: /api/admin/stats
- * Queries analytical metrics from Cloudflare D1 database.
+ * Queries analytical metrics from Cloudflare D1 database:
+ * distinct visitors, devices/platforms, and individual usage duration.
  */
 
 const CORS_HEADERS = {
@@ -72,64 +73,56 @@ export async function onRequestGet(context) {
   }
 
   try {
-    // 1. Overview counts
-    const totalEventsRes = await env.DB.prepare('SELECT COUNT(*) as cnt FROM events').first();
-    const totalSessionsRes = await env.DB.prepare('SELECT COUNT(DISTINCT session_id) as cnt FROM events').first();
-    
-    // Today
-    const todaySessionsRes = await env.DB.prepare(
-      "SELECT COUNT(DISTINCT session_id) as cnt FROM events WHERE created_at >= date('now', 'start of day')"
+    // 1. Overview counts from visitor_sessions
+    const totalVisitorsRes = await env.DB.prepare(
+      'SELECT COUNT(DISTINCT user_id) as cnt FROM visitor_sessions'
     ).first();
-    const todayFlipsRes = await env.DB.prepare(
-      "SELECT COUNT(*) as cnt FROM events WHERE event_name = 'flip_card' AND created_at >= date('now', 'start of day')"
+    const totalSessionsRes = await env.DB.prepare(
+      'SELECT COUNT(*) as cnt FROM visitor_sessions'
+    ).first();
+    const todayVisitorsRes = await env.DB.prepare(
+      "SELECT COUNT(DISTINCT user_id) as cnt FROM visitor_sessions WHERE last_seen >= date('now', 'start of day')"
+    ).first();
+    const avgDurationRes = await env.DB.prepare(
+      'SELECT ROUND(AVG(duration_seconds)) as avg_sec FROM visitor_sessions'
     ).first();
 
-    // 2. Countries Top 10
+    // 2. Platforms breakdown
+    const platformsRes = await env.DB.prepare(
+      `SELECT platform, COUNT(*) as count, COUNT(DISTINCT user_id) as users 
+       FROM visitor_sessions 
+       GROUP BY platform 
+       ORDER BY count DESC`
+    ).all();
+
+    // 3. Countries breakdown
     const countriesRes = await env.DB.prepare(
-      `SELECT country, COUNT(*) as count, COUNT(DISTINCT session_id) as users 
-       FROM events 
+      `SELECT country, COUNT(*) as count, COUNT(DISTINCT user_id) as users 
+       FROM visitor_sessions 
        WHERE country IS NOT NULL 
        GROUP BY country 
        ORDER BY users DESC, count DESC 
        LIMIT 10`
     ).all();
 
-    // 3. Platforms
-    const platformsRes = await env.DB.prepare(
-      `SELECT platform, COUNT(*) as count, COUNT(DISTINCT session_id) as users 
-       FROM events 
-       GROUP BY platform 
-       ORDER BY count DESC`
-    ).all();
-
-    // 4. Categories ranking
-    const categoriesRes = await env.DB.prepare(
-      `SELECT category, COUNT(*) as count 
-       FROM events 
-       WHERE category IS NOT NULL AND category != 'all'
-       GROUP BY category 
-       ORDER BY count DESC 
-       LIMIT 10`
-    ).all();
-
-    // 5. Daily Trend (Last 14 days)
+    // 4. Daily Trends (Last 14 days)
     const dailyRes = await env.DB.prepare(
-      `SELECT strftime('%Y-%m-%d', created_at) as date,
-              COUNT(DISTINCT session_id) as users,
-              COUNT(*) as total_events,
-              SUM(CASE WHEN event_name = 'flip_card' THEN 1 ELSE 0 END) as card_flips
-       FROM events 
-       WHERE created_at >= date('now', '-14 days')
+      `SELECT strftime('%Y-%m-%d', first_seen) as date,
+              COUNT(DISTINCT user_id) as users,
+              COUNT(*) as sessions,
+              ROUND(SUM(duration_seconds) / 60.0, 1) as total_minutes
+       FROM visitor_sessions 
+       WHERE first_seen >= date('now', '-14 days')
        GROUP BY date 
        ORDER BY date ASC`
     ).all();
 
-    // 6. Recent 20 Events
+    // 5. Recent individual visitor sessions (last 50)
     const recentRes = await env.DB.prepare(
-      `SELECT id, session_id, event_name, category, language, country, city, platform, created_at 
-       FROM events 
+      `SELECT id, session_id, user_id, platform, country, city, duration_seconds, first_seen, last_seen
+       FROM visitor_sessions
        ORDER BY id DESC 
-       LIMIT 25`
+       LIMIT 50`
     ).all();
 
     return new Response(
@@ -137,16 +130,15 @@ export async function onRequestGet(context) {
         success: true,
         data: {
           overview: {
-            totalEvents: totalEventsRes?.cnt || 0,
+            totalVisitors: totalVisitorsRes?.cnt || 0,
+            todayVisitors: todayVisitorsRes?.cnt || 0,
             totalSessions: totalSessionsRes?.cnt || 0,
-            todaySessions: todaySessionsRes?.cnt || 0,
-            todayFlips: todayFlipsRes?.cnt || 0,
+            avgDurationSeconds: avgDurationRes?.avg_sec || 0,
           },
-          countries: countriesRes.results || [],
           platforms: platformsRes.results || [],
-          categories: categoriesRes.results || [],
+          countries: countriesRes.results || [],
           dailyTrends: dailyRes.results || [],
-          recentEvents: recentRes.results || [],
+          sessions: recentRes.results || [],
         },
       }),
       {
