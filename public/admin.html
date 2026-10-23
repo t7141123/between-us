@@ -6,6 +6,12 @@
   <title>流量與數據分析後台 · 在我們之間 Between Us</title>
   <link rel="icon" href="/icon.png">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Immediate Auth Guard: If not logged in, redirect to /login before rendering anything -->
+  <script>
+    if (!sessionStorage.getItem('between_us_admin_session')) {
+      window.location.replace('/login');
+    }
+  </script>
   <style>
     :root {
       --bg: #F8F5F0;
@@ -45,95 +51,7 @@
       transition: background-color 0.2s, color 0.2s;
     }
 
-    /* Login Modal Overlay */
-    #login-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 20px;
-    }
-    .login-box {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 36px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-      text-align: center;
-    }
-    .login-logo {
-      width: 64px;
-      height: 64px;
-      border-radius: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      object-fit: cover;
-    }
-    .login-title {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .login-desc {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 24px;
-    }
-    .form-group {
-      text-align: left;
-      margin-bottom: 16px;
-    }
-    .form-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-      display: block;
-    }
-    .form-input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text-main);
-      border-radius: 10px;
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .form-input:focus {
-      border-color: var(--accent);
-    }
-    .btn-login {
-      width: 100%;
-      background: var(--accent);
-      color: #FFF;
-      border: none;
-      padding: 12px;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: opacity 0.2s;
-    }
-    .btn-login:hover {
-      opacity: 0.9;
-    }
-    .login-error {
-      color: #E53935;
-      font-size: 13px;
-      margin-top: 12px;
-      display: none;
-    }
-
-    /* Header */
+    /* Navbar */
     .navbar {
       border-bottom: 1px solid var(--border);
       background: var(--card-bg);
@@ -150,20 +68,20 @@
       align-items: center;
       gap: 12px;
     }
-    .nav-logo-box {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      overflow: hidden;
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #E07A6D 0%, #C25B4E 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--accent-soft);
+      box-shadow: 0 2px 8px rgba(194, 91, 78, 0.2);
     }
-    .nav-logo {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .brand-icon svg {
+      width: 17px;
+      height: 17px;
+      fill: #FFFFFF;
     }
     .nav-title {
       font-size: 17px;
@@ -181,7 +99,16 @@
     .nav-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+    }
+    .user-pill {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      background: var(--bg);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
     }
     .btn-action {
       background: var(--card-bg);
@@ -201,6 +128,23 @@
       background: var(--accent-soft);
       border-color: var(--accent);
       color: var(--accent);
+    }
+    .btn-logout {
+      color: #E53935;
+      border-color: #FFCDD2;
+    }
+    .btn-logout:hover {
+      background: #FFEBEE;
+      border-color: #E53935;
+      color: #D32F2F;
+    }
+    body.dark .btn-logout {
+      border-color: #5C2320;
+      color: #EF9A9A;
+    }
+    body.dark .btn-logout:hover {
+      background: #3B1B19;
+      color: #FFCDD2;
     }
 
     /* Container */
@@ -275,7 +219,7 @@
       font-weight: 600;
     }
 
-    /* FIXED CANVAS CONTAINER (Prevents Chart.js infinite height expansion) */
+    /* Strict Fixed Container for Charts */
     .chart-canvas-wrapper {
       position: relative;
       width: 100%;
@@ -354,42 +298,22 @@
   </style>
 </head>
 <body>
-  <!-- Login Modal Overlay (Default visible until session verified) -->
-  <div id="login-overlay">
-    <div class="login-box">
-      <img src="/icon.png" class="login-logo" alt="Logo" onerror="this.src='/favicon.ico'">
-      <h2 class="login-title">管理員登入</h2>
-      <p class="login-desc">在我們之間 · 流量分析與使用者行為監控</p>
-
-      <form id="login-form">
-        <div class="form-group">
-          <label class="form-label">管理者帳號</label>
-          <input type="text" id="username" class="form-input" placeholder="請輸入 admin" required autofocus>
-        </div>
-        <div class="form-group">
-          <label class="form-label">管理者密碼</label>
-          <input type="password" id="password" class="form-input" placeholder="請輸入密碼" required>
-        </div>
-        <button type="submit" class="btn-login" id="btn-submit">登入後台</button>
-        <div id="login-error" class="login-error"></div>
-      </form>
-    </div>
-  </div>
-
   <!-- Navbar -->
   <header class="navbar">
     <div class="nav-left">
-      <div class="nav-logo-box">
-        <img src="/icon.png" class="nav-logo" alt="Between Us" onerror="this.src='/favicon.ico'">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
       </div>
       <span class="nav-title">在我們之間 · 數據分析後台</span>
       <span class="nav-badge">Live Analytics</span>
     </div>
     <div class="nav-actions">
-      <span id="user-display" style="font-size: 13px; color: var(--text-muted); font-weight: 500;"></span>
-      <button class="btn-action" onclick="toggleTheme()" id="theme-btn">切換深色</button>
+      <span class="user-pill">管理者：admin</span>
+      <button class="btn-action" onclick="toggleTheme()" id="theme-btn">深色模式</button>
       <button class="btn-action" onclick="loadStats()" id="refresh-btn">重新整理</button>
-      <button class="btn-action" onclick="logout()" style="color: #E53935;">登出</button>
+      <button class="btn-action btn-logout" onclick="logout()">安全登出</button>
     </div>
   </header>
 
@@ -494,75 +418,32 @@
   <script>
     let trendChart = null;
     let platformChart = null;
-    // Use sessionStorage so closing browser or clicking logout prompts login screen
     let currentToken = sessionStorage.getItem('between_us_admin_session');
 
     window.addEventListener('DOMContentLoaded', () => {
-      // Handle dark mode preference
+      if (!currentToken) {
+        window.location.replace('/login');
+        return;
+      }
+
+      // Check dark mode
       if (localStorage.getItem('admin_theme') === 'dark') {
         document.body.classList.add('dark');
-        document.getElementById('theme-btn').textContent = '切換淺色';
+        document.getElementById('theme-btn').textContent = '淺色模式';
       }
 
-      if (currentToken) {
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('user-display').textContent = '管理員：admin';
-        loadStats();
-      } else {
-        document.getElementById('login-overlay').style.display = 'flex';
-      }
-    });
-
-    // Handle Login
-    document.getElementById('login-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const errEl = document.getElementById('login-error');
-      const submitBtn = document.getElementById('btn-submit');
-
-      errEl.style.display = 'none';
-      submitBtn.disabled = true;
-      submitBtn.textContent = '登入中…';
-
-      try {
-        const res = await fetch('/api/admin/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
-        });
-        const data = await res.json();
-        if (data.success && data.token) {
-          currentToken = data.token;
-          sessionStorage.setItem('between_us_admin_session', data.token);
-          document.getElementById('login-overlay').style.display = 'none';
-          document.getElementById('user-display').textContent = '管理員：' + username;
-          loadStats();
-        } else {
-          errEl.textContent = data.error || '帳號或密碼錯誤';
-          errEl.style.display = 'block';
-        }
-      } catch (err) {
-        errEl.textContent = '登入連線失敗：' + err.message;
-        errEl.style.display = 'block';
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = '登入後台';
-      }
+      loadStats();
     });
 
     function logout() {
       sessionStorage.removeItem('between_us_admin_session');
-      currentToken = null;
-      document.getElementById('user-display').textContent = '';
-      document.getElementById('login-overlay').style.display = 'flex';
-      document.getElementById('password').value = '';
+      window.location.replace('/login');
     }
 
     function toggleTheme() {
       const isDark = document.body.classList.toggle('dark');
       localStorage.setItem('admin_theme', isDark ? 'dark' : 'light');
-      document.getElementById('theme-btn').textContent = isDark ? '切換淺色' : '切換深色';
+      document.getElementById('theme-btn').textContent = isDark ? '淺色模式' : '深色模式';
       if (trendChart) trendChart.destroy();
       if (platformChart) platformChart.destroy();
       trendChart = null;
@@ -649,7 +530,7 @@
         countryListEl.innerHTML = '<li class="data-item"><span class="data-item-label">暫無地理數據</span></li>';
       }
 
-      // 4. Trend Chart (Render within strict max-height container)
+      // 4. Trend Chart (Strictly contained within fixed height)
       const isDark = document.body.classList.contains('dark');
       const textColor = isDark ? '#A39B91' : '#666';
       const gridColor = isDark ? '#2D2824' : '#E8E2D9';
@@ -743,7 +624,7 @@
       }
     }
 
-    // Auto-refresh every 30 seconds if tab active
+    // Auto refresh every 30s
     setInterval(() => {
       if (currentToken && !document.hidden) loadStats();
     }, 30000);
