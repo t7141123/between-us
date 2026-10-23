@@ -1,5 +1,46 @@
-.DS_Store
-.wrangler/cache/
-questions_new.json
+# Dependencies
+node_modules/
+
+# Cloudflare Wrangler
+.wrangler/
+
+# Expo and Metro builds
+.expo/
 dist/
-/app.js
+web-build/
+
+# Native builds
+ios/
+android/
+
+# Environment Variables & Secrets (CRITICAL for GitHub Security)
+.env
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+*.cert
+
+# Security: Keystores, Certificates and Provisioning Profiles
+*.jks
+*.keystore
+*.p12
+*.p8
+*.mobileprovision
+
+# Firebase / Cloud Credentials
+google-services.json
+GoogleService-Info.plist
+
+# macOS / OS Files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Legacy cleanup files
+questions_new.json

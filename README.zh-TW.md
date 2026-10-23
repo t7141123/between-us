@@ -1,80 +1,140 @@
 # 在我們之間 · Between Us
 
-雙人對話沙龍：2100 個問題（3 語系 × 700 題）、7 個主題，抽卡、翻面、好好說話。
+以最新版 **Expo SDK 52** 與 **React Native** 建構的跨平台雙人對話沙龍應用，支援單一 TypeScript 程式碼庫同時發佈至 **iOS (App Store)**、**Android (Google Play)** 及 **Web**。
 
-零依賴單檔 SPA（`index.html`），部署於 Cloudflare Pages，適合情侶、夫妻或親密關係的兩人一起使用。
+精選 2100 個深度對話問題（3 種語言 × 7 個主題 × 各 100 題）。
 
-## 線上網址
-👉 https://love-between-us.pages.dev
+---
 
-## 這個專案是什麼？
+## 🌟 核心特色
 
-「在我們之間」是一款專為兩人關係設計的對話卡片應用。內建 2100 個精心編寫的問題，支援三種語系，每個語系皆有 700 題，涵蓋七個主題，每類各 100 題：
+- **全平台支援**：從同一套 TypeScript 專案同時上架 iOS App Store、Android Google Play 以及部署 Web 網站。
+- **獨立語系檔案架構**：繁中、簡中、英文採用獨立 JSON 檔案結構 (`src/locales/{zh-TW,zh-CN,en}.json`)，切換即時流暢。
+- **雙色質感設計**：兼顧深色與淺色主題模式（陶土紅、紙感白、深炭灰、金箔金），支援系統外觀自動感應與手動開關。
+- **3D 流暢卡片翻面**：支援 60fps Y 軸翻牌動效、雙層金箔微光邊框、以及滑動手勢換題。
+- **觸覺震動回饋（Haptics）**：在手機端支援翻牌、收藏時的微震動回饋 (`expo-haptics`)。
+- **5 分鐘深度計時器**：浮層倒數、等寬時間顯示、時間結束和弦音效與彩紙慶祝動畫。
+- **題庫抽屜與即時搜尋**：支援 700 題全文即時檢索、主題篩選與收藏過濾。
+- **資安防護零洩漏**：嚴格的最小權限原則（不索取相機、麥克風、定位等危險權限），嚴密 `.gitignore` 阻絕 GitHub 敏感金鑰外洩。
 
-- **價值與未來**（每語系 100 題）—— 未來規劃、人生目標、家庭價值觀
-- **心靈與情緒**（每語系 100 題）—— 情感需求、內心世界、情緒連結
-- **家庭理財**（每語系 100 題）—— 金錢觀念、預算、財務規劃
-- **親密與連結**（每語系 100 題）—— 親密關係、浪漫、身心連結
-- **日常與陪伴**（每語系 100 題）—— 休閒、共同興趣、生活細節
-- **成長與對話**（每語系 100 題）—— 溝通、衝突處理、關係成長
-- **基督信仰**（每語系 100 題）—— 信仰生活、禱告、靈命成長
+---
 
-適用於約會夜、夫妻對話、婚前輔導、或任何想要加深兩人關係的場合。
-
-## 主要功能
-
-- **多語系切換**：繁體中文、简体中文、English，題庫與介面皆隨語系切換
-- **抽卡翻面**：點擊卡片 3D 翻轉，正面顯示題目與編號，背面顯示封面與提示
-- **分類篩選**：七個主題晶片，可單獨選擇或全部顯示
-- **收藏夾**：將喜歡的問題加入收藏，持久儲存在 localStorage
-- **題庫抽屜**：模糊搜尋所有問題，支援「僅看收藏」過濾，點擊自動切換分類
-- **5 分鐘計時器**：視窗計時器與結束音效，適合限時對話
-- **音效開關**：Web Audio 音效與靜音切換
-- **紙屑彩帶**：完成對話後的慶祝效果
-- **鍵盤操作**：空白鍵翻面、→ 換題、F 收藏、T 計時器
-- **行動優先響應式**：手機與桌面皆適配
-
-## 專案結構
+## 📁 簡潔模組化結構
 
 ```
-index.html              最終產出單檔 SPA（多語系題庫已內嵌，可直接開啟或部署）
-dist/index.html         部署載荷（僅包含 index.html）
-src/
-  index.template.html   版型來源（__ALL_LANGS__ 為多語系題庫佔位符）
-  app.js                應用程式邏輯（多語系、渲染、計時器、音效、收藏、抽屜）
-  lang/
-    zh-TW/questions.json  繁體中文題庫（700 題）
-    zh-CN/questions.json  简体中文題庫（700 題）
-    en/questions.json     英文題庫（700 題）
-build_bank.py           產生各語系 questions.json（題庫來源與切分）
-build_site.py           將多語系題庫注入版型，產生 index.html 與 dist/
-validate.py             題庫驗證（總數、分類、重複、禁用主題、長度）
+between-us/
+├── app.json                  # Expo 跨平台配置與權限管理
+├── eas.json                  # EAS Build 商店建置自動化設定
+├── package.json              # 專案相依與 npm 指令
+├── tsconfig.json             # 嚴格 TypeScript 設定
+├── .eslintrc.js              # ESLint 規範設定
+├── .gitignore                # 資安專用忽略清單 (防金鑰外洩)
+├── assets/                   # 上架專用圖標 (1024x1024) 與啟動畫面
+├── src/
+│   ├── locales/              # 獨立語系檔案 (UI 字串 + 各 700 題題庫)
+│   │   ├── zh-TW.json        # 繁體中文
+│   │   ├── zh-CN.json        # 簡體中文
+│   │   └── en.json           # 英文
+│   ├── components/           # 模組化 UI 元件
+│   │   ├── Card3D.tsx        # 3D 翻轉對話卡片
+│   │   ├── CategoryChips.tsx # 主題標籤導覽
+│   │   ├── HeaderBar.tsx     # 頂部導航列 (語言、音效、外觀模式)
+│   │   ├── DrawerModal.tsx   # 題庫搜尋抽屜
+│   │   └── TimerModal.tsx    # 5 分鐘計時器彈窗
+│   ├── hooks/                # 自訂 Hooks (主題、音效、觸覺)
+│   ├── services/             # 服務層 (i18n、安全 AsyncStorage)
+│   ├── constants/            # 設計色彩 Tokens 與分類常數
+│   ├── types/                # TypeScript 型別宣告
+│   └── App.tsx               # 應用主架構
+└── scripts/
+    └── validate-locales.js   # 題庫完整性校驗腳本
 ```
 
-## 重新建置與部署
+---
+
+## 🚀 快速上手
+
+### 安裝相依
 
 ```bash
-# 1. 產生各語系題庫（每語系 700 題，7 類各 100 題）
-python3 build_bank.py
-
-# 2. 產生多語系單檔 SPA
-python3 build_site.py
-
-# 3. 驗證題庫
-python3 validate.py
-
-# 4. 部署到 Cloudflare Pages（愛我們之間專案）
-CLOUDFLARE_ACCOUNT_ID=4a9d7d8a3cf4e6361ff78b54e157881c \
-  npx wrangler pages deploy dist --project-name love-between-us --branch main
+npm install
 ```
 
-## 技術說明
+### 本地開發
 
-- 零依賴：僅使用 CDN 引入 Tailwind CSS、Lucide 圖示與 canvas-confetti
-- 資料儲存：僅使用 localStorage（收藏、靜音、分類偏好、語言設定），不需後端或資料庫
-- 部署：Cloudflare Pages 靜態託管
-- 授權：公開原始碼，歡迎 Fork 與貢獻
+```bash
+# 啟動 Expo 開發伺服器 (使用手機 Expo Go 掃描 QR Code)
+npm start
 
-## 授權
+# 在網頁瀏覽器中執行
+npm run web
+
+# 在 iOS 模擬器中執行 (需 macOS)
+npm run ios
+
+# 在 Android 模擬器中執行
+npm run android
+```
+
+---
+
+## 🛠️ 品質檢驗指令
+
+```bash
+# 1. TypeScript 型別檢查
+npm run typecheck
+
+# 2. ESLint 程式碼規範檢查
+npm run lint
+
+# 3. 2100 題題庫完整性與敏感詞校驗
+npm run validate
+```
+
+---
+
+## 📦 發布與部署流程
+
+### 1. Web 部署 (Cloudflare Pages)
+
+```bash
+# 輸出靜態 Web 產物至 dist/
+npm run build:web
+
+# 部署至 Cloudflare Pages
+npx wrangler pages deploy dist --project-name love-between-us --branch main
+```
+
+### 2. iOS App Store 上架 (透過 EAS Build)
+
+```bash
+# 1. 安裝 EAS CLI
+npm install -g eas-cli
+
+# 2. 登入 Expo 帳號
+eas login
+
+# 3. 建置並自動提交至 App Store Connect
+eas build --platform ios --auto-submit
+```
+
+### 3. Android Google Play 上架 (透過 EAS Build)
+
+```bash
+# 建置 Android App Bundle (AAB) 並提交至 Google Play Console
+eas build --platform android --auto-submit
+```
+
+---
+
+## 🔒 資安與安全規範
+
+1. **零多餘權限原則**：`app.json` 未宣告任何多餘危險權限，滿足 App Store / Google Play 審查規範。
+2. **GitHub 安全防護**：`.env`、金鑰（`*.keystore`、`*.p8`）均已自版本控管永久排除。
+3. **套件資安校驗**：相依套件經嚴格驗證，關鍵依賴維持高安全性。
+
+---
+
+## 📄 授權條款
 
 MIT License
