@@ -12,6 +12,17 @@ const CORS_HEADERS = {
 const ADMIN_USER = 'admin';
 const SECRET_SALT = 'between_us_analytics_salt_2026';
 
+function constantTimeEqual(aStr, bStr) {
+  if (aStr.length !== bStr.length) return false;
+  const a = new TextEncoder().encode(aStr);
+  const b = new TextEncoder().encode(bStr);
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) {
+    diff |= a[i] ^ b[i];
+  }
+  return diff === 0;
+}
+
 async function verifyToken(authHeader) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) return false;
   const token = authHeader.slice(7).trim();
@@ -30,7 +41,7 @@ async function verifyToken(authHeader) {
   const hashArray = Array.from(new Uint8Array(digest));
   const expectedSig = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 
-  return signature === expectedSig;
+  return constantTimeEqual(signature, expectedSig);
 }
 
 export async function onRequestOptions() {
