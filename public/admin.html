@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>流量與數據分析後台 · 在我們之間 Between Us</title>
-  <link rel="icon" href="./assets/icon.png">
+  <link rel="icon" href="/icon.png">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     :root {
@@ -45,12 +45,12 @@
       transition: background-color 0.2s, color 0.2s;
     }
 
-    /* Login Modal */
+    /* Login Modal Overlay */
     #login-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -63,9 +63,17 @@
       border-radius: 20px;
       padding: 36px;
       width: 100%;
-      max-width: 400px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      max-width: 420px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
       text-align: center;
+    }
+    .login-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      object-fit: cover;
     }
     .login-title {
       font-size: 22px;
@@ -90,7 +98,7 @@
     }
     .form-input {
       width: 100%;
-      padding: 10px 14px;
+      padding: 12px 14px;
       border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text-main);
@@ -109,7 +117,7 @@
       border: none;
       padding: 12px;
       border-radius: 12px;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
       margin-top: 10px;
@@ -129,7 +137,7 @@
     .navbar {
       border-bottom: 1px solid var(--border);
       background: var(--card-bg);
-      padding: 16px 24px;
+      padding: 14px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -142,13 +150,23 @@
       align-items: center;
       gap: 12px;
     }
+    .nav-logo-box {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-soft);
+    }
     .nav-logo {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .nav-title {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
       letter-spacing: -0.3px;
     }
@@ -243,6 +261,8 @@
       border-radius: 16px;
       padding: 24px;
       box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
     }
     .panel-header {
       display: flex;
@@ -255,12 +275,23 @@
       font-weight: 600;
     }
 
+    /* FIXED CANVAS CONTAINER (Prevents Chart.js infinite height expansion) */
+    .chart-canvas-wrapper {
+      position: relative;
+      width: 100%;
+      height: 260px;
+      max-height: 260px;
+      flex-shrink: 0;
+    }
+
     /* Data List */
     .data-list {
       list-style: none;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      flex: 1;
+      justify-content: center;
     }
     .data-item {
       display: flex;
@@ -323,21 +354,21 @@
   </style>
 </head>
 <body>
-  <!-- Login Modal -->
+  <!-- Login Modal Overlay (Default visible until session verified) -->
   <div id="login-overlay">
     <div class="login-box">
-      <img src="./assets/icon.png" width="56" height="56" style="border-radius: 14px; margin-bottom: 14px;">
+      <img src="/icon.png" class="login-logo" alt="Logo" onerror="this.src='/favicon.ico'">
       <h2 class="login-title">管理員登入</h2>
       <p class="login-desc">在我們之間 · 流量分析與使用者行為監控</p>
 
       <form id="login-form">
         <div class="form-group">
           <label class="form-label">管理者帳號</label>
-          <input type="text" id="username" class="form-input" value="admin" required>
+          <input type="text" id="username" class="form-input" placeholder="請輸入 admin" required autofocus>
         </div>
         <div class="form-group">
           <label class="form-label">管理者密碼</label>
-          <input type="password" id="password" class="form-input" placeholder="輸入密碼" required autofocus>
+          <input type="password" id="password" class="form-input" placeholder="請輸入密碼" required>
         </div>
         <button type="submit" class="btn-login" id="btn-submit">登入後台</button>
         <div id="login-error" class="login-error"></div>
@@ -348,11 +379,14 @@
   <!-- Navbar -->
   <header class="navbar">
     <div class="nav-left">
-      <img src="./assets/icon.png" class="nav-logo">
+      <div class="nav-logo-box">
+        <img src="/icon.png" class="nav-logo" alt="Between Us" onerror="this.src='/favicon.ico'">
+      </div>
       <span class="nav-title">在我們之間 · 數據分析後台</span>
       <span class="nav-badge">Live Analytics</span>
     </div>
     <div class="nav-actions">
+      <span id="user-display" style="font-size: 13px; color: var(--text-muted); font-weight: 500;"></span>
       <button class="btn-action" onclick="toggleTheme()" id="theme-btn">切換深色</button>
       <button class="btn-action" onclick="loadStats()" id="refresh-btn">重新整理</button>
       <button class="btn-action" onclick="logout()" style="color: #E53935;">登出</button>
@@ -385,14 +419,16 @@
       </div>
     </section>
 
-    <!-- Charts Grid -->
+    <!-- Charts Grid (Fixed Height Containers) -->
     <div class="charts-grid">
       <!-- 14 Days Daily Trends -->
       <div class="chart-panel">
         <div class="panel-header">
           <h3 class="panel-title">近 14 日造訪人數與翻牌趨勢 (Daily Activity)</h3>
         </div>
-        <canvas id="trendChart" height="230"></canvas>
+        <div class="chart-canvas-wrapper">
+          <canvas id="trendChart"></canvas>
+        </div>
       </div>
 
       <!-- Categories Popularity -->
@@ -423,7 +459,9 @@
         <div class="panel-header">
           <h3 class="panel-title">裝置與作業系統佔比 (Devices & OS)</h3>
         </div>
-        <canvas id="platformChart" height="200"></canvas>
+        <div class="chart-canvas-wrapper">
+          <canvas id="platformChart"></canvas>
+        </div>
       </div>
     </div>
 
@@ -456,21 +494,22 @@
   <script>
     let trendChart = null;
     let platformChart = null;
-    let currentToken = localStorage.getItem('between_us_admin_token');
+    // Use sessionStorage so closing browser or clicking logout prompts login screen
+    let currentToken = sessionStorage.getItem('between_us_admin_session');
 
-    // Check auth on start
     window.addEventListener('DOMContentLoaded', () => {
-      if (currentToken) {
-        document.getElementById('login-overlay').style.display = 'none';
-        loadStats();
-      } else {
-        document.getElementById('login-overlay').style.display = 'flex';
-      }
-
-      // Check dark mode
+      // Handle dark mode preference
       if (localStorage.getItem('admin_theme') === 'dark') {
         document.body.classList.add('dark');
         document.getElementById('theme-btn').textContent = '切換淺色';
+      }
+
+      if (currentToken) {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('user-display').textContent = '管理員：admin';
+        loadStats();
+      } else {
+        document.getElementById('login-overlay').style.display = 'flex';
       }
     });
 
@@ -495,8 +534,9 @@
         const data = await res.json();
         if (data.success && data.token) {
           currentToken = data.token;
-          localStorage.setItem('between_us_admin_token', data.token);
+          sessionStorage.setItem('between_us_admin_session', data.token);
           document.getElementById('login-overlay').style.display = 'none';
+          document.getElementById('user-display').textContent = '管理員：' + username;
           loadStats();
         } else {
           errEl.textContent = data.error || '帳號或密碼錯誤';
@@ -512,9 +552,11 @@
     });
 
     function logout() {
-      localStorage.removeItem('between_us_admin_token');
+      sessionStorage.removeItem('between_us_admin_session');
       currentToken = null;
+      document.getElementById('user-display').textContent = '';
       document.getElementById('login-overlay').style.display = 'flex';
+      document.getElementById('password').value = '';
     }
 
     function toggleTheme() {
@@ -523,10 +565,11 @@
       document.getElementById('theme-btn').textContent = isDark ? '切換淺色' : '切換深色';
       if (trendChart) trendChart.destroy();
       if (platformChart) platformChart.destroy();
+      trendChart = null;
+      platformChart = null;
       loadStats();
     }
 
-    // Country flags helper
     function getCountryFlag(code) {
       if (!code || code === 'Unknown') return '🌐';
       return code.toUpperCase().replace(/./g, char => 
@@ -534,7 +577,6 @@
       );
     }
 
-    // Category names
     const CAT_NAMES = {
       'vision': '價值與未來',
       'soul': '靈魂與內心',
@@ -607,14 +649,14 @@
         countryListEl.innerHTML = '<li class="data-item"><span class="data-item-label">暫無地理數據</span></li>';
       }
 
-      // 4. Trend Chart
+      // 4. Trend Chart (Render within strict max-height container)
       const isDark = document.body.classList.contains('dark');
       const textColor = isDark ? '#A39B91' : '#666';
       const gridColor = isDark ? '#2D2824' : '#E8E2D9';
 
-      const trendCtx = document.getElementById('trendChart').getContext('2d');
+      const trendCanvas = document.getElementById('trendChart');
       if (trendChart) trendChart.destroy();
-      trendChart = new Chart(trendCtx, {
+      trendChart = new Chart(trendCanvas, {
         type: 'line',
         data: {
           labels: data.dailyTrends.map(d => d.date.slice(5)),
@@ -644,15 +686,15 @@
           },
           scales: {
             x: { ticks: { color: textColor }, grid: { color: gridColor } },
-            y: { ticks: { color: textColor }, grid: { color: gridColor } }
+            y: { ticks: { color: textColor, precision: 0 }, grid: { color: gridColor }, beginAtZero: true }
           }
         }
       });
 
       // 5. Platform Chart
-      const platformCtx = document.getElementById('platformChart').getContext('2d');
+      const platformCanvas = document.getElementById('platformChart');
       if (platformChart) platformChart.destroy();
-      platformChart = new Chart(platformCtx, {
+      platformChart = new Chart(platformCanvas, {
         type: 'doughnut',
         data: {
           labels: data.platforms.map(p => p.platform),
@@ -680,6 +722,7 @@
           else if (e.event_name === 'next_question') { tagClass = 'tag-page'; tagLabel = '換下一題'; }
           else if (e.event_name === 'toggle_favorite') { tagClass = 'tag-fav'; tagLabel = '卡牌收藏'; }
           else if (e.event_name === 'change_category') { tagClass = 'tag-cat'; tagLabel = '切換主題'; }
+          else if (e.event_name === 'start_timer') { tagClass = 'tag-cat'; tagLabel = '開始計時'; }
 
           const time = new Date(e.created_at + 'Z').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
           const loc = (e.city && e.city !== 'Unknown') ? `${getCountryFlag(e.country)} ${e.country} · ${e.city}` : `${getCountryFlag(e.country)} ${e.country}`;
@@ -700,9 +743,9 @@
       }
     }
 
-    // Auto-refresh every 30 seconds
+    // Auto-refresh every 30 seconds if tab active
     setInterval(() => {
-      if (currentToken) loadStats();
+      if (currentToken && !document.hidden) loadStats();
     }, 30000);
   </script>
 </body>
