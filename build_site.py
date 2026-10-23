@@ -163,8 +163,8 @@ def main():
     with open(TEMPLATE, encoding="utf-8") as f:
         html = f.read()
 
-    assert "__ALL_LANGS__" in html, "__ALL_LANGS__ placeholder not found in template"
-    html = html.replace("__ALL_LANGS__", payload)
+    assert "__ALL_LANGS_PAYLOAD__" in html, "__ALL_LANGS_PAYLOAD__ placeholder not found in template"
+    html = html.replace("__ALL_LANGS_PAYLOAD__", payload)
 
     # Replace static {key} UI placeholders with default-locale (zh-TW) strings
     default_ui = bundle[LOCALES[0]]["ui"]
