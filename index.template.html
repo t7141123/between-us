@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>在我們之間 · Between Us｜雙人對話沙龍</title>
+<meta name="description" content="500 個問題，讓兩個人慢慢說下去。抽一張卡，翻面，然後好好說話。" />
+<meta name="theme-color" content="#F9F7F2" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="zh_TW" />
+<meta property="og:title" content="在我們之間 · Between Us" />
+<meta property="og:description" content="500 個問題，讓兩個人慢慢說下去。抽一張卡，翻面，然後好好說話。" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23F9F7F2'/%3E%3Ccircle cx='13' cy='16' r='7.5' fill='none' stroke='%23C87D65' stroke-width='1.6'/%3E%3Ccircle cx='19' cy='16' r='7.5' fill='none' stroke='%232D282A' stroke-opacity='.5' stroke-width='1.6'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Sans+TC:wght@300;400;500&family=Noto+Serif+TC:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          paper: '#F9F7F2',
+          sand: '#F2EDE4',
+          ink: '#2D282A',
+          muted: '#78726D',
+          clay: '#C87D65',
+          claydeep: '#A65E47',
+        },
+        fontFamily: {
+          serif: ['"Cormorant Garamond"', '"Noto Serif TC"', 'serif'],
+          sans: ['"Noto Sans TC"', 'system-ui', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+  :root {
+    --paper: #f9f7f2;
+    --sand: #f2ede4;
+    --ink: #2d282a;
+    --muted: #78726d;
+    --clay: #c87d65;
+    --clay-deep: #a65e47;
+    --gold: rgba(212, 175, 55, 0.3);
+    --line: rgba(45, 40, 42, 0.1);
+    --card: #fffdf9;
+  }
+  * { -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', system-ui, sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(200, 125, 101, 0.07), transparent 46%),
+      radial-gradient(circle at 88% 92%, rgba(212, 175, 55, 0.08), transparent 42%),
+      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.6), transparent 70%);
+  }
+  .grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .serif { font-family: 'Cormorant Garamond', 'Noto Serif TC', serif; font-weight: 400; }
+  .eyebrow {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .hairline { height: 1px; background: var(--line); }
+
+  /* ---------- card ---------- */
+  .stage { perspective: 1600px; }
+  .card-3d {
+    position: relative;
+    width: 100%;
+    transform-style: preserve-3d;
+    transition: transform 720ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    will-change: transform;
+  }
+  .card-3d.is-flipped { transform: rotateY(180deg); }
+  .card-face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 4px;
+    border: 1px solid var(--gold);
+    background: var(--card);
+    box-shadow:
+      0 1px 2px rgba(45, 40, 42, 0.04),
+      0 18px 40px -24px rgba(45, 40, 42, 0.35);
+    overflow: hidden;
+  }
+  .card-front {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 340px;
+  }
+  .card-back {
+    position: absolute;
+    inset: 0;
+    transform: rotateY(180deg);
+    background: var(--sand);
+    display: flex;
+    flex-direction: column;
+  }
+  @media (min-width: 768px) {
+    .card-front { min-height: 400px; }
+  }
+  .card-inner-frame {
+    position: absolute;
+    inset: 10px;
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+  .q-text {
+    font-family: 'Noto Serif TC', 'Cormorant Garamond', serif;
+    font-weight: 400;
+    line-height: 1.85;
+    letter-spacing: 0.012em;
+    font-size: clamp(1.24rem, 5.2vw, 1.9rem);
+    text-wrap: pretty;
+  }
+  @media (min-width: 768px) {
+    .q-text { font-size: 1.72rem; line-height: 1.95; }
+  }
+
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    background: transparent;
+    transition: all 200ms ease;
+  }
+  .icon-btn:hover { border-color: rgba(200, 125, 101, 0.5); color: var(--clay-deep); background: rgba(200, 125, 101, 0.05); }
+  .icon-btn.is-on { border-color: var(--clay); color: var(--clay-deep); background: rgba(200, 125, 101, 0.1); }
+  .icon-btn:focus-visible, .chip:focus-visible, .btn:focus-visible, .link-btn:focus-visible {
+    outline: 2px solid var(--clay);
+    outline-offset: 3px;
+  }
+
+  .chip {
+    flex: 0 0 auto;
+    border: 1px solid rgba(45, 40, 42, 0.14);
+    background: rgba(255, 253, 249, 0.55);
+    color: var(--muted);
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    padding: 8px 16px;
+    border-radius: 999px;
+    transition: all 220ms ease;
+    white-space: nowrap;
+  }
+  .chip:hover { color: var(--ink); border-color: rgba(200, 125, 101, 0.45); }
+  .chip.is-active {
+    background: var(--clay);
+    border-color: var(--clay);
+    color: #fffaf6;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 12px 24px;
+    font-size: 13.5px;
+    letter-spacing: 0.1em;
+    transition: all 220ms ease;
+  }
+  .btn-primary { background: var(--clay); color: #fffaf6; border: 1px solid var(--clay); }
+  .btn-primary:hover { background: var(--clay-deep); border-color: var(--clay-deep); }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1px solid rgba(45, 40, 42, 0.18); }
+  .btn-ghost:hover { border-color: rgba(200, 125, 101, 0.55); color: var(--clay-deep); }
+
+  .link-btn { color: var(--muted); transition: color 180ms ease; }
+  .link-btn:hover { color: var(--clay-deep); }
+
+  /* drawer */
+  .drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(430px, 100%);
+    background: var(--paper);
+    border-left: 1px solid var(--line);
+    box-shadow: -30px 0 60px -40px rgba(45, 40, 42, 0.5);
+    transform: translateX(102%);
+    transition: transform 420ms cubic-bezier(0.22, 0.75, 0.2, 1);
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+  }
+  .drawer.is-open { transform: translateX(0); }
+  .scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(45, 40, 42, 0.32);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 320ms ease;
+    z-index: 50;
+  }
+  .scrim.is-open { opacity: 1; pointer-events: auto; }
+
+  .q-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    padding: 13px 8px;
+    text-align: left;
+    border-bottom: 1px solid rgba(45, 40, 42, 0.07);
+    transition: background 180ms ease;
+    align-items: flex-start;
+  }
+  .q-row:hover { background: rgba(200, 125, 101, 0.05); }
+  .q-row.is-current { background: rgba(200, 125, 101, 0.09); }
+  .q-row .q-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12px;
+    color: var(--clay);
+    letter-spacing: 0.08em;
+    padding-top: 3px;
+    flex: 0 0 30px;
+  }
+  .q-row .q-body { font-size: 13.5px; line-height: 1.7; color: #3d3639; font-weight: 300; }
+  .q-row .cat-mini {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    color: rgba(166, 94, 71, 0.85);
+    font-weight: 400;
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--line);
+    background: rgba(255, 253, 249, 0.75);
+    border-radius: 2px;
+    padding: 10px 12px;
+  }
+  .search-box input {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    font-size: 13.5px;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+  .search-box input::placeholder { color: #a49d97; }
+
+  .seg {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px;
+    background: rgba(255, 253, 249, 0.6);
+  }
+  .seg button {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    transition: all 200ms ease;
+  }
+  .seg button.is-active { background: var(--ink); color: var(--paper); }
+
+  /* timer */
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    background: rgba(45, 40, 42, 0.3);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    transition: opacity 260ms ease;
+  }
+  .modal.is-open { opacity: 1; pointer-events: auto; }
+  .modal-card {
+    position: relative;
+    width: min(360px, 100%);
+    background: var(--paper);
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    padding: 34px 26px 26px;
+    text-align: center;
+    box-shadow: 0 40px 80px -40px rgba(45, 40, 42, 0.55);
+    transform: translateY(12px) scale(0.985);
+    transition: transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .modal.is-open .modal-card { transform: translateY(0) scale(1); }
+  .ring-bg { fill: none; stroke: rgba(45, 40, 42, 0.08); stroke-width: 3; }
+  .ring-fg {
+    fill: none;
+    stroke: var(--clay);
+    stroke-width: 3;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 900ms linear, stroke 300ms ease;
+  }
+  .timer-digits {
+    font-family: 'Cormorant Garamond', serif;
+    font-variant-numeric: tabular-nums;
+    font-size: 44px;
+    letter-spacing: 0.06em;
+    line-height: 1;
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translate(-50%, 16px);
+    background: var(--ink);
+    color: #f9f7f2;
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    padding: 10px 20px;
+    border-radius: 999px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 300ms ease;
+    z-index: 90;
+  }
+  .toast.is-show { opacity: 1; transform: translate(-50%, 0); }
+
+  .rule-gold { background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.55), transparent); height: 1px; }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  .drawer-list::-webkit-scrollbar { width: 6px; }
+  .drawer-list::-webkit-scrollbar-thumb { background: rgba(45, 40, 42, 0.18); border-radius: 999px; }
+
+  .rise { animation: rise 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+  .drawer-inner-scroll { overscroll-behavior: contain; }
+</style>
+</head>
+<body class="grain antialiased">
+
+<div class="relative z-10 min-h-screen flex flex-col">
+
+  <!-- ============ header ============ -->
+  <header class="w-full">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-5 pt-6 pb-5 md:px-10 md:pt-8">
+      <a href="#top" class="flex items-center gap-3 group">
+        <span class="relative inline-flex h-9 w-9 items-center justify-center">
+          <svg viewBox="0 0 40 40" class="h-9 w-9" aria-hidden="true">
+            <circle cx="15" cy="20" r="10.5" fill="none" stroke="#C87D65" stroke-width="1.1" opacity=".85"/>
+            <circle cx="25" cy="20" r="10.5" fill="none" stroke="#2D282A" stroke-width="1.1" opacity=".45"/>
+            <circle cx="20" cy="20" r="1.6" fill="#C87D65"/>
+          </svg>
+        </span>
+        <span class="leading-none">
+          <span class="serif block text-[19px] tracking-[0.06em] text-ink">Between Us</span>
+          <span class="eyebrow mt-1 block text-[9px] tracking-[0.28em]">雙人對話沙龍</span>
+        </span>
+      </a>
+
+      <div class="flex items-center gap-2">
+        <button id="muteBtn" class="icon-btn" aria-label="切換音效" title="音效開關">
+          <i data-lucide="volume-2" class="h-[17px] w-[17px]"></i>
+        </button>
+        <button id="drawerBtn" class="btn btn-ghost !px-4 !py-2 !text-[12px]" aria-label="開啟題庫">
+          <i data-lucide="library" class="h-[15px] w-[15px]"></i>
+          <span class="hidden sm:inline">題庫</span>
+        </button>
+      </div>
+    </div>
+    <div class="rule-gold mx-auto max-w-6xl opacity-70"></div>
+  </header>
+
+  <main id="top" class="mx-auto w-full max-w-6xl flex-1 px-5 pb-16 md:px-10">
+
+    <!-- ============ hero ============ -->
+    <section class="rise pt-6 pb-4 text-center md:pt-8 md:pb-6">
+      <p class="eyebrow">A quiet conversation for two</p>
+      <h1 class="serif mt-2.5 text-[2.15rem] leading-[1.2] tracking-[0.02em] text-ink md:text-[3.15rem]">
+        在我們之間
+      </h1>
+      <p class="mx-auto mt-3 max-w-md text-[12.5px] leading-[1.85] text-muted md:mt-3.5 md:text-[14px] md:leading-[1.95]">
+        五百個問題，不急著回答。<br class="sm:hidden" />
+        抽一張卡，翻面，然後好好說話。
+      </p>
+      <div class="mt-4 flex items-center justify-center gap-3 text-[10px] md:mt-5 md:text-[10.5px] tracking-[0.22em] text-muted/80">
+        <span>500 道題</span>
+        <span class="h-[3px] w-[3px] rounded-full bg-clay/60"></span>
+        <span>7 個主題</span>
+        <span class="h-[3px] w-[3px] rounded-full bg-clay/60"></span>
+        <span>5 分鐘</span>
+      </div>
+    </section>
+
+    <!-- ============ category chips ============ -->
+    <nav class="relative -mx-5 md:mx-0" aria-label="主題篩選">
+      <div id="chips" class="no-scrollbar flex gap-2 overflow-x-auto px-5 pb-5 pt-1 md:flex-wrap md:justify-center md:px-0"></div>
+    </nav>
+
+    <!-- ============ card stage ============ -->
+    <section class="stage mx-auto w-full max-w-[560px]">
+      <div id="card" class="card-3d" role="group" aria-label="問題卡">
+        <!-- FRONT -->
+        <div class="card-face card-front">
+          <div class="card-inner-frame"></div>
+
+          <div class="relative flex items-start justify-between gap-3 px-6 pt-6 md:px-8 md:pt-7">
+            <div class="flex items-center gap-2.5">
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-clay/30 bg-clay/[0.07] px-3 py-[5px] text-[10px] tracking-[0.16em] text-claydeep">
+                <span class="h-[4px] w-[4px] rounded-full bg-clay"></span>
+                <span id="cardCat">價值與未來</span>
+              </span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="favBtn" class="icon-btn !h-9 !w-9" aria-label="收藏這一題" title="收藏">
+                <i data-lucide="bookmark" class="h-[16px] w-[16px]"></i>
+              </button>
+              <button id="timerBtn" class="icon-btn !h-9 !w-9" aria-label="開啟 5 分鐘計時" title="計時">
+                <i data-lucide="timer" class="h-[16px] w-[16px]"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="relative flex flex-1 flex-col justify-center px-7 py-6 md:px-12 md:py-8">
+            <span id="cardNum" class="serif mb-4 block text-[13px] tracking-[0.28em] text-clay/80">NO. 001</span>
+            <p id="cardQuestion" class="q-text text-ink"></p>
+          </div>
+
+          <div class="relative px-6 pb-6 md:px-8 md:pb-7">
+            <div class="flex items-end justify-between gap-4">
+              <button id="flipHint" class="link-btn group flex items-center gap-2 text-[11.5px] tracking-[0.14em]">
+                <span class="inline-flex h-7 w-7 items-center justify-center rounded-full border border-line transition group-hover:border-clay/50">
+                  <i data-lucide="refresh-cw" class="h-[13px] w-[13px]"></i>
+                </span>
+                輕觸翻面
+              </button>
+              <span id="cardIndex" class="text-[10.5px] tracking-[0.18em] text-muted/70"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BACK -->
+        <div class="card-face card-back">
+          <div class="card-inner-frame" style="border-color: rgba(212,175,55,.32)"></div>
+          <div class="relative flex h-full flex-col items-center justify-between px-7 py-6 text-center md:px-9 md:py-7">
+            <p class="eyebrow text-[9px] tracking-[0.42em] text-muted/80">Between Us</p>
+
+            <div class="flex min-h-0 flex-1 items-center justify-center py-2">
+              <svg viewBox="0 0 200 200" class="h-[132px] w-[132px] md:h-[150px] md:w-[150px]" aria-hidden="true">
+                <defs>
+                  <linearGradient id="archGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#C87D65" stop-opacity=".22"/>
+                    <stop offset="100%" stop-color="#C87D65" stop-opacity=".05"/>
+                  </linearGradient>
+                </defs>
+                <path d="M55 168 V100 a45 45 0 0 1 90 0 v68" fill="none" stroke="#2D282A" stroke-opacity=".28" stroke-width="1"/>
+                <path d="M66 168 V102 a34 34 0 0 1 68 0 v66" fill="url(#archGrad)" stroke="#C87D65" stroke-opacity=".55" stroke-width="1"/>
+                <circle cx="100" cy="60" r="13" fill="none" stroke="#D4AF37" stroke-opacity=".65" stroke-width="1"/>
+                <circle cx="100" cy="60" r="4" fill="#C87D65" fill-opacity=".75"/>
+                <line x1="46" y1="168" x2="154" y2="168" stroke="#2D282A" stroke-opacity=".3" stroke-width="1"/>
+                <line x1="46" y1="174" x2="154" y2="174" stroke="#D4AF37" stroke-opacity=".45" stroke-width="0.8"/>
+              </svg>
+            </div>
+
+            <div class="shrink-0">
+              <p class="serif text-[1.45rem] leading-tight tracking-[0.06em] text-ink">在我們之間</p>
+              <div class="mx-auto mt-2 h-px w-9 bg-clay/40"></div>
+              <p class="mt-2 text-[11px] leading-[1.8] tracking-[0.06em] text-muted">
+                慢慢說，慢慢聽。沒有標準答案。
+              </p>
+              <button id="backHint" class="link-btn mt-3 inline-flex items-center gap-1.5 text-[10px] tracking-[0.2em]">
+                輕觸回到題目
+                <i data-lucide="arrow-left" class="h-[12px] w-[12px]"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ actions ============ -->
+    <div class="mx-auto mt-7 flex w-full max-w-[560px] flex-wrap items-center justify-center gap-2.5 md:mt-9">
+      <button id="nextBtn" class="btn btn-primary flex-1 md:flex-none md:min-w-[168px]">
+        <i data-lucide="shuffle" class="h-[15px] w-[15px]"></i>
+        換一題
+      </button>
+      <button id="openDrawerBtn" class="btn btn-ghost flex-1 md:flex-none">
+        <i data-lucide="search" class="h-[15px] w-[15px]"></i>
+        從題庫挑
+      </button>
+    </div>
+
+    <p class="mt-5 text-center text-[10.5px] tracking-[0.2em] text-muted/70">
+      <span id="progressText"></span>
+    </p>
+  </main>
+
+  <!-- ============ footer ============ -->
+  <footer class="relative z-10 border-t border-line/70">
+    <div class="mx-auto flex max-w-6xl flex-col items-center gap-2 px-5 py-7 text-center md:flex-row md:justify-between md:px-10">
+      <p class="text-[10.5px] tracking-[0.22em] text-muted/70">雙人對話沙龍 · Between Us</p>
+      <p class="text-[10.5px] tracking-[0.14em] text-muted/60">一次一題，把話說完。</p>
+    </div>
+  </footer>
+</div>
+
+<!-- ============ scrim ============ -->
+<div id="scrim" class="scrim"></div>
+
+<!-- ============ drawer ============ -->
+<aside id="drawer" class="drawer" aria-hidden="true" aria-label="題庫" inert>
+  <div class="flex items-start justify-between gap-4 px-6 pb-4 pt-6">
+    <div>
+      <p class="eyebrow">Question Library</p>
+      <h2 class="serif mt-1.5 text-[1.55rem] leading-none tracking-[0.04em]">題庫</h2>
+      <p id="drawerCount" class="mt-2 text-[11px] tracking-[0.08em] text-muted"></p>
+    </div>
+    <button id="closeDrawerBtn" class="icon-btn !h-9 !w-9 shrink-0" aria-label="關閉題庫">
+      <i data-lucide="x" class="h-[16px] w-[16px]"></i>
+    </button>
+  </div>
+
+  <div class="px-6">
+    <div class="search-box">
+      <i data-lucide="search" class="h-[15px] w-[15px] shrink-0 text-muted"></i>
+      <input id="searchInput" type="search" placeholder="搜尋關鍵字，例如「父母」「禱告」" aria-label="搜尋題目" autocomplete="off" />
+      <button id="clearSearch" class="link-btn hidden" aria-label="清除搜尋">
+        <i data-lucide="x" class="h-[14px] w-[14px]"></i>
+      </button>
+    </div>
+
+    <div class="mt-3 flex items-center justify-between">
+      <div class="seg" role="group" aria-label="篩選範圍">
+        <button id="segAll" class="is-active" data-scope="all">全部</button>
+        <button id="segFav" data-scope="fav">僅看收藏</button>
+      </div>
+      <span id="favCounter" class="text-[10.5px] tracking-[0.12em] text-muted/80"></span>
+    </div>
+  </div>
+
+  <div id="drawerList" class="drawer-list drawer-inner-scroll mt-3 flex-1 overflow-y-auto px-6 pb-8"></div>
+</aside>
+
+<!-- ============ timer modal ============ -->
+<div id="timerModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="timerTitle" inert>
+  <div class="modal-card">
+    <button id="closeTimerBtn" class="icon-btn absolute right-3 top-3 !h-8 !w-8" aria-label="關閉計時器">
+      <i data-lucide="x" class="h-[15px] w-[15px]"></i>
+    </button>
+
+    <p class="eyebrow">Five minutes</p>
+    <h2 id="timerTitle" class="serif mt-2 text-[1.5rem] tracking-[0.04em]">給彼此五分鐘</h2>
+    <p class="mt-1.5 text-[11.5px] tracking-[0.06em] text-muted">一個人說，另一個人只聽。</p>
+
+    <div class="relative mx-auto mt-6 flex h-[188px] w-[188px] items-center justify-center">
+      <svg viewBox="0 0 128 128" class="absolute inset-0 h-full w-full" aria-hidden="true">
+        <circle class="ring-bg" cx="64" cy="64" r="56"></circle>
+        <circle id="ring" class="ring-fg" cx="64" cy="64" r="56" stroke-dasharray="351.86" stroke-dashoffset="0"></circle>
+      </svg>
+      <div class="text-center">
+        <div id="timerDigits" class="timer-digits text-ink">05:00</div>
+        <div id="timerState" class="mt-2 text-[10px] tracking-[0.24em] text-muted">READY</div>
+      </div>
+    </div>
+
+    <div class="mt-6 flex items-center justify-center gap-2.5">
+      <button id="timerToggle" class="btn btn-primary flex-1">
+        <i data-lucide="play" class="h-[15px] w-[15px]"></i>
+        開始
+      </button>
+      <button id="timerReset" class="btn btn-ghost !px-4" aria-label="重設計時">
+        <i data-lucide="rotate-ccw" class="h-[15px] w-[15px]"></i>
+      </button>
+    </div>
+    <p class="mt-4 text-[10.5px] leading-relaxed tracking-[0.06em] text-muted/70">
+      時間到會輕輕提醒你。要不要停，你們決定。
+    </p>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ============================================================
+   Data
+   ============================================================ */
+const BANK = __QUESTIONS__;
+
+/* ============================================================
+   State & storage
+   ============================================================ */
+const STORE_KEY = 'betweenus.v1';
+const state = {
+  cat: 'all',
+  current: null,          // { cat, idx }
+  favorites: [],          // array of question text
+  muted: false,
+  flipped: false,
+};
+
+function loadStore() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (Array.isArray(s.favorites)) state.favorites = s.favorites.filter((x) => typeof x === 'string');
+    if (typeof s.muted === 'boolean') state.muted = s.muted;
+    if (typeof s.cat === 'string' && (s.cat === 'all' || BANK.some((b) => b.key === s.cat))) state.cat = s.cat;
+    if (s.current && typeof s.current.cat === 'string') {
+      const entry = BANK.find((b) => b.key === s.current.cat);
+      if (entry && Number.isInteger(s.current.idx) && entry.questions[s.current.idx]) state.current = s.current;
+    }
+  } catch (e) { /* ignore corrupt storage */ }
+}
+function saveStore() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      favorites: state.favorites,
+      muted: state.muted,
+      cat: state.cat,
+      current: state.current,
+    }));
+  } catch (e) { /* storage full or blocked */ }
+}
+
+const favSet = () => new Set(state.favorites);
+const isFav = (text) => favSet().has(text);
+
+/* ============================================================
+   Audio (Web Audio API, no external files)
+   ============================================================ */
+const Audio = (() => {
+  let ctx = null;
+  function ensure() {
+    if (state.muted) return null;
+    try {
+      if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === 'suspended') ctx.resume();
+      return ctx;
+    } catch (e) { return null; }
+  }
+  function tone({ freq = 440, dur = 0.18, type = 'sine', gain = 0.05, delay = 0, glide = null }) {
+    const ac = ensure();
+    if (!ac) return;
+    const t0 = ac.currentTime + delay;
+    const osc = ac.createOscillator();
+    const g = ac.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+    if (glide) osc.frequency.exponentialRampToValueAtTime(glide, t0 + dur);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(gain, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(g).connect(ac.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.05);
+  }
+  return {
+    unlock() { ensure(); },
+    flip() {
+      tone({ freq: 620, dur: 0.1, type: 'sine', gain: 0.035, glide: 880 });
+      tone({ freq: 1180, dur: 0.09, type: 'sine', gain: 0.018, delay: 0.06 });
+    },
+    draw() {
+      tone({ freq: 392, dur: 0.22, type: 'sine', gain: 0.03, glide: 523.25 });
+    },
+    save() {
+      tone({ freq: 880, dur: 0.14, type: 'triangle', gain: 0.032 });
+      tone({ freq: 1318.5, dur: 0.22, type: 'triangle', gain: 0.026, delay: 0.09 });
+    },
+    unsave() {
+      tone({ freq: 660, dur: 0.14, type: 'triangle', gain: 0.026, glide: 440 });
+    },
+    chime() {
+      const notes = [783.99, 987.77, 1318.51];
+      notes.forEach((f, i) => tone({ freq: f, dur: 1.1, type: 'sine', gain: 0.05, delay: i * 0.22 }));
+      tone({ freq: 392, dur: 1.6, type: 'sine', gain: 0.02, delay: 0.1 });
+    },
+  };
+})();
+
+/* ============================================================
+   Confetti (paper-like, small bursts)
+   ============================================================ */
+function paperBurst(origin) {
+  if (typeof confetti !== 'function') return;
+  const colors = ['#C87D65', '#D4AF37', '#2D282A', '#E8DCC8', '#A65E47'];
+  confetti({
+    particleCount: 26,
+    spread: 52,
+    startVelocity: 26,
+    gravity: 0.75,
+    ticks: 120,
+    scalar: 0.75,
+    colors,
+    origin: origin || { x: 0.5, y: 0.62 },
+    disableForReducedMotion: true,
+  });
+}
+
+/* ============================================================
+   Helpers
+   ============================================================ */
+const $ = (sel) => document.querySelector(sel);
+const el = {
+  card: $('#card'),
+  cardCat: $('#cardCat'),
+  cardNum: $('#cardNum'),
+  cardQuestion: $('#cardQuestion'),
+  cardIndex: $('#cardIndex'),
+  favBtn: $('#favBtn'),
+  timerBtn: $('#timerBtn'),
+  nextBtn: $('#nextBtn'),
+  flipHint: $('#flipHint'),
+  backHint: $('#backHint'),
+  mutedBtn: $('#muteBtn'),
+  drawerBtn: $('#drawerBtn'),
+  openDrawerBtn: $('#openDrawerBtn'),
+  drawer: $('#drawer'),
+  closeDrawerBtn: $('#closeDrawerBtn'),
+  scrim: $('#scrim'),
+  chips: $('#chips'),
+  drawerList: $('#drawerList'),
+  drawerCount: $('#drawerCount'),
+  favCounter: $('#favCounter'),
+  searchInput: $('#searchInput'),
+  clearSearch: $('#clearSearch'),
+  segAll: $('#segAll'),
+  segFav: $('#segFav'),
+  progressText: $('#progressText'),
+  timerModal: $('#timerModal'),
+  closeTimerBtn: $('#closeTimerBtn'),
+  timerDigits: $('#timerDigits'),
+  timerState: $('#timerState'),
+  ring: $('#ring'),
+  timerToggle: $('#timerToggle'),
+  timerReset: $('#timerReset'),
+  toast: $('#toast'),
+};
+
+const CAT_LABEL = Object.fromEntries(BANK.map((b) => [b.key, b.label]));
+const TOTAL = BANK.reduce((n, b) => n + b.questions.length, 0);
+
+function labelOf(cat) { return CAT_LABEL[cat] || ''; }
+function pad3(n) { return String(n).padStart(3, '0'); }
+
+function poolFor(cat) {
+  const out = [];
+  BANK.forEach((b) => {
+    if (cat !== 'all' && b.key !== cat) return;
+    b.questions.forEach((text, idx) => {
+      out.push({ cat: b.key, label: b.label, idx, text, num: pad3(idx + 1) });
+    });
+  });
+  return out;
+}
+
+let showFavOnly = false;
+
+// The card deck only follows the category chip; the drawer's "favorites only"
+// and search scope never shrink the deck.
+function filteredPool() {
+  return poolFor(state.cat);
+}
+
+/* ============================================================
+   Card rendering
+   ============================================================ */
+function pickRandom(list, avoid) {
+  if (list.length === 0) return null;
+  if (list.length === 1) return list[0];
+  let pick = list[Math.floor(Math.random() * list.length)];
+  let guard = 0;
+  while (avoid && pick.cat === avoid.cat && pick.idx === avoid.idx && guard < 24) {
+    pick = list[Math.floor(Math.random() * list.length)];
+    guard += 1;
+  }
+  return pick;
+}
+
+function setFlipped(v) {
+  state.flipped = v;
+  el.card.classList.toggle('is-flipped', v);
+}
+
+function renderCard({ sound = false } = {}) {
+  const cur = state.current;
+  if (!cur) return;
+  const entry = BANK.find((b) => b.key === cur.cat);
+  if (!entry) return;
+  const text = entry.questions[cur.idx];
+  if (!text) return;
+
+  el.cardCat.textContent = entry.label;
+  el.cardNum.textContent = 'NO. ' + pad3(cur.idx + 1);
+  el.cardQuestion.textContent = text;
+
+  const list = filteredPool();
+  const pos = list.findIndex((q) => q.cat === cur.cat && q.idx === cur.idx);
+  el.cardIndex.textContent = pos >= 0 ? `${String(pos + 1).padStart(2, '0')} / ${String(list.length).padStart(2, '0')}` : `${String(list.length).padStart(2, '0')} 題`;
+  el.progressText.textContent = `${entry.label} · 第 ${String(pos >= 0 ? pos + 1 : cur.idx + 1).padStart(2, '0')} 題，共 ${list.length} 題`;
+
+  const fav = isFav(text);
+  el.favBtn.classList.toggle('is-on', fav);
+  el.favBtn.setAttribute('aria-pressed', String(fav));
+  el.favBtn.setAttribute('aria-label', fav ? '取消收藏這一題' : '收藏這一題');
+  el.favBtn.innerHTML = `<i data-lucide="bookmark" class="h-[16px] w-[16px]" ${fav ? 'fill="currentColor"' : ''}></i>`;
+
+  if (window.lucide) lucide.createIcons();
+  if (sound) Audio.draw();
+}
+
+function nextQuestion() {
+  const list = filteredPool();
+  if (list.length === 0) {
+    toast('這個主題還沒有題目');
+    return;
+  }
+  const pick = pickRandom(list, state.current);
+  if (!pick) return;
+  setFlipped(false);
+  state.current = { cat: pick.cat, idx: pick.idx };
+  saveStore();
+  renderCard({ sound: true });
+  if (isDrawerOpen()) renderDrawer();
+}
+
+/* ============================================================
+   Favorites
+   ============================================================ */
+function toggleFavorite() {
+  const cur = state.current;
+  if (!cur) return;
+  const text = BANK.find((b) => b.key === cur.cat).questions[cur.idx];
+  const set = favSet();
+  if (set.has(text)) {
+    set.delete(text);
+    state.favorites = [...set];
+    Audio.unsave();
+    toast('已取消收藏');
+  } else {
+    set.add(text);
+    state.favorites = [...set];
+    Audio.save();
+    paperBurst({ x: 0.5, y: 0.55 });
+    toast('已收藏');
+  }
+  saveStore();
+  renderCard();
+  renderDrawer();
+}
+
+/* ============================================================
+   Chips
+   ============================================================ */
+function renderChips() {
+  const items = [{ key: 'all', label: '全部' }, ...BANK.map((b) => ({ key: b.key, label: b.label }))];
+  el.chips.innerHTML = items.map((it) => (
+    `<button class="chip${state.cat === it.key ? ' is-active' : ''}" data-cat="${it.key}" aria-pressed="${state.cat === it.key}">${it.label}</button>`
+  )).join('');
+  el.chips.querySelectorAll('button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.cat = btn.dataset.cat;
+      saveStore();
+      renderChips();
+      const list = filteredPool();
+      if (list.length === 0) {
+        toast('這是空的，換個主題看看');
+        return;
+      }
+      const first = list[0];
+      setFlipped(false);
+      state.current = { cat: first.cat, idx: first.idx };
+      saveStore();
+      renderCard({ sound: true });
+      renderDrawer();
+      Audio.unlock();
+    });
+  });
+}
+
+/* ============================================================
+   Drawer
+   ============================================================ */
+function isDrawerOpen() { return el.drawer.classList.contains('is-open'); }
+
+function openDrawer() {
+  el.drawer.classList.add('is-open');
+  el.drawer.setAttribute('aria-hidden', 'false');
+  el.drawer.inert = false;
+  el.scrim.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+  renderDrawer();
+  setTimeout(() => el.searchInput.focus({ preventScroll: true }), 260);
+}
+function closeDrawer() {
+  el.drawer.classList.remove('is-open');
+  el.drawer.setAttribute('aria-hidden', 'true');
+  el.drawer.inert = true;
+  el.scrim.classList.remove('is-open');
+  if (!el.timerModal.classList.contains('is-open')) document.body.style.overflow = '';
+}
+
+function fuzzyMatch(text, query) {
+  const t = text.replace(/\s+/g, '');
+  const q = query.replace(/\s+/g, '').toLowerCase();
+  if (!q) return true;
+  if (t.toLowerCase().includes(q)) return true;
+  let i = 0;
+  for (const ch of t.toLowerCase()) {
+    if (ch === q[i]) i += 1;
+    if (i === q.length) return true;
+  }
+  return false;
+}
+
+function renderDrawer() {
+  const q = el.searchInput.value.trim();
+  const crossScope = showFavOnly || !!q;
+  let list = crossScope ? poolFor('all') : poolFor(state.cat);
+  if (showFavOnly) {
+    const favs = favSet();
+    list = list.filter((x) => favs.has(x.text));
+  }
+  if (q) list = list.filter((x) => fuzzyMatch(x.text, q));
+
+  if (q) {
+    el.drawerCount.textContent = `符合 ${list.length} 題 · 全部主題`;
+  } else if (showFavOnly) {
+    el.drawerCount.textContent = `${list.length} 題收藏 · 全部主題`;
+  } else {
+    el.drawerCount.textContent = `${list.length} 題 · ${state.cat === 'all' ? '全部主題' : labelOf(state.cat)}`;
+  }
+  el.favCounter.textContent = `${state.favorites.length} 題收藏`;
+
+  el.clearSearch.classList.toggle('hidden', !q);
+
+  if (list.length === 0) {
+    const emptyFav = showFavOnly && !q;
+    el.drawerList.innerHTML = `
+      <div class="flex flex-col items-center justify-center py-16 text-center">
+        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-line">
+          <i data-lucide="${emptyFav ? 'bookmark' : 'search-x'}" class="h-5 w-5 text-muted/70"></i>
+        </div>
+        <p class="text-[13px] tracking-[0.06em] text-muted">${emptyFav ? '還沒有收藏的題目' : '找不到符合的題目'}</p>
+        <p class="mt-1.5 text-[11.5px] text-muted/70">${emptyFav ? '在卡片右上角按下書籤，就會出現在這裡' : '試試別的字，或切換到「全部」'}</p>
+      </div>`;
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+  list.forEach((item) => {
+    const btn = document.createElement('button');
+    btn.className = 'q-row' + (state.current && state.current.cat === item.cat && state.current.idx === item.idx ? ' is-current' : '');
+    btn.type = 'button';
+    const marked = isFav(item.text);
+    btn.innerHTML = `
+      <span class="q-num">${item.num}</span>
+      <span class="q-body flex-1">
+        ${crossScope ? `<span class="cat-mini">${item.label}</span>` : ''}
+        ${escapeHtml(item.text)}
+      </span>
+      ${marked ? '<span class="pt-1 text-clay"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></span>' : ''}
+    `;
+    btn.addEventListener('click', () => {
+      setFlipped(false);
+      if (state.cat !== 'all' && state.cat !== item.cat) {
+        state.cat = item.cat;
+        renderChips();
+      }
+      state.current = { cat: item.cat, idx: item.idx };
+      saveStore();
+      renderCard({ sound: true });
+      closeDrawer();
+      Audio.unlock();
+    });
+    frag.appendChild(btn);
+  });
+  el.drawerList.innerHTML = '';
+  el.drawerList.appendChild(frag);
+  if (window.lucide) lucide.createIcons();
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+/* ============================================================
+   Timer
+   ============================================================ */
+const TIMER_TOTAL = 300;
+const timer = { left: TIMER_TOTAL, running: false, id: null, endsAt: 0 };
+const RING_C = 2 * Math.PI * 56;
+
+function fmt(sec) {
+  const m = Math.floor(Math.max(0, sec) / 60);
+  const s = Math.max(0, sec) % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+function paintTimer() {
+  el.timerDigits.textContent = fmt(timer.left);
+  const ratio = timer.left / TIMER_TOTAL;
+  el.ring.style.strokeDashoffset = String(RING_C * (1 - ratio));
+  el.ring.style.stroke = timer.left === 0 ? '#A65E47' : (timer.left <= 30 ? '#C87D65' : '#C87D65');
+  el.timerState.textContent = timer.left === 0 ? 'TIME' : (timer.running ? 'LISTEN' : (timer.left === TIMER_TOTAL ? 'READY' : 'PAUSED'));
+  el.timerToggle.innerHTML = timer.running
+    ? '<i data-lucide="pause" class="h-[15px] w-[15px]"></i>暫停'
+    : (timer.left === 0 ? '<i data-lucide="rotate-ccw" class="h-[15px] w-[15px]"></i>再一次' : '<i data-lucide="play" class="h-[15px] w-[15px]"></i>開始');
+  if (window.lucide) lucide.createIcons();
+}
+
+function tickTimer() {
+  const now = Date.now();
+  const left = Math.max(0, Math.round((timer.endsAt - now) / 1000));
+  if (left === timer.left && left !== 0) {
+    return;
+  }
+  timer.left = left;
+  paintTimer();
+  if (left === 0) {
+    stopTimer(false);
+    timerFinished();
+  }
+}
+
+function startTimer() {
+  if (timer.left === 0) timer.left = TIMER_TOTAL;
+  timer.running = true;
+  timer.endsAt = Date.now() + timer.left * 1000;
+  clearInterval(timer.id);
+  timer.id = setInterval(tickTimer, 250);
+  Audio.unlock();
+  paintTimer();
+}
+function pauseTimer() {
+  timer.running = false;
+  clearInterval(timer.id);
+  timer.id = null;
+  paintTimer();
+}
+function stopTimer(reset = false) {
+  timer.running = false;
+  clearInterval(timer.id);
+  timer.id = null;
+  if (reset) timer.left = TIMER_TOTAL;
+  paintTimer();
+}
+function timerFinished() {
+  Audio.chime();
+  paperBurst({ x: 0.5, y: 0.5 });
+  setTimeout(() => paperBurst({ x: 0.34, y: 0.56 }), 260);
+  setTimeout(() => paperBurst({ x: 0.66, y: 0.56 }), 420);
+  toast('五分鐘到了，慢慢收尾就好');
+  if (navigator.vibrate) navigator.vibrate([60, 80, 60]);
+}
+
+function openTimer() {
+  el.timerModal.classList.add('is-open');
+  el.timerModal.inert = false;
+  document.body.style.overflow = 'hidden';
+  paintTimer();
+  Audio.unlock();
+}
+function closeTimer() {
+  el.timerModal.classList.remove('is-open');
+  el.timerModal.inert = true;
+  if (!isDrawerOpen()) document.body.style.overflow = '';
+}
+
+/* ============================================================
+   Toast
+   ============================================================ */
+let toastId = null;
+function toast(msg) {
+  el.toast.textContent = msg;
+  el.toast.classList.add('is-show');
+  clearTimeout(toastId);
+  toastId = setTimeout(() => el.toast.classList.remove('is-show'), 2200);
+}
+
+/* ============================================================
+   Mute
+   ============================================================ */
+function paintMute() {
+  el.mutedBtn.classList.toggle('is-on', state.muted);
+  el.mutedBtn.innerHTML = state.muted
+    ? '<i data-lucide="volume-x" class="h-[17px] w-[17px]"></i>'
+    : '<i data-lucide="volume-2" class="h-[17px] w-[17px]"></i>';
+  el.mutedBtn.setAttribute('aria-pressed', String(state.muted));
+  el.mutedBtn.setAttribute('aria-label', state.muted ? '開啟音效' : '關閉音效');
+  if (window.lucide) lucide.createIcons();
+}
+
+/* ============================================================
+   Wiring
+   ============================================================ */
+function init() {
+  loadStore();
+
+  // first question
+  if (!state.current) {
+    const first = BANK[0];
+    state.current = { cat: first.key, idx: 0 };
+  }
+
+  renderChips();
+  paintMute();
+  renderCard();
+
+  // card flip
+  el.card.addEventListener('click', (e) => {
+    if (e.target.closest('button')) return;
+    setFlipped(!state.flipped);
+    Audio.flip();
+    Audio.unlock();
+  });
+  el.flipHint.addEventListener('click', () => { setFlipped(true); Audio.flip(); Audio.unlock(); });
+  el.backHint.addEventListener('click', (e) => { e.stopPropagation(); setFlipped(false); Audio.flip(); });
+
+  el.favBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleFavorite(); Audio.unlock(); });
+  el.timerBtn.addEventListener('click', (e) => { e.stopPropagation(); openTimer(); });
+  el.nextBtn.addEventListener('click', () => { nextQuestion(); Audio.unlock(); });
+
+  el.mutedBtn.addEventListener('click', () => {
+    state.muted = !state.muted;
+    saveStore();
+    paintMute();
+    if (!state.muted) { Audio.unlock(); }
+  });
+
+  // drawer
+  el.drawerBtn.addEventListener('click', openDrawer);
+  el.openDrawerBtn.addEventListener('click', openDrawer);
+  el.closeDrawerBtn.addEventListener('click', closeDrawer);
+  el.scrim.addEventListener('click', closeDrawer);
+
+  el.searchInput.addEventListener('input', renderDrawer);
+  el.clearSearch.addEventListener('click', () => { el.searchInput.value = ''; renderDrawer(); el.searchInput.focus(); });
+  el.segAll.addEventListener('click', () => {
+    showFavOnly = false;
+    el.segAll.classList.add('is-active');
+    el.segFav.classList.remove('is-active');
+    renderDrawer();
+  });
+  el.segFav.addEventListener('click', () => {
+    showFavOnly = true;
+    el.segFav.classList.add('is-active');
+    el.segAll.classList.remove('is-active');
+    renderDrawer();
+  });
+
+  // timer
+  el.closeTimerBtn.addEventListener('click', closeTimer);
+  el.timerModal.addEventListener('click', (e) => { if (e.target === el.timerModal) closeTimer(); });
+  el.timerToggle.addEventListener('click', () => {
+    if (timer.left === 0) { timer.left = TIMER_TOTAL; startTimer(); return; }
+    timer.running ? pauseTimer() : startTimer();
+  });
+  el.timerReset.addEventListener('click', () => { stopTimer(true); Audio.flip(); });
+
+  // keyboard
+  document.addEventListener('keydown', (e) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);
+    if (e.key === 'Escape') {
+      if (el.timerModal.classList.contains('is-open')) closeTimer();
+      else if (isDrawerOpen()) closeDrawer();
+      return;
+    }
+    if (typing) return;
+    if (isDrawerOpen() || el.timerModal.classList.contains('is-open')) return;
+    if (e.code === 'Space') { e.preventDefault(); setFlipped(!state.flipped); Audio.flip(); }
+    else if (e.key === 'ArrowRight') { nextQuestion(); }
+    else if (e.key.toLowerCase() === 'f') { toggleFavorite(); }
+    else if (e.key.toLowerCase() === 't') { openTimer(); }
+  });
+
+  // unlock audio on first pointer
+  const unlock = () => { Audio.unlock(); window.removeEventListener('pointerdown', unlock); };
+  window.addEventListener('pointerdown', unlock, { once: true });
+
+  // keep timer accurate after tab sleep
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && timer.running) tickTimer();
+  });
+
+  if (window.lucide) lucide.createIcons();
+}
+
+init();
+</script>
+</body>
+</html>
