@@ -1,80 +1,80 @@
-# 在我們之間 · Between Us
+# Between Us · 在我們之間
 
-雙人對話沙龍：2100 個問題（3 語系 × 700 題）、7 個主題，抽卡、翻面、好好說話。
+A couples conversation card deck: 2100 questions (3 languages × 700), 7 themes. Draw, flip, talk.
 
-零依賴單檔 SPA（`index.html`），部署於 Cloudflare Pages，適合情侶、夫妻或親密關係的兩人一起使用。
+Zero-dependency single-file SPA (`index.html`), deployed on Cloudflare Pages, designed for couples, partners, and intimate relationships.
 
-## 線上網址
+## Live URL
 👉 https://love-between-us.pages.dev
 
-## 這個專案是什麼？
+## What is this project?
 
-「在我們之間」是一款專為兩人關係設計的對話卡片應用。內建 2100 個精心編寫的問題，支援三種語系，每個語系皆有 700 題，涵蓋七個主題，每類各 100 題：
+"Between Us" is a conversation card app designed for two-person relationships. It includes 2100 carefully written questions across three languages, 700 per language, covering 7 themes with 100 questions per category:
 
-- **價值與未來**（每語系 100 題）—— 未來規劃、人生目標、家庭價值觀
-- **心靈與情緒**（每語系 100 題）—— 情感需求、內心世界、情緒連結
-- **家庭理財**（每語系 100 題）—— 金錢觀念、預算、財務規劃
-- **親密與連結**（每語系 100 題）—— 親密關係、浪漫、身心連結
-- **日常與陪伴**（每語系 100 題）—— 休閒、共同興趣、生活細節
-- **成長與對話**（每語系 100 題）—— 溝通、衝突處理、關係成長
-- **基督信仰**（每語系 100 題）—— 信仰生活、禱告、靈命成長
+- **Values & Future** (100 per language) — future planning, life goals, family values
+- **Heart & Emotions** (100 per language) — emotional needs, inner world, emotional connection
+- **Family & Finance** (100 per language) — money mindset, budgeting, financial planning
+- **Intimacy & Connection** (100 per language) — intimate relationships, romance, body and mind connection
+- **Daily & Companionship** (100 per language) — leisure, shared interests, everyday moments
+- **Growth & Conversation** (100 per language) — communication, conflict resolution, relationship growth
+- **Christian Faith** (100 per language) — faith life, prayer, spiritual growth
 
-適用於約會夜、夫妻對話、婚前輔導、或任何想要加深兩人關係的場合。
+Suitable for date nights, couples conversations, premarital counseling, or any occasion to deepen your relationship.
 
-## 主要功能
+## Key Features
 
-- **多語系切換**：繁體中文、简体中文、English，題庫與介面皆隨語系切換
-- **抽卡翻面**：點擊卡片 3D 翻轉，正面顯示題目與編號，背面顯示封面與提示
-- **分類篩選**：七個主題晶片，可單獨選擇或全部顯示
-- **收藏夾**：將喜歡的問題加入收藏，持久儲存在 localStorage
-- **題庫抽屜**：模糊搜尋所有問題，支援「僅看收藏」過濾，點擊自動切換分類
-- **5 分鐘計時器**：視窗計時器與結束音效，適合限時對話
-- **音效開關**：Web Audio 音效與靜音切換
-- **紙屑彩帶**：完成對話後的慶祝效果
-- **鍵盤操作**：空白鍵翻面、→ 換題、F 收藏、T 計時器
-- **行動優先響應式**：手機與桌面皆適配
+- **Multi-language switching**: Traditional Chinese, Simplified Chinese, English — both UI and question bank switch with language
+- **Card flip**: Click cards to 3D flip; front shows question and number, back shows cover art and hint
+- **Category filtering**: 7 theme chips, select individual themes or show all
+- **Favorites**: Add favorite questions to favorites, persisted via localStorage
+- **Question drawer**: Fuzzy search all questions, supports "Favorites only" filter, clicking auto-switches category
+- **5-minute timer**: Window timer with end sound, for timed conversations
+- **Sound toggle**: Web Audio sound effects with mute switch
+- **Paper confetti**: Celebration effect after conversations
+- **Keyboard shortcuts**: Space to flip, → next question, F favorite, T timer
+- **Mobile-first responsive**: Works on phones and desktops
 
-## 專案結構
+## Project Structure
 
 ```
-index.html              最終產出單檔 SPA（多語系題庫已內嵌，可直接開啟或部署）
-dist/index.html         部署載荷（僅包含 index.html）
+index.html              Final single-file SPA (multi-language question bank embedded, ready to open or deploy)
+dist/index.html         Deployment payload (index.html only)
 src/
-  index.template.html   版型來源（__ALL_LANGS__ 為多語系題庫佔位符）
-  app.js                應用程式邏輯（多語系、渲染、計時器、音效、收藏、抽屜）
+  index.template.html   Template source (__ALL_LANGS__ placeholder for multi-language question bank)
+  app.js                App logic (multi-language, rendering, timer, sound, favorites, drawer)
   lang/
-    zh-TW/questions.json  繁體中文題庫（700 題）
-    zh-CN/questions.json  简体中文題庫（700 題）
-    en/questions.json     英文題庫（700 題）
-build_bank.py           產生各語系 questions.json（題庫來源與切分）
-build_site.py           將多語系題庫注入版型，產生 index.html 與 dist/
-validate.py             題庫驗證（總數、分類、重複、禁用主題、長度）
+    zh-TW/questions.json  Traditional Chinese question bank (700 questions)
+    zh-CN/questions.json  Simplified Chinese question bank (700 questions)
+    en/questions.json     English question bank (700 questions)
+build_bank.py           Generate per-language questions.json (question bank source and slicing)
+build_site.py           Inject multi-language question bank into template, generate index.html and dist/
+validate.py             Question bank validation (count, categories, duplicates, banned topics, length)
 ```
 
-## 重新建置與部署
+## Rebuild and Deploy
 
 ```bash
-# 1. 產生各語系題庫（每語系 700 題，7 類各 100 題）
+# 1. Generate per-language question banks (700 per language, 7 categories × 100 per category)
 python3 build_bank.py
 
-# 2. 產生多語系單檔 SPA
+# 2. Generate the multi-language single-file SPA
 python3 build_site.py
 
-# 3. 驗證題庫
+# 3. Validate the question bank
 python3 validate.py
 
-# 4. 部署到 Cloudflare Pages（愛我們之間專案）
+# 4. Deploy to Cloudflare Pages (Between Us project)
 CLOUDFLARE_ACCOUNT_ID=4a9d7d8a3cf4e6361ff78b54e157881c \
   npx wrangler pages deploy dist --project-name love-between-us --branch main
 ```
 
-## 技術說明
+## Technical Details
 
-- 零依賴：僅使用 CDN 引入 Tailwind CSS、Lucide 圖示與 canvas-confetti
-- 資料儲存：僅使用 localStorage（收藏、靜音、分類偏好、語言設定），不需後端或資料庫
-- 部署：Cloudflare Pages 靜態託管
-- 授權：公開原始碼，歡迎 Fork 與貢獻
+- Zero dependencies: only uses CDN-loaded Tailwind CSS, Lucide icons, and canvas-confetti
+- Data storage: uses localStorage only (favorites, mute, category preference, language setting) — no backend or database
+- Deployment: Cloudflare Pages static hosting
+- License: Open source, Fork and contributions welcome
 
-## 授權
+## License
 
 MIT License
