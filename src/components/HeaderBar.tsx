@@ -2,7 +2,7 @@
  * HeaderBar Component containing title, subtitle, theme toggle, mute toggle and language picker.
  */
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, useWindowDimensions } from 'react-native';
 import { Sun, Moon, Volume2, VolumeX, Globe } from 'lucide-react-native';
 import { LocaleKey, ThemeColors } from '../types';
 import { I18nService } from '../services/i18n';
@@ -19,9 +19,9 @@ interface HeaderBarProps {
 }
 
 const LOCALES_OPTIONS: SelectOption<LocaleKey>[] = [
-  { value: 'zh-TW', label: '繁體中文' },
-  { value: 'zh-CN', label: '简体中文' },
-  { value: 'en', label: 'English' },
+  { value: 'zh-TW', label: '繁中' },
+  { value: 'zh-CN', label: '简中' },
+  { value: 'en', label: 'EN' },
 ];
 
 export const HeaderBar: React.FC<HeaderBarProps> = ({
@@ -33,13 +33,16 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
   onToggleMute,
   onSelectLocale,
 }) => {
+  const { width, height } = useWindowDimensions();
+  const isMobile = width < 600 || height < 750;
+
   const title = I18nService.t(locale, 'title');
   const subtitle = I18nService.t(locale, 'subtitle');
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isMobile && styles.containerMobile]}>
       {/* Action icons row */}
-      <View style={styles.topRow}>
+      <View style={[styles.topRow, isMobile && styles.topRowMobile]}>
         <View style={styles.brandTag}>
           <Text style={[styles.brandText, { color: colors.clay }]}>BETWEEN US</Text>
         </View>
@@ -64,9 +67,9 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             accessibilityLabel="切換音效"
           >
             {muted ? (
-              <VolumeX size={16} color={colors.muted} />
+              <VolumeX size={15} color={colors.muted} />
             ) : (
-              <Volume2 size={16} color={colors.clay} />
+              <Volume2 size={15} color={colors.clay} />
             )}
           </TouchableOpacity>
 
@@ -78,9 +81,9 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             accessibilityLabel="切換主題模式"
           >
             {isDark ? (
-              <Sun size={16} color={colors.clay} />
+              <Sun size={15} color={colors.clay} />
             ) : (
-              <Moon size={16} color={colors.muted} />
+              <Moon size={15} color={colors.muted} />
             )}
           </TouchableOpacity>
         </View>
@@ -88,8 +91,34 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
 
       {/* Main Title & Subtitle */}
       <View style={styles.titleContainer}>
-        <Text style={[styles.title, { color: colors.ink }]}>{title}</Text>
-        <Text style={[styles.subtitle, { color: colors.muted }]}>{subtitle}</Text>
+        <Text
+          style={[
+            styles.title,
+            {
+              color: colors.ink,
+              fontSize: isMobile ? 22 : (Platform.OS === 'web' ? 34 : 28),
+              lineHeight: isMobile ? 28 : (Platform.OS === 'web' ? 40 : 34),
+            },
+          ]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {title}
+        </Text>
+        <Text
+          style={[
+            styles.subtitle,
+            {
+              color: colors.muted,
+              fontSize: isMobile ? 12 : 13,
+              lineHeight: isMobile ? 17 : 20,
+              marginTop: isMobile ? 3 : 6,
+            },
+          ]}
+          numberOfLines={2}
+        >
+          {subtitle}
+        </Text>
       </View>
     </View>
   );
@@ -98,10 +127,14 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'web' ? 24 : 12,
-    paddingBottom: 12,
+    paddingHorizontal: 16,
+    paddingTop: Platform.OS === 'web' ? 20 : 12,
+    paddingBottom: 8,
     alignItems: 'center',
+  },
+  containerMobile: {
+    paddingTop: Platform.OS === 'web' ? 12 : 8,
+    paddingBottom: 4,
   },
   topRow: {
     width: '100%',
@@ -109,25 +142,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 12,
+  },
+  topRowMobile: {
+    marginBottom: 6,
   },
   brandTag: {
     paddingVertical: 2,
+    flexShrink: 0,
   },
   brandText: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 10,
+    fontWeight: '700',
     letterSpacing: 2,
   },
   controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    flexShrink: 0,
   },
   iconButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -135,19 +173,16 @@ const styles = StyleSheet.create({
   titleContainer: {
     alignItems: 'center',
     paddingHorizontal: 8,
+    width: '100%',
   },
   title: {
-    fontSize: Platform.OS === 'web' ? 36 : 28,
     fontWeight: '400',
     letterSpacing: 0.5,
     textAlign: 'center',
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
   },
   subtitle: {
-    fontSize: 13,
-    lineHeight: 20,
     textAlign: 'center',
-    marginTop: 6,
     maxWidth: 420,
   },
 });

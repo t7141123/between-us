@@ -11,6 +11,8 @@ import {
   StyleSheet,
   Platform,
   StatusBar,
+  ScrollView,
+  useWindowDimensions,
 } from 'react-native';
 import { Shuffle, BookOpen } from 'lucide-react-native';
 import confetti from 'canvas-confetti';
@@ -30,6 +32,9 @@ import { DrawerModal } from './components/DrawerModal';
 import { TimerModal } from './components/TimerModal';
 
 export const MainApp: React.FC = () => {
+  const { width, height } = useWindowDimensions();
+  const isMobile = width < 600 || height < 750;
+
   const { isDark, colors, toggleTheme } = useTheme();
   const { muted, toggleMute, playFlip, playClick, playSuccess } = useSound();
   const { triggerImpact, triggerNotification } = useHaptics();
@@ -180,15 +185,19 @@ export const MainApp: React.FC = () => {
   const nextBtnText = I18nService.t(locale, 'next_question', '換一題');
   const drawerBtnText = I18nService.t(locale, 'drawer_btn', '從題庫挑');
   const keyboardHint =
-    Platform.OS === 'web'
-      ? I18nService.t(locale, 'keyboard_hint', '空白鍵：翻牌 ｜ →：換一題 ｜ F：收藏 ｜ T：計時器')
-      : I18nService.t(locale, 'mobile_hint', '輕觸翻牌 ｜ 滑動換題 ｜ 點擊收藏');
+    isMobile || Platform.OS !== 'web'
+      ? I18nService.t(locale, 'mobile_hint', '輕觸翻牌 ｜ 滑動換題 ｜ 點擊收藏')
+      : I18nService.t(locale, 'keyboard_hint', '空白鍵：翻牌 ｜ →：換一題 ｜ F：收藏 ｜ T：計時器');
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.paper }]}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.paper} />
 
-      <View style={styles.mainContainer}>
+      <ScrollView
+        contentContainerStyle={[styles.mainContainer, isMobile && styles.mainContainerMobile]}
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header Bar */}
         <HeaderBar
           locale={locale}
@@ -217,7 +226,7 @@ export const MainApp: React.FC = () => {
         />
 
         {/* 3D Flippable Question Card */}
-        <View style={styles.cardWrapper}>
+        <View style={[styles.cardWrapper, isMobile && styles.cardWrapperMobile]}>
           <Card3D
             question={currentQuestion}
             totalInDeck={deck.length}
@@ -241,34 +250,57 @@ export const MainApp: React.FC = () => {
         </View>
 
         {/* Primary Action Buttons */}
-        <View style={styles.actionsContainer}>
+        <View style={[styles.actionsContainer, isMobile && styles.actionsContainerMobile]}>
           <TouchableOpacity
-            style={[styles.primaryActionBtn, { backgroundColor: colors.clay }]}
+            style={[
+              styles.primaryActionBtn,
+              isMobile && styles.actionBtnMobile,
+              { backgroundColor: colors.clay },
+            ]}
             onPress={handleNextQuestion}
             activeOpacity={0.8}
           >
-            <Shuffle size={17} color="#FFFFFF" style={{ marginRight: 8 }} />
-            <Text style={styles.primaryActionText}>{nextBtnText}</Text>
+            <Shuffle size={16} color="#FFFFFF" style={{ marginRight: 6 }} />
+            <Text style={styles.primaryActionText} numberOfLines={1}>
+              {nextBtnText}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.secondaryActionBtn, { borderColor: colors.line, backgroundColor: colors.card }]}
+            style={[
+              styles.secondaryActionBtn,
+              isMobile && styles.actionBtnMobile,
+              { borderColor: colors.line, backgroundColor: colors.card },
+            ]}
             onPress={() => {
               playClick();
               setIsDrawerOpen(true);
             }}
             activeOpacity={0.8}
           >
-            <BookOpen size={16} color={colors.clay} style={{ marginRight: 8 }} />
-            <Text style={[styles.secondaryActionText, { color: colors.ink }]}>{drawerBtnText}</Text>
+            <BookOpen size={16} color={colors.clay} style={{ marginRight: 6 }} />
+            <Text
+              style={[styles.secondaryActionText, { color: colors.ink }]}
+              numberOfLines={1}
+            >
+              {drawerBtnText}
+            </Text>
           </TouchableOpacity>
         </View>
 
         {/* Hint Footer */}
         <View style={styles.hintContainer}>
-          <Text style={[styles.hintText, { color: colors.muted }]}>{keyboardHint}</Text>
+          <Text
+            style={[
+              styles.hintText,
+              { color: colors.muted, fontSize: isMobile ? 11 : 12 },
+            ]}
+            numberOfLines={1}
+          >
+            {keyboardHint}
+          </Text>
         </View>
-      </View>
+      </ScrollView>
 
       {/* Drawer Modal */}
       <DrawerModal
@@ -297,18 +329,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   mainContainer: {
-    flex: 1,
+    flexGrow: 1,
     width: '100%',
     maxWidth: 680,
     alignSelf: 'center',
     justifyContent: 'space-between',
     paddingBottom: Platform.OS === 'ios' ? 12 : 18,
   },
+  mainContainerMobile: {
+    paddingBottom: 8,
+  },
   cardWrapper: {
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
     width: '100%',
+  },
+  cardWrapperMobile: {
+    paddingHorizontal: 12,
   },
   actionsContainer: {
     flexDirection: 'row',
@@ -317,6 +355,11 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 20,
     marginVertical: 12,
+  },
+  actionsContainerMobile: {
+    gap: 8,
+    marginVertical: 6,
+    paddingHorizontal: 12,
   },
   primaryActionBtn: {
     flex: 1,
@@ -330,6 +373,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
+  },
+  actionBtnMobile: {
+    height: 42,
+    maxWidth: 150,
   },
   primaryActionText: {
     color: '#FFFFFF',

@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>流量與數據分析後台 · 在我們之間 Between Us</title>
+  <title>流量與數據分析後台 · 在我們之間</title>
   <link rel="icon" href="/icon.png">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <!-- Immediate Auth Guard: If not logged in, redirect to /login before rendering anything -->
+  <!-- 未登入自動重定向至專屬登入頁 -->
   <script>
     if (!sessionStorage.getItem('between_us_admin_session')) {
       window.location.replace('/login');
@@ -43,7 +43,7 @@
       padding: 0;
     }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Noto Sans TC", sans-serif;
       background-color: var(--bg);
       color: var(--text-main);
       min-height: 100vh;
@@ -51,7 +51,7 @@
       transition: background-color 0.2s, color 0.2s;
     }
 
-    /* Navbar */
+    /* 頂部導覽列 */
     .navbar {
       border-bottom: 1px solid var(--border);
       background: var(--card-bg);
@@ -68,20 +68,20 @@
       align-items: center;
       gap: 12px;
     }
-    .brand-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
-      background: linear-gradient(135deg, #E07A6D 0%, #C25B4E 100%);
+    .brand-icon-box {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px rgba(194, 91, 78, 0.2);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
-    .brand-icon svg {
-      width: 17px;
-      height: 17px;
-      fill: #FFFFFF;
+    .brand-icon-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .nav-title {
       font-size: 17px;
@@ -147,14 +147,14 @@
       color: #FFCDD2;
     }
 
-    /* Container */
+    /* 主要容器 */
     .main-container {
       max-width: 1240px;
       margin: 0 auto;
       padding: 24px;
     }
 
-    /* KPI Cards */
+    /* 關鍵數據指標卡片 */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -187,7 +187,7 @@
       font-weight: 500;
     }
 
-    /* Grid Layout for Charts */
+    /* 圖表網格 */
     .charts-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
@@ -219,7 +219,7 @@
       font-weight: 600;
     }
 
-    /* Strict Fixed Container for Charts */
+    /* 嚴格鎖定圖表容器高度，防止無限延展 */
     .chart-canvas-wrapper {
       position: relative;
       width: 100%;
@@ -228,7 +228,7 @@
       flex-shrink: 0;
     }
 
-    /* Data List */
+    /* 排行清單 */
     .data-list {
       list-style: none;
       display: flex;
@@ -261,7 +261,7 @@
       font-weight: 600;
     }
 
-    /* Tables */
+    /* 數據表格 */
     .table-container {
       overflow-x: auto;
     }
@@ -295,93 +295,95 @@
     .tag-page { background: #E3F2FD; color: #1565C0; }
     .tag-fav { background: #FFF3E0; color: #E65100; }
     .tag-cat { background: #F3E5F5; color: #7B1FA2; }
+    body.dark .tag-flip { background: #1B3820; color: #81C784; }
+    body.dark .tag-page { background: #152A3E; color: #64B5F6; }
+    body.dark .tag-fav { background: #3E2914; color: #FFB74D; }
+    body.dark .tag-cat { background: #35193B; color: #BA68C8; }
   </style>
 </head>
 <body>
-  <!-- Navbar -->
+  <!-- 頂部導覽列 -->
   <header class="navbar">
     <div class="nav-left">
-      <div class="brand-icon">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-        </svg>
+      <div class="brand-icon-box">
+        <img src="/icon.png" class="brand-icon-img" alt="在我們之間" onerror="this.src='/favicon.ico'">
       </div>
       <span class="nav-title">在我們之間 · 數據分析後台</span>
-      <span class="nav-badge">Live Analytics</span>
+      <span class="nav-badge">即時監控中</span>
     </div>
     <div class="nav-actions">
-      <span class="user-pill">管理者：admin</span>
+      <span class="user-pill">管理者：系統管理員</span>
       <button class="btn-action" onclick="toggleTheme()" id="theme-btn">深色模式</button>
       <button class="btn-action" onclick="loadStats()" id="refresh-btn">重新整理</button>
       <button class="btn-action btn-logout" onclick="logout()">安全登出</button>
     </div>
   </header>
 
-  <!-- Main Content -->
+  <!-- 主要內容區 -->
   <main class="main-container">
-    <!-- KPI Overview -->
+    <!-- 核心數據統計 -->
     <section class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-title">今日獨立訪客 (Today's Visitors)</div>
+        <div class="kpi-title">今日造訪人數</div>
         <div class="kpi-value" id="kpi-today-sessions">0</div>
         <div class="kpi-sub">獨立活躍工作階段</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">今日翻牌次數 (Today's Flips)</div>
+        <div class="kpi-title">今日翻牌互動</div>
         <div class="kpi-value" id="kpi-today-flips">0</div>
-        <div class="kpi-sub">核心深度話題互動</div>
+        <div class="kpi-sub">深度對話探索次數</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">累計總訪客數 (Total Visitors)</div>
+        <div class="kpi-title">累積獨立訪客</div>
         <div class="kpi-value" id="kpi-total-sessions">0</div>
-        <div class="kpi-sub">歷史累計使用者</div>
+        <div class="kpi-sub">歷史累積使用者</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-title">累計總事件 (Total Events)</div>
+        <div class="kpi-title">全站累積互動</div>
         <div class="kpi-value" id="kpi-total-events">0</div>
-        <div class="kpi-sub">全平台互動總量</div>
+        <div class="kpi-sub">各平台互動總累積</div>
       </div>
     </section>
 
-    <!-- Charts Grid (Fixed Height Containers) -->
+    <!-- 圖表區 -->
     <div class="charts-grid">
-      <!-- 14 Days Daily Trends -->
+      <!-- 趨勢圖 -->
       <div class="chart-panel">
         <div class="panel-header">
-          <h3 class="panel-title">近 14 日造訪人數與翻牌趨勢 (Daily Activity)</h3>
+          <h3 class="panel-title">近 14 日造訪人數與翻牌趨勢折線圖</h3>
         </div>
         <div class="chart-canvas-wrapper">
           <canvas id="trendChart"></canvas>
         </div>
       </div>
 
-      <!-- Categories Popularity -->
+      <!-- 分類排行 -->
       <div class="chart-panel">
         <div class="panel-header">
-          <h3 class="panel-title">熱門話題分類排行榜 (Top Topics)</h3>
+          <h3 class="panel-title">熱門話題主題排行榜</h3>
         </div>
         <ul class="data-list" id="category-list">
-          <li class="data-item"><span class="data-item-label">載入中…</span></li>
+          <li class="data-item"><span class="data-item-label">資料載入中…</span></li>
         </ul>
       </div>
     </div>
 
-    <!-- Geo & Platform Row -->
+    <!-- 地理與設備區 -->
     <div class="charts-grid">
-      <!-- Top Countries -->
+      <!-- 地理位置 -->
       <div class="chart-panel">
         <div class="panel-header">
-          <h3 class="panel-title">使用者地理分佈 TOP 10 (Geographic Distribution)</h3>
+          <h3 class="panel-title">使用者地理分佈前 10 大地區</h3>
         </div>
         <ul class="data-list" id="country-list">
-          <li class="data-item"><span class="data-item-label">載入中…</span></li>
+          <li class="data-item"><span class="data-item-label">資料載入中…</span></li>
         </ul>
       </div>
 
-      <!-- Platforms -->
+      <!-- 設備比例 -->
       <div class="chart-panel">
         <div class="panel-header">
-          <h3 class="panel-title">裝置與作業系統佔比 (Devices & OS)</h3>
+          <h3 class="panel-title">使用設備與作業系統佔比</h3>
         </div>
         <div class="chart-canvas-wrapper">
           <canvas id="platformChart"></canvas>
@@ -389,26 +391,26 @@
       </div>
     </div>
 
-    <!-- Live Stream Table -->
+    <!-- 即時動態表格 -->
     <section class="chart-panel">
       <div class="panel-header">
-        <h3 class="panel-title">最近即時互動動態 (Recent Live Activity)</h3>
-        <span id="last-update" style="font-size: 12px; color: var(--text-muted);">更新中…</span>
+        <h3 class="panel-title">最新使用者即時互動動態</h3>
+        <span id="last-update" style="font-size: 12px; color: var(--text-muted);">正在更新中…</span>
       </div>
       <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>時間</th>
-              <th>事件類型</th>
-              <th>當前主題</th>
-              <th>語言</th>
+              <th>發生時間</th>
+              <th>互動類型</th>
+              <th>對應主題</th>
+              <th>使用語言</th>
               <th>地理位置</th>
-              <th>作業系統 / 平台</th>
+              <th>使用設備與系統</th>
             </tr>
           </thead>
           <tbody id="events-tbody">
-            <tr><td colspan="6" style="text-align:center; padding: 20px;">載入中…</td></tr>
+            <tr><td colspan="6" style="text-align:center; padding: 20px;">資料載入中…</td></tr>
           </tbody>
         </table>
       </div>
@@ -426,7 +428,7 @@
         return;
       }
 
-      // Check dark mode
+      // 深色模式記憶檢查
       if (localStorage.getItem('admin_theme') === 'dark') {
         document.body.classList.add('dark');
         document.getElementById('theme-btn').textContent = '淺色模式';
@@ -458,6 +460,20 @@
       );
     }
 
+    const COUNTRY_NAMES = {
+      'TW': '台灣',
+      'HK': '香港',
+      'JP': '日本',
+      'US': '美國',
+      'MY': '馬來西亞',
+      'SG': '新加坡',
+      'CN': '中國大陸',
+      'MO': '澳門',
+      'AU': '澳洲',
+      'CA': '加拿大',
+      'GB': '英國'
+    };
+
     const CAT_NAMES = {
       'vision': '價值與未來',
       'soul': '靈魂與內心',
@@ -466,6 +482,23 @@
       'fun': '趣味與童心',
       'growth': '個人成長',
       'faith': '信念與世界觀'
+    };
+
+    const LANG_NAMES = {
+      'zh-TW': '繁體中文',
+      'zh-CN': '簡體中文',
+      'en': '英文'
+    };
+
+    const PLATFORM_NAMES = {
+      'web': '電腦瀏覽器',
+      'iOS (Web)': '蘋果手機瀏覽器',
+      'Android (Web)': '安卓手機瀏覽器',
+      'iOS (App)': '蘋果手機應用程式',
+      'Android (App)': '安卓手機應用程式',
+      'macOS': '蘋果電腦系統',
+      'Windows': '微軟視窗系統',
+      'Linux': 'Linux 系統'
     };
 
     async function loadStats() {
@@ -494,13 +527,13 @@
     }
 
     function renderData(data) {
-      // 1. KPI
+      // 1. 核心指標數值
       document.getElementById('kpi-today-sessions').textContent = data.overview.todaySessions.toLocaleString();
       document.getElementById('kpi-today-flips').textContent = data.overview.todayFlips.toLocaleString();
       document.getElementById('kpi-total-sessions').textContent = data.overview.totalSessions.toLocaleString();
       document.getElementById('kpi-total-events').textContent = data.overview.totalEvents.toLocaleString();
 
-      // 2. Categories List
+      // 2. 主題分類排行
       const catListEl = document.getElementById('category-list');
       if (data.categories && data.categories.length > 0) {
         catListEl.innerHTML = data.categories.map(c => `
@@ -515,13 +548,13 @@
         catListEl.innerHTML = '<li class="data-item"><span class="data-item-label">暫無分類數據</span></li>';
       }
 
-      // 3. Countries List
+      // 3. 地理分佈
       const countryListEl = document.getElementById('country-list');
       if (data.countries && data.countries.length > 0) {
         countryListEl.innerHTML = data.countries.map(c => `
           <li class="data-item">
             <span class="data-item-label">
-              <span>${getCountryFlag(c.country)}</span> ${c.country}
+              <span>${getCountryFlag(c.country)}</span> ${COUNTRY_NAMES[c.country] || c.country}
             </span>
             <span class="data-item-badge">${c.users} 訪客 · ${c.count} 次</span>
           </li>
@@ -530,7 +563,7 @@
         countryListEl.innerHTML = '<li class="data-item"><span class="data-item-label">暫無地理數據</span></li>';
       }
 
-      // 4. Trend Chart (Strictly contained within fixed height)
+      // 4. 趨勢圖表
       const isDark = document.body.classList.contains('dark');
       const textColor = isDark ? '#A39B91' : '#666';
       const gridColor = isDark ? '#2D2824' : '#E8E2D9';
@@ -551,7 +584,7 @@
               tension: 0.3
             },
             {
-              label: '獨立訪客',
+              label: '造訪人數',
               data: data.dailyTrends.map(d => d.users),
               borderColor: '#8E877F',
               borderDash: [5, 5],
@@ -572,13 +605,13 @@
         }
       });
 
-      // 5. Platform Chart
+      // 5. 設備分佈圖
       const platformCanvas = document.getElementById('platformChart');
       if (platformChart) platformChart.destroy();
       platformChart = new Chart(platformCanvas, {
         type: 'doughnut',
         data: {
-          labels: data.platforms.map(p => p.platform),
+          labels: data.platforms.map(p => PLATFORM_NAMES[p.platform] || p.platform),
           datasets: [{
             data: data.platforms.map(p => p.count),
             backgroundColor: ['#C25B4E', '#D9822B', '#0F9960', '#2B95D6', '#8F3985', '#738A9C']
@@ -593,29 +626,32 @@
         }
       });
 
-      // 6. Recent Events Table
+      // 6. 即時動態表格
       const tbody = document.getElementById('events-tbody');
       if (data.recentEvents && data.recentEvents.length > 0) {
         tbody.innerHTML = data.recentEvents.map(e => {
           let tagClass = 'tag-page';
           let tagLabel = e.event_name;
-          if (e.event_name === 'flip_card') { tagClass = 'tag-flip'; tagLabel = '翻牌互動'; }
+          if (e.event_name === 'flip_card') { tagClass = 'tag-flip'; tagLabel = '翻開卡牌'; }
           else if (e.event_name === 'next_question') { tagClass = 'tag-page'; tagLabel = '換下一題'; }
           else if (e.event_name === 'toggle_favorite') { tagClass = 'tag-fav'; tagLabel = '卡牌收藏'; }
           else if (e.event_name === 'change_category') { tagClass = 'tag-cat'; tagLabel = '切換主題'; }
           else if (e.event_name === 'start_timer') { tagClass = 'tag-cat'; tagLabel = '開始計時'; }
+          else if (e.event_name === 'change_language') { tagClass = 'tag-page'; tagLabel = '切換語言'; }
+          else if (e.event_name === 'pageview') { tagClass = 'tag-page'; tagLabel = '訪問首頁'; }
 
           const time = new Date(e.created_at + 'Z').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-          const loc = (e.city && e.city !== 'Unknown') ? `${getCountryFlag(e.country)} ${e.country} · ${e.city}` : `${getCountryFlag(e.country)} ${e.country}`;
+          const countryName = COUNTRY_NAMES[e.country] || e.country;
+          const loc = (e.city && e.city !== 'Unknown') ? `${getCountryFlag(e.country)} ${countryName} · ${e.city}` : `${getCountryFlag(e.country)} ${countryName}`;
 
           return `
             <tr>
               <td>${time}</td>
               <td><span class="tag ${tagClass}">${tagLabel}</span></td>
-              <td>${CAT_NAMES[e.category] || e.category || '-'}</td>
-              <td>${e.language || '-'}</td>
+              <td>${CAT_NAMES[e.category] || e.category || '全部'}</td>
+              <td>${LANG_NAMES[e.language] || e.language || '-'}</td>
               <td>${loc}</td>
-              <td>${e.platform || '-'}</td>
+              <td>${PLATFORM_NAMES[e.platform] || e.platform || '-'}</td>
             </tr>
           `;
         }).join('');
@@ -624,7 +660,7 @@
       }
     }
 
-    // Auto refresh every 30s
+    // 每 30 秒自動靜默刷新
     setInterval(() => {
       if (currentToken && !document.hidden) loadStats();
     }, 30000);

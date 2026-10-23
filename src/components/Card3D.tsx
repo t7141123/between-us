@@ -11,6 +11,7 @@ import {
   Animated,
   Platform,
   PanResponder,
+  useWindowDimensions,
 } from 'react-native';
 import Svg, { Path, Circle, Line } from 'react-native-svg';
 import { Bookmark, Timer, RefreshCw, RotateCcw } from 'lucide-react-native';
@@ -42,6 +43,9 @@ export const Card3D: React.FC<Card3DProps> = ({
   onNextQuestion,
   onFlipCard,
 }) => {
+  const { width, height } = useWindowDimensions();
+  const isMobile = width < 600 || height < 750;
+
   const animatedValue = useRef(new Animated.Value(0)).current;
   const isFlippedRef = useRef(false);
 
@@ -121,7 +125,13 @@ export const Card3D: React.FC<Card3DProps> = ({
   const backHint = I18nService.t(locale, 'card_back_hint', '點擊翻回題目');
 
   return (
-    <View style={styles.cardContainer} {...panResponder.panHandlers}>
+    <View
+      style={[
+        styles.cardContainer,
+        { minHeight: isMobile ? 300 : (Platform.OS === 'web' ? 380 : 350) },
+      ]}
+      {...panResponder.panHandlers}
+    >
       {/* Front Face */}
       <Animated.View
         style={[
@@ -130,23 +140,29 @@ export const Card3D: React.FC<Card3DProps> = ({
           {
             backgroundColor: colors.card,
             borderColor: colors.line,
+            minHeight: isMobile ? 300 : (Platform.OS === 'web' ? 380 : 350),
+            borderRadius: isMobile ? 22 : 28,
             transform: [{ rotateY: frontInterpolate }],
             opacity: frontOpacity,
           },
         ]}
       >
         <TouchableOpacity
-          style={styles.innerTouchable}
+          style={[styles.innerTouchable, isMobile && styles.innerTouchableMobile]}
           activeOpacity={0.96}
           onPress={flipCard}
         >
           {/* Inner decorative gold border */}
-          <View style={[styles.innerBorder, { borderColor: colors.gold }]} />
+          <View pointerEvents="none" style={[styles.innerBorder, { borderColor: colors.gold }]} />
 
           {/* Front Header */}
           <View style={styles.cardHeader}>
             <View style={[styles.categoryBadge, { backgroundColor: colors.badgeBg, borderColor: colors.clay }]}>
-              <Text style={[styles.categoryText, { color: colors.clay }]}>
+              <Text
+                style={[styles.categoryText, { color: colors.clay }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
                 {question?.categoryLabel || ''}
               </Text>
             </View>
@@ -158,7 +174,7 @@ export const Card3D: React.FC<Card3DProps> = ({
                 activeOpacity={0.7}
                 accessibilityLabel="開啟計時器"
               >
-                <Timer size={18} color={colors.muted} />
+                <Timer size={isMobile ? 16 : 18} color={colors.muted} />
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -168,7 +184,7 @@ export const Card3D: React.FC<Card3DProps> = ({
                 accessibilityLabel="收藏此題"
               >
                 <Bookmark
-                  size={18}
+                  size={isMobile ? 16 : 18}
                   color={isFavorite ? colors.clay : colors.muted}
                   fill={isFavorite ? colors.clay : 'none'}
                 />
@@ -177,11 +193,20 @@ export const Card3D: React.FC<Card3DProps> = ({
           </View>
 
           {/* Question Text Body */}
-          <View style={styles.bodyContainer}>
+          <View style={[styles.bodyContainer, isMobile && styles.bodyContainerMobile]}>
             <Text style={[styles.questionNumber, { color: colors.clay }]}>
               NO. {padIndex}
             </Text>
-            <Text style={[styles.questionText, { color: colors.ink }]}>
+            <Text
+              style={[
+                styles.questionText,
+                {
+                  color: colors.ink,
+                  fontSize: isMobile ? 19 : (Platform.OS === 'web' ? 24 : 21),
+                  lineHeight: isMobile ? 29 : (Platform.OS === 'web' ? 38 : 34),
+                },
+              ]}
+            >
               {question?.text || I18nService.t(locale, 'deck_empty')}
             </Text>
           </View>
@@ -189,8 +214,14 @@ export const Card3D: React.FC<Card3DProps> = ({
           {/* Front Footer */}
           <View style={[styles.cardFooter, { borderTopColor: colors.line }]}>
             <View style={styles.footerPrompt}>
-              <RefreshCw size={13} color={colors.muted} />
-              <Text style={[styles.promptText, { color: colors.muted }]}>{frontHint}</Text>
+              <RefreshCw size={12} color={colors.muted} />
+              <Text
+                style={[styles.promptText, { color: colors.muted }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {frontHint}
+              </Text>
             </View>
             <Text style={[styles.progressText, { color: colors.muted }]}>
               {currentIndex + 1} / {totalInDeck}
@@ -207,31 +238,39 @@ export const Card3D: React.FC<Card3DProps> = ({
           {
             backgroundColor: colors.cardBack,
             borderColor: colors.line,
+            minHeight: isMobile ? 300 : (Platform.OS === 'web' ? 380 : 350),
+            borderRadius: isMobile ? 22 : 28,
             transform: [{ rotateY: backInterpolate }],
             opacity: backOpacity,
           },
         ]}
       >
         <TouchableOpacity
-          style={styles.innerTouchable}
+          style={[styles.innerTouchable, isMobile && styles.innerTouchableMobile]}
           activeOpacity={0.96}
           onPress={flipCard}
         >
           {/* Inner decorative gold border */}
-          <View style={[styles.innerBorder, { borderColor: colors.gold }]} />
+          <View pointerEvents="none" style={[styles.innerBorder, { borderColor: colors.gold }]} />
 
           {/* Back Header */}
           <View style={styles.cardHeader}>
             <Text style={[styles.backBrandText, { color: colors.muted }]}>BETWEEN US</Text>
             <TouchableOpacity onPress={flipCard} style={styles.actionBtn}>
-              <RotateCcw size={16} color={colors.muted} />
+              <RotateCcw size={15} color={colors.muted} />
             </TouchableOpacity>
           </View>
 
           {/* Back Graphic & Quote */}
-          <View style={styles.backBody}>
-            <View style={[styles.portalIconContainer, { backgroundColor: colors.badgeBg }]}>
-              <Svg width={32} height={32} viewBox="0 0 48 48" fill="none">
+          <View style={[styles.backBody, isMobile && styles.backBodyMobile]}>
+            <View
+              style={[
+                styles.portalIconContainer,
+                isMobile && styles.portalIconMobile,
+                { backgroundColor: colors.badgeBg },
+              ]}
+            >
+              <Svg width={isMobile ? 26 : 32} height={isMobile ? 26 : 32} viewBox="0 0 48 48" fill="none">
                 <Path
                   d="M12 40V24a12 12 0 0 1 24 0v16"
                   stroke={colors.clay}
@@ -248,16 +287,44 @@ export const Card3D: React.FC<Card3DProps> = ({
               </Svg>
             </View>
 
-            <Text style={[styles.backTitle, { color: colors.ink }]}>{backTitle}</Text>
+            <Text
+              style={[
+                styles.backTitle,
+                {
+                  color: colors.ink,
+                  fontSize: isMobile ? 20 : 24,
+                  marginBottom: isMobile ? 4 : 8,
+                },
+              ]}
+            >
+              {backTitle}
+            </Text>
             <View style={[styles.goldDivider, { backgroundColor: colors.gold }]} />
-            <Text style={[styles.backQuote, { color: colors.muted }]}>{backQuote}</Text>
+            <Text
+              style={[
+                styles.backQuote,
+                {
+                  color: colors.muted,
+                  fontSize: isMobile ? 13 : 14,
+                  lineHeight: isMobile ? 20 : 22,
+                },
+              ]}
+            >
+              {backQuote}
+            </Text>
           </View>
 
           {/* Back Footer */}
           <View style={[styles.cardFooter, { borderTopColor: colors.line, justifyContent: 'center' }]}>
             <View style={styles.footerPrompt}>
-              <RotateCcw size={13} color={colors.muted} />
-              <Text style={[styles.promptText, { color: colors.muted }]}>{backHint}</Text>
+              <RotateCcw size={12} color={colors.muted} />
+              <Text
+                style={[styles.promptText, { color: colors.muted }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {backHint}
+              </Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -270,19 +337,16 @@ const styles = StyleSheet.create({
   cardContainer: {
     width: '100%',
     maxWidth: 540,
-    minHeight: Platform.OS === 'web' ? 380 : 350,
     alignSelf: 'center',
-    marginVertical: 12,
+    marginVertical: 8,
   },
   cardFace: {
     width: '100%',
-    minHeight: Platform.OS === 'web' ? 380 : 350,
-    borderRadius: 28,
     borderWidth: 1,
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.1,
-    shadowRadius: 24,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 6,
     overflow: 'hidden',
   },
   cardFront: {
@@ -298,59 +362,66 @@ const styles = StyleSheet.create({
   },
   innerTouchable: {
     flex: 1,
-    padding: Platform.OS === 'web' ? 28 : 22,
+    padding: Platform.OS === 'web' ? 24 : 20,
     justifyContent: 'space-between',
+  },
+  innerTouchableMobile: {
+    padding: 18,
   },
   innerBorder: {
     position: 'absolute',
-    top: 10,
-    left: 10,
-    right: 10,
-    bottom: 10,
+    top: 8,
+    left: 8,
+    right: 8,
+    bottom: 8,
     borderWidth: 1,
-    borderRadius: 20,
-    pointerEvents: 'none',
+    borderRadius: 18,
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     zIndex: 2,
+    gap: 8,
   },
   categoryBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
     borderWidth: 1,
+    flexShrink: 1,
   },
   categoryText: {
     fontSize: 11,
     fontWeight: '600',
-    letterSpacing: 0.8,
+    letterSpacing: 0.5,
   },
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
+    flexShrink: 0,
   },
   actionBtn: {
-    padding: 6,
+    padding: 5,
   },
   bodyContainer: {
-    marginVertical: 24,
+    marginVertical: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
+  },
+  bodyContainerMobile: {
+    marginVertical: 10,
+    paddingHorizontal: 6,
   },
   questionNumber: {
     fontSize: 11,
     letterSpacing: 3,
     fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   questionText: {
-    fontSize: Platform.OS === 'web' ? 25 : 21,
-    lineHeight: Platform.OS === 'web' ? 42 : 34,
     textAlign: 'center',
     fontWeight: '400',
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
@@ -359,23 +430,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 12,
+    paddingTop: 10,
     borderTopWidth: 1,
     zIndex: 2,
+    gap: 8,
   },
   footerPrompt: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 5,
+    flexShrink: 1,
   },
   promptText: {
     fontSize: 11,
     fontWeight: '500',
+    flexShrink: 1,
   },
   progressText: {
     fontSize: 11,
     fontWeight: '500',
     letterSpacing: 1,
+    flexShrink: 0,
   },
   backBrandText: {
     fontSize: 10,
@@ -385,30 +460,35 @@ const styles = StyleSheet.create({
   backBody: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 18,
+    paddingVertical: 14,
+  },
+  backBodyMobile: {
+    paddingVertical: 8,
   },
   portalIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
-  },
-  backTitle: {
-    fontSize: 24,
-    fontWeight: '400',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-    marginBottom: 8,
-  },
-  goldDivider: {
-    width: 36,
-    height: 1,
     marginBottom: 12,
   },
+  portalIconMobile: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    marginBottom: 8,
+  },
+  backTitle: {
+    fontWeight: '400',
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+  },
+  goldDivider: {
+    width: 32,
+    height: 1,
+    marginBottom: 10,
+  },
   backQuote: {
-    fontSize: 14,
-    lineHeight: 22,
     textAlign: 'center',
     maxWidth: 280,
   },

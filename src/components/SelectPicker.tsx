@@ -207,17 +207,21 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     marginRight: 2,
+    flexShrink: 0,
   },
   triggerTextCompact: {
     fontSize: 12,
     fontWeight: '500',
+    flexShrink: 1,
   },
   triggerTextRegular: {
     fontSize: 14,
     fontWeight: '500',
+    flexShrink: 1,
   },
   chevron: {
     marginLeft: 6,
+    flexShrink: 0,
   },
   modalBackdrop: {
     flex: 1,
