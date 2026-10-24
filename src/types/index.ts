@@ -70,3 +70,11 @@ export interface ThemeColors {
   shadow: string;
   badgeBg: string;
 }
+
+export type AuthProvider = 'apple' | 'google' | 'email';
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  provider: AuthProvider;
+}

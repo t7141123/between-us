@@ -79,23 +79,58 @@ export function formatEcpayDate(d = new Date()) {
   return `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`;
 }
 
-/** Ensure orders table exists in Cloudflare D1 */
+/** Ensure orders and user entitlements tables exist in Cloudflare D1 */
 export async function ensureOrdersTable(db) {
   if (!db) return;
+  await db.batch([
+    db.prepare(`
+      CREATE TABLE IF NOT EXISTS users (
+        id TEXT PRIMARY KEY,
+        email TEXT UNIQUE,
+        provider TEXT DEFAULT 'email',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+    `),
+    db.prepare(`
+      CREATE TABLE IF NOT EXISTS orders (
+        id TEXT PRIMARY KEY,
+        user_id TEXT,
+        item_key TEXT NOT NULL,
+        amount INTEGER NOT NULL,
+        currency TEXT DEFAULT 'TWD',
+        status TEXT DEFAULT 'pending',
+        trade_no TEXT,
+        payment_type TEXT,
+        payment_date TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+    `),
+    db.prepare(`
+      CREATE TABLE IF NOT EXISTS user_entitlements (
+        user_id TEXT NOT NULL,
+        item_key TEXT NOT NULL,
+        source TEXT DEFAULT 'ecpay',
+        order_id TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (user_id, item_key)
+      );
+    `),
+  ]);
+}
+
+/** Grant an entitlement to a user safely */
+export async function grantEntitlement(db, userId, itemKey, source = 'ecpay', orderId = null) {
+  if (!db || !userId || !itemKey) return;
+  await ensureOrdersTable(db);
   await db.prepare(`
-    CREATE TABLE IF NOT EXISTS orders (
-      id TEXT PRIMARY KEY,
-      item_key TEXT NOT NULL,
-      amount INTEGER NOT NULL,
-      currency TEXT DEFAULT 'TWD',
-      status TEXT DEFAULT 'pending',
-      trade_no TEXT,
-      payment_type TEXT,
-      payment_date TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-  `).run();
+    INSERT INTO user_entitlements (user_id, item_key, source, order_id)
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT(user_id, item_key) DO NOTHING
+  `)
+    .bind(userId, itemKey, source, orderId)
+    .run();
 }
 
 /** Parse urlencoded or form-data body into key-value map */

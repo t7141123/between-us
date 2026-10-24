@@ -47,13 +47,15 @@ export async function onRequestPost(context) {
       .slice(2, 6)
       .toUpperCase()}`;
 
+    const userId = typeof body.userId === 'string' ? body.userId.trim().slice(0, 48) : null;
+
     // Ensure database table exists and insert pending order
     if (env.DB) {
       await ensureOrdersTable(env.DB);
       await env.DB.prepare(
-        'INSERT INTO orders (id, item_key, amount, currency, status) VALUES (?, ?, ?, ?, ?)'
+        'INSERT INTO orders (id, user_id, item_key, amount, currency, status) VALUES (?, ?, ?, ?, ?, ?)'
       )
-        .bind(tradeNo, item.id, item.amount, 'TWD', 'pending')
+        .bind(tradeNo, userId, item.id, item.amount, 'TWD', 'pending')
         .run();
     }
 
@@ -73,6 +75,7 @@ export async function onRequestPost(context) {
       ClientBackURL: `${origin}/?payment=cancelled`,
       ChoosePayment: 'ALL',
       EncryptType: '1',
+      CustomField1: userId || '',
     };
 
     ecpayParams.CheckMacValue = await calculateCheckMacValue(

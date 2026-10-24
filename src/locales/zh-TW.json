@@ -75,7 +75,19 @@
     "redeem_placeholder": "輸入解鎖代碼 (如 LOVE2026)",
     "redeem_btn": "兌換",
     "redeem_success": "解鎖成功！感謝您的支持與陪伴。",
-    "redeem_invalid": "無效的兌換代碼，請確認後重試。"
+    "redeem_invalid": "無效的兌換代碼，請確認後重試。",
+    "auth_modal_title": "跨裝置雲端同步",
+    "auth_modal_desc": "平時使用完全免登入。若您在多台手機或電腦間使用，綁定帳號即可跨平台同步已解鎖的專題包與支持者權益。",
+    "sign_in_apple": "使用 Apple 登入",
+    "sign_in_google": "使用 Google 登入",
+    "or_email": "或使用 Email 快速同步",
+    "email_placeholder": "輸入您的電子信箱",
+    "btn_sync_now": "立即同步",
+    "sync_success": "帳號同步成功！已為您同步雲端權益。",
+    "logged_in_as": "已同步帳號",
+    "btn_logout": "解除綁定",
+    "sync_card_hint": "想要在其他手機或平台同步已購買的內容？",
+    "btn_open_sync": "帳號同步"
   },
   "categories": {
     "vision": {

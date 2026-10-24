@@ -3,6 +3,7 @@
  * Follows zero-tracking privacy architecture; unlocked states stored securely on client.
  */
 import { Platform } from 'react-native';
+import { StorageService } from './storage';
 
 export type StoreItemKey = 'pack_sensual' | 'tip_coffee' | 'tip_afternoon';
 
@@ -19,16 +20,21 @@ export interface VerifyOrderResponse {
 
 export const PaymentService = {
   /** Initiates ECPay checkout by creating and posting a hidden form in Web browser */
-  async startEcpayCheckout(itemKey: StoreItemKey): Promise<{ success: boolean; error?: string }> {
+  async startEcpayCheckout(
+    itemKey: StoreItemKey,
+    explicitUserId?: string | null
+  ): Promise<{ success: boolean; error?: string }> {
     if (Platform.OS !== 'web' || typeof document === 'undefined') {
       return { success: false, error: 'ECPay Web checkout is currently supported on Web' };
     }
 
     try {
+      const user = explicitUserId ? null : await StorageService.getAuthUser();
+      const userId = explicitUserId || user?.id || null;
       const res = await fetch('/api/payment/ecpay/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemKey }),
+        body: JSON.stringify({ itemKey, userId }),
       });
 
       if (!res.ok) {

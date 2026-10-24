@@ -3,7 +3,7 @@
  * Guards against data corruption and prototype pollution.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CardSkinId, LocaleKey, ThemeMode } from '../types';
+import { AuthUser, CardSkinId, LocaleKey, ThemeMode } from '../types';
 
 const STORAGE_KEYS = {
   LANG: 'betweenus.lang',
@@ -13,6 +13,7 @@ const STORAGE_KEYS = {
   UNLOCKED_PACKS: 'betweenus.unlocked_packs',
   CARD_SKIN: 'betweenus.card_skin',
   SUPPORTER: 'betweenus.supporter',
+  AUTH_USER: 'betweenus.auth_user',
 } as const;
 
 export const StorageService = {
@@ -160,6 +161,34 @@ export const StorageService = {
   async setIsSupporter(isSupporter: boolean): Promise<void> {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.SUPPORTER, isSupporter ? '1' : '0');
+    } catch {
+      // Storage write error
+    }
+  },
+
+  async getAuthUser(): Promise<AuthUser | null> {
+    try {
+      const raw = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_USER);
+      if (raw) {
+        return JSON.parse(raw) as AuthUser;
+      }
+    } catch {
+      // Ignore read error
+    }
+    return null;
+  },
+
+  async setAuthUser(user: AuthUser): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(user));
+    } catch {
+      // Storage write error
+    }
+  },
+
+  async clearAuthUser(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(STORAGE_KEYS.AUTH_USER);
     } catch {
       // Storage write error
     }

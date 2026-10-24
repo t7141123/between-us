@@ -75,7 +75,19 @@
     "redeem_placeholder": "输入解锁代码 (如 LOVE2026)",
     "redeem_btn": "兑换",
     "redeem_success": "解锁成功！感谢您的支持与陪伴。",
-    "redeem_invalid": "无效的兑换代码，请确认后重试。"
+    "redeem_invalid": "无效的兑换代码，请确认后重试。",
+    "auth_modal_title": "跨设备云端同步",
+    "auth_modal_desc": "平时使用完全免登录。若您在多台手机或电脑间使用，绑定账号即可跨平台同步已解锁的专题包与支持者权益。",
+    "sign_in_apple": "使用 Apple 登录",
+    "sign_in_google": "使用 Google 登录",
+    "or_email": "或使用 Email 快速同步",
+    "email_placeholder": "输入您的电子邮箱",
+    "btn_sync_now": "立即同步",
+    "sync_success": "账号同步成功！已为您同步云端权益。",
+    "logged_in_as": "已同步账号",
+    "btn_logout": "解除绑定",
+    "sync_card_hint": "想要在其他手机或平台同步已购买的内容？",
+    "btn_open_sync": "账号同步"
   },
   "categories": {
     "vision": {

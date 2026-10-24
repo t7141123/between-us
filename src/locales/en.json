@@ -75,7 +75,19 @@
     "redeem_placeholder": "Enter promo code (e.g. LOVE2026)",
     "redeem_btn": "Redeem",
     "redeem_success": "Successfully unlocked! Thank you for your support.",
-    "redeem_invalid": "Invalid promo code. Please check and try again."
+    "redeem_invalid": "Invalid promo code. Please check and try again.",
+    "auth_modal_title": "Cross-Platform Sync",
+    "auth_modal_desc": "Between Us is local-first by default. Sign in only when you want to access your unlocked packs across multiple phones or platforms.",
+    "sign_in_apple": "Sign in with Apple",
+    "sign_in_google": "Sign in with Google",
+    "or_email": "Or quick sync with Email",
+    "email_placeholder": "Enter your email address",
+    "btn_sync_now": "Sync Now",
+    "sync_success": "Account synced! Your purchases are now restored.",
+    "logged_in_as": "Synced Account",
+    "btn_logout": "Disconnect",
+    "sync_card_hint": "Want to access your purchases on other devices?",
+    "btn_open_sync": "Sync Account"
   },
   "categories": {
     "vision": {

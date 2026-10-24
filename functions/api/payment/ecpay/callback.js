@@ -6,6 +6,7 @@ import {
   calculateCheckMacValue,
   parseFormBody,
   ensureOrdersTable,
+  grantEntitlement,
 } from '../_lib.js';
 
 export async function onRequestPost(context) {
@@ -47,6 +48,18 @@ export async function onRequestPost(context) {
             MerchantTradeNo
           )
           .run();
+
+        // Grant entitlement to user for cross-platform restore
+        const finalUserId = order.user_id || formData.CustomField1 || null;
+        if (finalUserId) {
+          await grantEntitlement(
+            env.DB,
+            finalUserId,
+            order.item_key,
+            'ecpay',
+            MerchantTradeNo
+          );
+        }
       }
     }
 

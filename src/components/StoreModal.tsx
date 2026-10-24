@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 import { CARD_SKINS, EXPANSION_PACKS } from '../constants/packs';
+import { AuthUser } from '../services/auth';
 import { I18nService } from '../services/i18n';
 import { PaymentService } from '../services/payment';
 import { CardSkinId, LocaleKey, ThemeColors, ThemeMode } from '../types';
@@ -27,10 +28,13 @@ interface StoreModalProps {
   unlockedPacks: string[];
   selectedSkin: CardSkinId;
   isSupporter: boolean;
+  currentUser?: AuthUser | null;
   onSelectSkin: (skinId: CardSkinId) => void;
   onUnlockPack: (packId: string) => void;
   onSetSupporter: (isSupporter: boolean) => void;
   onLoadPackSample?: (packId: string) => void;
+  onOpenAuth?: () => void;
+  onLogout?: () => void;
 }
 
 type TabKey = 'packs' | 'skins' | 'support';
@@ -44,10 +48,13 @@ export const StoreModal: React.FC<StoreModalProps> = ({
   unlockedPacks,
   selectedSkin,
   isSupporter,
+  currentUser,
   onSelectSkin,
   onUnlockPack,
   onSetSupporter,
   onLoadPackSample,
+  onOpenAuth,
+  onLogout,
 }) => {
   const [activeTab, setActiveTab] = useState<TabKey>('packs');
   const [promoCode, setPromoCode] = useState('');
@@ -77,7 +84,8 @@ export const StoreModal: React.FC<StoreModalProps> = ({
     if (Platform.OS === 'web') {
       setRedeemFeedback('正在引導至綠界 ECPay 安全付款畫面...');
       const res = await PaymentService.startEcpayCheckout(
-        packId === 'sensual' ? 'pack_sensual' : 'pack_sensual'
+        packId === 'sensual' ? 'pack_sensual' : 'pack_sensual',
+        currentUser?.id
       );
       if (!res.success) {
         setRedeemFeedback(res.error || '啟動綠界支付失敗');
@@ -92,7 +100,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
   const handleTip = async (itemKey: 'tip_coffee' | 'tip_afternoon') => {
     if (Platform.OS === 'web') {
       setRedeemFeedback('正在引導至綠界 ECPay 安全付款畫面...');
-      const res = await PaymentService.startEcpayCheckout(itemKey);
+      const res = await PaymentService.startEcpayCheckout(itemKey, currentUser?.id);
       if (!res.success) {
         setRedeemFeedback(res.error || '啟動綠界支付失敗');
       }
@@ -468,6 +476,54 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                 </View>
               </View>
             )}
+
+            {/* Cross-device Cloud Sync Card */}
+            <View
+              style={[
+                styles.syncBanner,
+                {
+                  backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                  borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                },
+              ]}
+            >
+              <View style={styles.syncBannerContent}>
+                <Text style={styles.syncBannerIcon}>☁️</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.syncBannerTitle, { color: colors.ink }]}>
+                    {currentUser
+                      ? `${I18nService.t(locale, 'logged_in_as')}: ${currentUser.email}`
+                      : I18nService.t(locale, 'auth_modal_title')}
+                  </Text>
+                  <Text style={[styles.syncBannerSubtitle, { color: colors.muted }]}>
+                    {currentUser
+                      ? `(${currentUser.provider.toUpperCase()})`
+                      : I18nService.t(locale, 'sync_card_hint')}
+                  </Text>
+                </View>
+              </View>
+              <Pressable
+                onPress={currentUser ? onLogout : onOpenAuth}
+                style={[
+                  styles.syncBannerBtn,
+                  {
+                    borderColor: colors.clay,
+                    backgroundColor: currentUser ? 'transparent' : colors.clay,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.syncBannerBtnText,
+                    { color: currentUser ? colors.clay : '#FFFFFF' },
+                  ]}
+                >
+                  {currentUser
+                    ? I18nService.t(locale, 'btn_logout')
+                    : I18nService.t(locale, 'btn_open_sync')}
+                </Text>
+              </Pressable>
+            </View>
           </ScrollView>
         </View>
       </View>
@@ -770,6 +826,44 @@ const styles = StyleSheet.create({
   redeemBtnText: {
     color: '#FFFFFF',
     fontSize: 13,
+    fontWeight: '700',
+  },
+  syncBanner: {
+    marginTop: 18,
+    marginBottom: 8,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  syncBannerContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  syncBannerIcon: {
+    fontSize: 20,
+  },
+  syncBannerTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  syncBannerSubtitle: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+  syncBannerBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  syncBannerBtnText: {
+    fontSize: 12,
     fontWeight: '700',
   },
 });

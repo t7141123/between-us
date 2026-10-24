@@ -33,6 +33,8 @@ import { Card3D, Card3DHandle } from './components/Card3D';
 import { DrawerModal } from './components/DrawerModal';
 import { TimerModal } from './components/TimerModal';
 import { StoreModal } from './components/StoreModal';
+import { AuthModal } from './components/AuthModal';
+import { AuthService, AuthUser } from './services/auth';
 
 export const MainApp: React.FC = () => {
   const { width, height } = useWindowDimensions();
@@ -51,10 +53,12 @@ export const MainApp: React.FC = () => {
   const [unlockedPacks, setUnlockedPacks] = useState<string[]>([]);
   const [selectedSkin, setSelectedSkin] = useState<CardSkinId>('classic');
   const [isSupporter, setIsSupporter] = useState(false);
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [isStoreOpen, setIsStoreOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   const cardRef = useRef<Card3DHandle>(null);
 
@@ -68,13 +72,27 @@ export const MainApp: React.FC = () => {
       StorageService.getUnlockedPacks(),
       StorageService.getCardSkin('classic'),
       StorageService.getIsSupporter(),
-    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter]) => {
+      StorageService.getAuthUser(),
+    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter, savedUser]) => {
       if (!mounted) return;
       setLocale(savedLocale);
       setFavorites(savedFavs);
       setUnlockedPacks(savedPacks);
       setSelectedSkin(savedSkin);
       setIsSupporter(savedSupporter);
+      if (savedUser) {
+        setCurrentUser(savedUser);
+        // Silently sync latest entitlements from cloud on startup
+        AuthService.syncCloudEntitlements(savedUser.id).then((cloud) => {
+          if (!mounted || !cloud) return;
+          if (cloud.unlockedPacks.length > 0) {
+            setUnlockedPacks(cloud.unlockedPacks);
+          }
+          if (cloud.isSupporter) {
+            setIsSupporter(true);
+          }
+        });
+      }
     });
     return () => {
       mounted = false;
@@ -203,6 +221,29 @@ export const MainApp: React.FC = () => {
     setCurrentIndex(foundIdx >= 0 ? foundIdx : 0);
   }, [locale]);
 
+  const handleLogout = useCallback(() => {
+    AuthService.logout().then(() => {
+      setCurrentUser(null);
+    });
+  }, []);
+
+  const handleUserChanged = useCallback((user: AuthUser | null) => {
+    setCurrentUser(user);
+  }, []);
+
+  const handleSyncComplete = useCallback((packs: string[], supporter: boolean) => {
+    setUnlockedPacks(packs);
+    setIsSupporter(supporter);
+    if (Platform.OS === 'web' && typeof confetti === 'function') {
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { y: 0.6 },
+        colors: ['#C87D65', '#D4AF37', '#78726D'],
+      });
+    }
+  }, []);
+
   // Handle return from ECPay payment gateway on Web
   useEffect(() => {
     if (Platform.OS !== 'web' || typeof window === 'undefined') return;
@@ -219,6 +260,9 @@ export const MainApp: React.FC = () => {
           } else if (res.type === 'supporter') {
             handleSetSupporter(true);
           }
+          if (currentUser) {
+            AuthService.claimOrder(currentUser.id, orderId);
+          }
           if (typeof confetti === 'function') {
             confetti({
               particleCount: 60,
@@ -233,7 +277,7 @@ export const MainApp: React.FC = () => {
     } else if (payment === 'cancelled' || payment === 'failed') {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [handleSetSupporter, handleUnlockPack]);
+  }, [currentUser, handleSetSupporter, handleUnlockPack]);
 
   // Global keyboard shortcuts for web desktop
   useEffect(() => {
@@ -408,10 +452,25 @@ export const MainApp: React.FC = () => {
         unlockedPacks={unlockedPacks}
         selectedSkin={selectedSkin}
         isSupporter={isSupporter}
+        currentUser={currentUser}
         onSelectSkin={handleSelectSkin}
         onUnlockPack={handleUnlockPack}
         onSetSupporter={handleSetSupporter}
         onLoadPackSample={handleLoadPackSample}
+        onOpenAuth={() => setIsAuthOpen(true)}
+        onLogout={handleLogout}
+      />
+
+      {/* Progressive Optional Auth & Cloud Sync Modal */}
+      <AuthModal
+        visible={isAuthOpen}
+        locale={locale}
+        theme={isDark ? 'dark' : 'light'}
+        colors={colors}
+        currentUser={currentUser}
+        onClose={() => setIsAuthOpen(false)}
+        onUserChanged={handleUserChanged}
+        onSyncComplete={handleSyncComplete}
       />
     </SafeAreaView>
   );
