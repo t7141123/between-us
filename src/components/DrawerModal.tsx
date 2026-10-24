@@ -129,6 +129,16 @@ export const DrawerModal: React.FC<DrawerModalProps> = ({
                 onChangeText={setSearchQuery}
                 clearButtonMode="while-editing"
               />
+              {searchQuery.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => setSearchQuery('')}
+                  style={styles.clearSearchBtn}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  accessibilityLabel="清空搜尋"
+                >
+                  <X size={14} color={colors.muted} />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 
@@ -256,6 +266,10 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     padding: 0,
+  },
+  clearSearchBtn: {
+    padding: 4,
+    marginLeft: 6,
   },
   listContent: {
     padding: 16,

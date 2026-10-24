@@ -32,6 +32,7 @@ export const TimerModal: React.FC<TimerModalProps> = ({
 }) => {
   const [timeLeft, setTimeLeft] = useState(300);
   const [isRunning, setIsRunning] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -41,6 +42,7 @@ export const TimerModal: React.FC<TimerModalProps> = ({
           if (prev <= 1) {
             clearInterval(timerRef.current as NodeJS.Timeout);
             setIsRunning(false);
+            setIsCompleted(true);
             onPlaySuccessSound?.();
             if (Platform.OS === 'web' && typeof confetti === 'function') {
               confetti({
@@ -64,11 +66,13 @@ export const TimerModal: React.FC<TimerModalProps> = ({
   }, [isRunning, onPlaySuccessSound]);
 
   const toggleStart = () => {
+    if (isCompleted) setIsCompleted(false);
     setIsRunning((prev) => !prev);
   };
 
   const resetTimer = () => {
     setIsRunning(false);
+    setIsCompleted(false);
     setTimeLeft(300);
   };
 
@@ -105,6 +109,14 @@ export const TimerModal: React.FC<TimerModalProps> = ({
           <Text style={[styles.prompt, { color: colors.muted }]}>{timerPrompt}</Text>
 
           <Text style={[styles.digits, { color: colors.clay }]}>{formatTime(timeLeft)}</Text>
+
+          {isCompleted && (
+            <View style={[styles.completedBadge, { backgroundColor: colors.badgeBg, borderColor: colors.clay }]}>
+              <Text style={[styles.completedText, { color: colors.clay }]}>
+                ✨ {I18nService.t(locale, 'timer_end', '時間到')}
+              </Text>
+            </View>
+          )}
 
           <View style={styles.actionsRow}>
             <TouchableOpacity
@@ -188,6 +200,18 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
     letterSpacing: 2,
     marginBottom: 24,
+  },
+  completedBadge: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 14,
+    borderWidth: 1,
+    marginBottom: 16,
+  },
+  completedText: {
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
   actionsRow: {
     flexDirection: 'row',

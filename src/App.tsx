@@ -2,7 +2,7 @@
  * Main Application View for Between Us.
  * Seamlessly coordinates themes, locales, question decks, gestures and modals.
  */
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   SafeAreaView,
   View,
@@ -27,7 +27,7 @@ import { TelemetryService } from './services/telemetry';
 
 import { HeaderBar } from './components/HeaderBar';
 import { CategorySelect } from './components/CategorySelect';
-import { Card3D } from './components/Card3D';
+import { Card3D, Card3DHandle } from './components/Card3D';
 import { DrawerModal } from './components/DrawerModal';
 import { TimerModal } from './components/TimerModal';
 
@@ -47,6 +47,8 @@ export const MainApp: React.FC = () => {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
+
+  const cardRef = useRef<Card3DHandle>(null);
 
   // Load initial settings & initialize session duration telemetry
   useEffect(() => {
@@ -145,7 +147,10 @@ export const MainApp: React.FC = () => {
       if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
         return;
       }
-      if (e.key === 'ArrowRight' || e.key === 'Enter') {
+      if (e.code === 'Space' || e.key === ' ') {
+        e.preventDefault();
+        cardRef.current?.flip();
+      } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
         handleNextQuestion();
       } else if (e.key.toLowerCase() === 'f') {
         handleToggleFavorite();
@@ -202,6 +207,7 @@ export const MainApp: React.FC = () => {
         {/* 3D Flippable Question Card */}
         <View style={[styles.cardWrapper, isMobile && styles.cardWrapperMobile]}>
           <Card3D
+            ref={cardRef}
             question={currentQuestion}
             totalInDeck={deck.length}
             currentIndex={currentIndex}

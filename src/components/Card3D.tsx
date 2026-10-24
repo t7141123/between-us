@@ -2,7 +2,7 @@
  * 3D Interactive Card Component supporting smooth Y-axis flip rotation,
  * dual face rendering, gestures, and gold accent styling.
  */
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,10 @@ import { Bookmark, Timer, RefreshCw, RotateCcw } from 'lucide-react-native';
 import { LocaleKey, QuestionEntry, ThemeColors } from '../types';
 import { I18nService } from '../services/i18n';
 
+export interface Card3DHandle {
+  flip: () => void;
+}
+
 interface Card3DProps {
   question: QuestionEntry | null;
   totalInDeck: number;
@@ -31,7 +35,7 @@ interface Card3DProps {
   onFlipCard?: () => void;
 }
 
-export const Card3D: React.FC<Card3DProps> = ({
+export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
   question,
   totalInDeck,
   currentIndex,
@@ -42,7 +46,7 @@ export const Card3D: React.FC<Card3DProps> = ({
   onOpenTimer,
   onNextQuestion,
   onFlipCard,
-}) => {
+}, ref) => {
   const { width, height } = useWindowDimensions();
   const isMobile = width < 600 || height < 750;
 
@@ -84,6 +88,10 @@ export const Card3D: React.FC<Card3DProps> = ({
       });
     }
   };
+
+  useImperativeHandle(ref, () => ({
+    flip: flipCard,
+  }));
 
   // Horizontal swipe gesture for next question
   const panResponder = useRef(
@@ -151,6 +159,10 @@ export const Card3D: React.FC<Card3DProps> = ({
           style={[styles.innerTouchable, isMobile && styles.innerTouchableMobile]}
           activeOpacity={0.96}
           onPress={flipCard}
+          accessible={true}
+          accessibilityRole="button"
+          accessibilityLabel={`${question?.categoryLabel || ''}, ${question?.text || ''}`}
+          accessibilityHint={frontHint}
         >
           {/* Inner decorative gold border */}
           <View pointerEvents="none" style={[styles.innerBorder, { borderColor: colors.gold }]} />
@@ -173,6 +185,7 @@ export const Card3D: React.FC<Card3DProps> = ({
                 style={styles.actionBtn}
                 activeOpacity={0.7}
                 accessibilityLabel="開啟計時器"
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
                 <Timer size={isMobile ? 16 : 18} color={colors.muted} />
               </TouchableOpacity>
@@ -182,6 +195,7 @@ export const Card3D: React.FC<Card3DProps> = ({
                 style={styles.actionBtn}
                 activeOpacity={0.7}
                 accessibilityLabel="收藏此題"
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
                 <Bookmark
                   size={isMobile ? 16 : 18}
@@ -249,6 +263,10 @@ export const Card3D: React.FC<Card3DProps> = ({
           style={[styles.innerTouchable, isMobile && styles.innerTouchableMobile]}
           activeOpacity={0.96}
           onPress={flipCard}
+          accessible={true}
+          accessibilityRole="button"
+          accessibilityLabel={`${backTitle}, ${backQuote}`}
+          accessibilityHint={backHint}
         >
           {/* Inner decorative gold border */}
           <View pointerEvents="none" style={[styles.innerBorder, { borderColor: colors.gold }]} />
@@ -256,7 +274,12 @@ export const Card3D: React.FC<Card3DProps> = ({
           {/* Back Header */}
           <View style={styles.cardHeader}>
             <Text style={[styles.backBrandText, { color: colors.muted }]}>BETWEEN US</Text>
-            <TouchableOpacity onPress={flipCard} style={styles.actionBtn}>
+            <TouchableOpacity
+              onPress={flipCard}
+              style={styles.actionBtn}
+              accessibilityLabel="翻回正面"
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            >
               <RotateCcw size={15} color={colors.muted} />
             </TouchableOpacity>
           </View>
@@ -331,7 +354,9 @@ export const Card3D: React.FC<Card3DProps> = ({
       </Animated.View>
     </View>
   );
-};
+});
+
+Card3D.displayName = 'Card3D';
 
 const styles = StyleSheet.create({
   cardContainer: {
