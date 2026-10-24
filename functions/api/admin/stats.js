@@ -91,8 +91,19 @@ export async function onRequestGet(context) {
     const todayVisitorsRes = await env.DB.prepare(
       "SELECT COUNT(DISTINCT user_id) as cnt FROM visitor_sessions WHERE last_seen >= date('now', 'start of day')"
     ).first();
+    const todaySessionsRes = await env.DB.prepare(
+      "SELECT COUNT(*) as cnt FROM visitor_sessions WHERE last_seen >= date('now', 'start of day')"
+    ).first();
+    const todayMinutesRes = await env.DB.prepare(
+      "SELECT ROUND(SUM(duration_seconds) / 60.0) as total_min FROM visitor_sessions WHERE last_seen >= date('now', 'start of day')"
+    ).first();
     const avgDurationRes = await env.DB.prepare(
       'SELECT ROUND(AVG(duration_seconds)) as avg_sec FROM visitor_sessions'
+    ).first();
+
+    // Active users in the last 3 minutes
+    const activeNowRes = await env.DB.prepare(
+      "SELECT COUNT(DISTINCT user_id) as cnt FROM visitor_sessions WHERE last_seen >= datetime('now', '-3 minutes')"
     ).first();
 
     // 2. Platforms breakdown
@@ -110,27 +121,38 @@ export async function onRequestGet(context) {
        WHERE country IS NOT NULL 
        GROUP BY country 
        ORDER BY users DESC, count DESC 
-       LIMIT 10`
+       LIMIT 12`
     ).all();
 
-    // 4. Daily Trends (Last 14 days)
+    // 4. Daily Trends (Last 30 days for flexible filtering)
     const dailyRes = await env.DB.prepare(
       `SELECT strftime('%Y-%m-%d', first_seen) as date,
               COUNT(DISTINCT user_id) as users,
               COUNT(*) as sessions,
               ROUND(SUM(duration_seconds) / 60.0, 1) as total_minutes
        FROM visitor_sessions 
-       WHERE first_seen >= date('now', '-14 days')
+       WHERE first_seen >= date('now', '-30 days')
        GROUP BY date 
        ORDER BY date ASC`
     ).all();
 
-    // 5. Recent individual visitor sessions (last 50)
+    // 5. Today's Hourly Traffic Distribution (00 to 23)
+    const hourlyRes = await env.DB.prepare(
+      `SELECT strftime('%H', first_seen) as hour,
+              COUNT(DISTINCT user_id) as users,
+              COUNT(*) as sessions
+       FROM visitor_sessions
+       WHERE first_seen >= date('now', 'start of day')
+       GROUP BY hour
+       ORDER BY hour ASC`
+    ).all();
+
+    // 6. Recent individual visitor sessions (last 100)
     const recentRes = await env.DB.prepare(
       `SELECT id, session_id, user_id, platform, country, city, duration_seconds, first_seen, last_seen
        FROM visitor_sessions
        ORDER BY id DESC 
-       LIMIT 50`
+       LIMIT 100`
     ).all();
 
     return new Response(
@@ -138,14 +160,18 @@ export async function onRequestGet(context) {
         success: true,
         data: {
           overview: {
-            totalVisitors: totalVisitorsRes?.cnt || 0,
+            activeNow: activeNowRes?.cnt || 0,
             todayVisitors: todayVisitorsRes?.cnt || 0,
+            todaySessions: todaySessionsRes?.cnt || 0,
+            todayMinutes: todayMinutesRes?.total_min || 0,
+            totalVisitors: totalVisitorsRes?.cnt || 0,
             totalSessions: totalSessionsRes?.cnt || 0,
             avgDurationSeconds: avgDurationRes?.avg_sec || 0,
           },
           platforms: platformsRes.results || [],
           countries: countriesRes.results || [],
           dailyTrends: dailyRes.results || [],
+          hourlyToday: hourlyRes.results || [],
           sessions: recentRes.results || [],
         },
       }),
