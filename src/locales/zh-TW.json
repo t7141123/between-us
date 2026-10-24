@@ -36,7 +36,13 @@
     "fav_added": "已加入收藏",
     "fav_removed": "已取消收藏",
     "privacy_policy": "隱私政策與條款",
-    "version_info": "版本"
+    "version_info": "版本",
+    "info_title": "隱私政策與說明",
+    "commitment_title": "隱私與零資料收集承諾",
+    "commitment_text": "「在我們之間」致力於為您與伴侶打造純淨的對話空間。我們不收集任何個人身分資料、無第三方廣告追蹤器、無登入系統。您的題目收藏與設定全部只儲存在您本人的手機中。",
+    "terms_title": "使用條款與版權",
+    "terms_text": "本 App 所提供之 700 道題目與視覺風格均受智慧財產權保護，僅供個人與伴侶交流使用。本 App 按現狀提供，旨在促進伴侶情感交流。",
+    "support_title": "聯絡支援"
   },
   "categories": {
     "vision": {

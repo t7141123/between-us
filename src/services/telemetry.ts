@@ -92,26 +92,23 @@ export class TelemetryService {
         url = '/api/track';
       }
 
+      // Keepalive ensures the request succeeds even when unloading or closing tabs on web
+      const isWeb = Platform.OS === 'web' && typeof window !== 'undefined';
+      const fetchOptions: RequestInit = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+        ...(isWeb ? { keepalive: true } : {}),
+      };
+
       try {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body,
-        });
+        const res = await fetch(url, fetchOptions);
         if (!res.ok && url !== FALLBACK_ENDPOINT) {
-          await fetch(FALLBACK_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body,
-          }).catch(() => {});
+          await fetch(FALLBACK_ENDPOINT, fetchOptions).catch(() => {});
         }
       } catch {
         if (url !== FALLBACK_ENDPOINT) {
-          await fetch(FALLBACK_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body,
-          }).catch(() => {});
+          await fetch(FALLBACK_ENDPOINT, fetchOptions).catch(() => {});
         }
       }
     } catch {

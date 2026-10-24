@@ -36,7 +36,13 @@
     "fav_added": "Added to favorites",
     "fav_removed": "Removed from favorites",
     "privacy_policy": "Privacy & Terms",
-    "version_info": "Version"
+    "version_info": "Version",
+    "info_title": "Privacy Policy & About",
+    "commitment_title": "Zero-Data-Collection Guarantee",
+    "commitment_text": "\"Between Us\" is dedicated to creating an intimate conversation sanctuary. We collect zero personal data, use no ad tracking, and require no account. All bookmarks and settings stay entirely on your device.",
+    "terms_title": "Terms of Use & Copyright",
+    "terms_text": "All 700 conversation prompts and visual designs are protected by copyright for personal, non-commercial use between partners.",
+    "support_title": "Contact Support"
   },
   "categories": {
     "vision": {

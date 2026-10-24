@@ -36,7 +36,13 @@
     "fav_added": "已加入收藏",
     "fav_removed": "已取消收藏",
     "privacy_policy": "隐私政策与条款",
-    "version_info": "版本"
+    "version_info": "版本",
+    "info_title": "隐私政策与说明",
+    "commitment_title": "隐私与零数据收集承诺",
+    "commitment_text": "「在我们之间」致力于为您与伴侣打造纯净的对话空间。我们不收集任何个人身份资料、无第三方广告追踪器、无登录系统。您的题目收藏与设置全部只储存在您本人的手机中。",
+    "terms_title": "使用条款与版权",
+    "terms_text": "本 App 所提供之 700 道题目与视觉风格均受知识产权保护，仅供个人与伴侣交流使用。本 App 按现状提供，旨在促进伴侣情感交流。",
+    "support_title": "联系支持"
   },
   "categories": {
     "vision": {
