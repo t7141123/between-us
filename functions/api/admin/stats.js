@@ -2,16 +2,21 @@
  * Cloudflare Pages Function: /api/admin/stats
  * Queries analytical metrics from Cloudflare D1 database:
  * distinct visitors, devices/platforms, and individual usage duration.
+ * Supports environment variable overrides for salt and admin credentials.
  */
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
+const DEFAULT_SECRET_SALT = 'between_us_analytics_salt_2026';
+const DEFAULT_ADMIN_USER = 'admin';
 
-const ADMIN_USER = 'admin';
-const SECRET_SALT = 'between_us_analytics_salt_2026';
+function getCorsHeaders(request) {
+  const origin = request ? request.headers.get('Origin') : null;
+  return {
+    'Access-Control-Allow-Origin': origin || '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Vary': 'Origin',
+  };
+}
 
 function constantTimeEqual(aStr, bStr) {
   if (aStr.length !== bStr.length) return false;
@@ -24,19 +29,21 @@ function constantTimeEqual(aStr, bStr) {
   return diff === 0;
 }
 
-async function verifyToken(authHeader) {
+async function verifyToken(authHeader, env) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) return false;
   const token = authHeader.slice(7).trim();
   const parts = token.split('.');
   if (parts.length !== 3) return false;
 
   const [username, expiresAtStr, signature] = parts;
-  if (username !== ADMIN_USER) return false;
+  const adminUser = env?.ADMIN_USER || DEFAULT_ADMIN_USER;
+  if (username !== adminUser) return false;
 
   const expiresAt = Number(expiresAtStr);
   if (isNaN(expiresAt) || Date.now() > expiresAt) return false;
 
-  const raw = `${ADMIN_USER}:${expiresAt}:${SECRET_SALT}`;
+  const salt = env?.SECRET_SALT || DEFAULT_SECRET_SALT;
+  const raw = `${adminUser}:${expiresAt}:${salt}`;
   const encoder = new TextEncoder();
   const digest = await crypto.subtle.digest('SHA-256', encoder.encode(raw));
   const hashArray = Array.from(new Uint8Array(digest));
@@ -45,30 +52,31 @@ async function verifyToken(authHeader) {
   return constantTimeEqual(signature, expectedSig);
 }
 
-export async function onRequestOptions() {
+export async function onRequestOptions(context) {
   return new Response(null, {
     status: 204,
-    headers: CORS_HEADERS,
+    headers: getCorsHeaders(context.request),
   });
 }
 
 export async function onRequestGet(context) {
   const { request, env } = context;
+  const corsHeaders = getCorsHeaders(request);
 
   const auth = request.headers.get('Authorization');
-  const isValid = await verifyToken(auth);
+  const isValid = await verifyToken(auth, env);
 
   if (!isValid) {
     return new Response(JSON.stringify({ error: '未授權或登入已過期 (Unauthorized)' }), {
       status: 401,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   }
 
   if (!env.DB) {
     return new Response(JSON.stringify({ error: 'D1 Database not bound' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   }
 
@@ -143,13 +151,13 @@ export async function onRequestGet(context) {
       }),
       {
         status: 200,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       }
     );
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   }
 }

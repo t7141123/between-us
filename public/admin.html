@@ -489,6 +489,16 @@
       loadStats();
     }
 
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     function getCountryFlag(code) {
       if (!code || code === 'Unknown') return '🌐';
       return code.toUpperCase().replace(/./g, char => 
@@ -580,14 +590,20 @@
       // 2. 地理分佈
       const countryListEl = document.getElementById('country-list');
       if (data.countries && data.countries.length > 0) {
-        countryListEl.innerHTML = data.countries.map(c => `
-          <li class="data-item">
-            <span class="data-item-label">
-              <span>${getCountryFlag(c.country)}</span> ${COUNTRY_NAMES[c.country] || c.country}
-            </span>
-            <span class="data-item-badge">${c.users} 位訪客 · ${c.count} 次</span>
-          </li>
-        `).join('');
+        countryListEl.innerHTML = data.countries.map(c => {
+          const rawName = COUNTRY_NAMES[c.country] || c.country;
+          const safeName = escapeHtml(rawName);
+          const safeUsers = escapeHtml(String(c.users));
+          const safeCount = escapeHtml(String(c.count));
+          return `
+            <li class="data-item">
+              <span class="data-item-label">
+                <span>${getCountryFlag(c.country)}</span> ${safeName}
+              </span>
+              <span class="data-item-badge">${safeUsers} 位訪客 · ${safeCount} 次</span>
+            </li>
+          `;
+        }).join('');
       } else {
         countryListEl.innerHTML = '<li class="data-item"><span class="data-item-label">暫無地理數據</span></li>';
       }
@@ -687,22 +703,26 @@
           const lastActiveMs = new Date(s.last_seen + 'Z').getTime();
           const isActive = (nowMs - lastActiveMs) < (3 * 60 * 1000); // 3 分鐘內活躍
 
-          const countryName = COUNTRY_NAMES[s.country] || s.country || '未知地區';
-          const loc = (s.city && s.city !== 'Unknown') 
-            ? `${getCountryFlag(s.country)} ${countryName} · ${s.city}` 
-            : `${getCountryFlag(s.country)} ${countryName}`;
+          const rawCountry = COUNTRY_NAMES[s.country] || s.country || '未知地區';
+          const safeCountry = escapeHtml(rawCountry);
+          const safeCity = (s.city && s.city !== 'Unknown') ? escapeHtml(s.city) : '';
+          const loc = safeCity 
+            ? `${getCountryFlag(s.country)} ${safeCountry} · ${safeCity}` 
+            : `${getCountryFlag(s.country)} ${safeCountry}`;
 
           const deviceIcon = PLATFORM_ICONS[s.platform] || '📱';
-          const platformName = PLATFORM_NAMES[s.platform] || s.platform || '未知設備';
-          const userCode = (s.user_id || s.session_id || 'u_guest').slice(-6).toUpperCase();
+          const safePlatform = escapeHtml(PLATFORM_NAMES[s.platform] || s.platform || '未知設備');
+          const rawUserCode = (s.user_id || s.session_id || 'u_guest').slice(-6).toUpperCase();
+          const safeUserCode = escapeHtml(rawUserCode);
+          const safeDuration = escapeHtml(formatDuration(s.duration_seconds));
 
           return `
             <tr>
-              <td>${time}</td>
-              <td><span class="user-tag">訪客 #${userCode}</span></td>
-              <td><span class="device-badge">${deviceIcon} ${platformName}</span></td>
+              <td>${escapeHtml(time)}</td>
+              <td><span class="user-tag">訪客 #${safeUserCode}</span></td>
+              <td><span class="device-badge">${deviceIcon} ${safePlatform}</span></td>
               <td>${loc}</td>
-              <td><span class="duration-badge">${formatDuration(s.duration_seconds)}</span></td>
+              <td><span class="duration-badge">${safeDuration}</span></td>
               <td>
                 <span class="status-badge ${isActive ? 'active' : ''}">
                   <span class="status-dot"></span>
