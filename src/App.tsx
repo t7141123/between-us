@@ -24,6 +24,7 @@ import { useHaptics } from './hooks/useHaptics';
 import { I18nService } from './services/i18n';
 import { StorageService } from './services/storage';
 import { TelemetryService } from './services/telemetry';
+import { PaymentService } from './services/payment';
 import { SENSUAL_PACK_DATA } from './constants/packs';
 
 import { HeaderBar } from './components/HeaderBar';
@@ -201,6 +202,38 @@ export const MainApp: React.FC = () => {
     const foundIdx = questions.findIndex((q) => q.text === item.text);
     setCurrentIndex(foundIdx >= 0 ? foundIdx : 0);
   }, [locale]);
+
+  // Handle return from ECPay payment gateway on Web
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const payment = urlParams.get('payment');
+    const orderId = urlParams.get('orderId');
+
+    if (payment === 'success' && orderId) {
+      PaymentService.verifyOrder(orderId).then((res) => {
+        if (res && res.paid) {
+          if (res.type === 'pack' && res.target) {
+            handleUnlockPack(res.target);
+          } else if (res.type === 'supporter') {
+            handleSetSupporter(true);
+          }
+          if (typeof confetti === 'function') {
+            confetti({
+              particleCount: 60,
+              spread: 70,
+              origin: { y: 0.6 },
+              colors: ['#C87D65', '#D4AF37', '#78726D'],
+            });
+          }
+        }
+      });
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (payment === 'cancelled' || payment === 'failed') {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [handleSetSupporter, handleUnlockPack]);
 
   // Global keyboard shortcuts for web desktop
   useEffect(() => {

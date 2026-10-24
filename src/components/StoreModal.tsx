@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { CARD_SKINS, EXPANSION_PACKS } from '../constants/packs';
 import { I18nService } from '../services/i18n';
+import { PaymentService } from '../services/payment';
 import { CardSkinId, LocaleKey, ThemeColors, ThemeMode } from '../types';
 
 interface StoreModalProps {
@@ -72,16 +73,34 @@ export const StoreModal: React.FC<StoreModalProps> = ({
     }, 4000);
   };
 
-  const handleSimulatePurchasePack = (packId: string) => {
-    onUnlockPack(packId);
-    setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
-    setTimeout(() => setRedeemFeedback(null), 3000);
+  const handlePurchasePack = async (packId: string) => {
+    if (Platform.OS === 'web') {
+      setRedeemFeedback('正在引導至綠界 ECPay 安全付款畫面...');
+      const res = await PaymentService.startEcpayCheckout(
+        packId === 'sensual' ? 'pack_sensual' : 'pack_sensual'
+      );
+      if (!res.success) {
+        setRedeemFeedback(res.error || '啟動綠界支付失敗');
+      }
+    } else {
+      onUnlockPack(packId);
+      setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
+      setTimeout(() => setRedeemFeedback(null), 3000);
+    }
   };
 
-  const handleSimulateTip = () => {
-    onSetSupporter(true);
-    setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
-    setTimeout(() => setRedeemFeedback(null), 3000);
+  const handleTip = async (itemKey: 'tip_coffee' | 'tip_afternoon') => {
+    if (Platform.OS === 'web') {
+      setRedeemFeedback('正在引導至綠界 ECPay 安全付款畫面...');
+      const res = await PaymentService.startEcpayCheckout(itemKey);
+      if (!res.success) {
+        setRedeemFeedback(res.error || '啟動綠界支付失敗');
+      }
+    } else {
+      onSetSupporter(true);
+      setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
+      setTimeout(() => setRedeemFeedback(null), 3000);
+    }
   };
 
   return (
@@ -266,7 +285,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                         <Pressable
                           onPress={() => {
                             if (!isUnlocked) {
-                              handleSimulatePurchasePack(pack.id);
+                              handlePurchasePack(pack.id);
                             } else {
                               onLoadPackSample?.(pack.id);
                               onClose();
@@ -382,7 +401,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
 
                 <View style={styles.tipRow}>
                   <Pressable
-                    onPress={handleSimulateTip}
+                    onPress={() => handleTip('tip_coffee')}
                     style={[
                       styles.tipButton,
                       { backgroundColor: isDark ? '#292524' : '#FFFFFF', borderColor: colors.clay },
@@ -395,7 +414,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                   </Pressable>
 
                   <Pressable
-                    onPress={handleSimulateTip}
+                    onPress={() => handleTip('tip_afternoon')}
                     style={[
                       styles.tipButton,
                       { backgroundColor: isDark ? '#292524' : '#FFFFFF', borderColor: colors.clay },
