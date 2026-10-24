@@ -73,9 +73,9 @@ module.exports = [
     en: "How in-sync do you feel our physical desires and rhythms are lately, and where can we adjust with grace?"
   },
   {
-    tw: "當你看著我的眼睛時，你最常從我的目光中讀到的是深情、依賴，還是安心？",
-    cn: "当你看owner我的眼睛时，你最常从我的目光中读到的是深情、依赖，还是安心？",
-    en: "When you gaze deep into my eyes across the table, what emotion speaks to you loudest from my gaze?"
+    tw: "當我們安靜看著對方時，你通常能從我的眼神裡看出我是在放空、在擔心事情，還是想抱抱你？",
+    cn: "当我们安静看着对方时，你通常能从我的眼神里看出我是在放空、在担心事情，还是想抱抱你？",
+    en: "When we quietly look at each other, can you instantly tell if I'm zoning out, stressed, or craving a hug?"
   },
   {
     tw: "如果今晚我們可以不受時間打擾地泡個熱水澡或按摩，你最想放鬆哪裡的肌肉？",
@@ -143,9 +143,9 @@ module.exports = [
     en: "How many sacred, uninterrupted windows of undivided affection do we need per week to keep the flame roaring?"
   },
   {
-    tw: "有沒有哪個我替你吹頭髮、繫鞋帶或擦眼淚的瞬間，讓你覺得被照顧得無微不至？",
-    cn: "有没有哪个我替你吹头发、系鞋带或擦眼泪的瞬间，让你觉得被照顾得无微不至？",
-    en: "Did an act of gentle caretaking—like drying your hair or soothing your tears—make you feel precious?"
+    tw: "有沒有哪一次我幫你吹頭髮、削水果或倒溫水，那個很小的小動作讓你心裡特別溫暖？",
+    cn: "有没有哪一次我帮你吹头发、削水果或倒温水，那个很小的小动作让你心里特别温暖？",
+    en: "Was there a tiny gesture—like drying your hair, peeling fruit, or pouring warm water—that quietly melted your heart?"
   },
   {
     tw: "當你看見我穿上哪一件特定風格的衣服時，會讓你在心底忍不住多看我幾眼？",
@@ -208,9 +208,9 @@ module.exports = [
     en: "What profile of me lost in concentration—cooking, writing, or fixing something—do you secretly admire?"
   },
   {
-    tw: "當我們在被窩裡十指相扣安靜入睡時，那一刻會不會讓你覺得世界再喧囂也不怕？",
-    cn: "我们在被窝里十指相扣安静入睡时，那一刻会不会让你觉得世界再喧嚣也不怕？",
-    en: "Tangled in sheets with our fingers locked as sleep takes us, does the noisy world outside completely fade away?"
+    tw: "睡覺前在被窩裡牽著手聊天的時候，你有沒有哪一次覺得整個人特別放鬆、特別踏實？",
+    cn: "睡觉前在被窝里牵着手聊天的时候，你有没有哪一次觉得整个人特别放松、特别踏实？",
+    en: "Holding hands in bed and chatting before sleep, was there a time you felt completely relaxed and grounded?"
   },
   {
     tw: "如果我們可以給彼此的身體寫一封感謝信，你最感謝我的身體為這段感情付出了什麼？",
@@ -283,9 +283,9 @@ module.exports = [
     en: "Did I ever flare with protective jealousy that secretly flattered you and made you smile inside?"
   },
   {
-    tw: "如果給我們的親密關係打一個熱度分數，你覺得現在是溫潤的保溫瓶還是燃燒的火爐？",
-    cn: "如果给我们的亲密关系打一个热度分数，你觉得现在是温润的保温瓶还是燃烧的火炉？",
-    en: "If our romantic ember had a gauge, is it currently a steadily warming thermos or crackling flames?"
+    tw: "如果看我們最近這幾個月的親密相處，你覺得我們現在像熱戀期的小情侶，還是像很舒服的老夫老妻？",
+    cn: "如果看我们最近这几个月的亲密相处，你觉得我们现在像热恋期的小情侣，还是像很舒服的老夫老妻？",
+    en: "Looking at our physical intimacy over recent months, does it feel more like giddy honeymoon lovers or comfortable old pros?"
   },
   {
     tw: "在你看來，被另一半看透了所有缺點與傷疤之後依然被深愛著，那是一種怎樣的解脫？",
@@ -313,9 +313,9 @@ module.exports = [
     en: "When you catch me smiling across the platform or coffee shop, what thought immediately lights up inside you?"
   },
   {
-    tw: "在你看來，如何才能在日復一日的生活柴米油鹽中，永遠保留住當初為彼此心動的那份初心？",
-    cn: "在你看来，如何才能在日复一日的生活柴米油盐中，永远保留住当初为彼此心动的那份初心？",
-    en: "What conscious practice protects that initial wonder and electricity against the erosion of daily chores?"
+    tw: "在每天忙著上班、做家事、付帳單的生活裡，做哪一件小事最能讓你重新感覺到談戀愛的滋味？",
+    cn: "在每天忙着上班、做家务、付账单的生活里，做哪一件小事最能让你重新感觉到谈恋爱的滋味？",
+    en: "Amidst the daily grind of work, chores, and bills, what tiny thing reliably makes you feel like we're dating again?"
   },
   {
     tw: "有沒有哪個我專屬的親暱稱呼或小綽號，是只要我一叫出口，就會讓你心頭軟綿綿的？",
@@ -398,108 +398,108 @@ module.exports = [
     en: "Does being loved by me feel more like drop-anchor harbor peace, or the wind beneath your wings to fly bold?"
   },
   {
-    tw: "回想我們曾一起度過的無數個夜晚，哪一個夜晚的對話最讓你覺得靈魂深處被完全接納了？",
-    cn: "回想我们曾一起度过的无数个夜晚，哪一个夜晚的对话最让你觉得灵魂深处被完全接纳了？",
-    en: "Across hundreds of shared evenings, which late-night conversation made your soul feel fully, radically accepted?"
+    tw: "回想我們聊到很晚的那些夜晚裡，哪一次你把心裡最不敢跟別人講的話說給我聽，而且說完鬆了一口氣？",
+    cn: "回想我们聊到很晚的那些夜晚里，哪一次你把心里最不敢跟别人讲的话说给我听，而且说完松了一口气？",
+    en: "Looking back at our late-night talks, which time did you confess something you'd never told anyone else, feeling huge relief?"
   },
   {
-    tw: "當我在人群中輕輕將手搭在你的腰際時，那種宣示主權的溫柔觸碰，會讓你感到安心嗎？",
-    cn: "当我在人群中轻轻将手搭在你的腰际时，那种宣示主权的温柔触碰，会让你感到安心吗？",
-    en: "When I place a firm, protective hand on the small of your back in public, does it make you feel anchored?"
+    tw: "當我們在外面走在一起時，我有意無意搭著你的肩膀或牽著手，會讓你覺得有面子或很安心嗎？",
+    cn: "当我们在外面走在一起时，我有意无意搭着你的肩膀或牵着手，会让你觉得有面子或很安心吗？",
+    en: "When we walk together and I casually drape an arm over your shoulder, does that public touch make you feel proud or safe?"
   },
   {
-    tw: "如果今晚我們要為彼此寫下一句專屬的愛情誓言，你最想讓我一輩子銘記在心的是哪句話？",
-    cn: "如果今晚我们要为彼此写下一句专属的爱情誓言，你最想让我一辈子铭记在心的是哪句话？",
-    en: "If we renewed a private vow between us tonight, what sentence would you want engraved on my heart forever?"
+    tw: "如果今天睡前我們可以有一段不拿手機、專心給彼此按摩肩膀或小腿的十分鐘，你想先按還是我先？",
+    cn: "如果今天睡前我们可以有一段不拿手机、专心给彼此按摩肩膀或小腿的十分钟，你想先按还是我先？",
+    en: "If we traded 10 uninterrupted phone-free minutes rubbing each other's tired shoulders tonight, who gets to go first?"
   },
   {
-    tw: "在你看來，相愛的兩個人在日久天長之後，該如何維持那份對彼此身體與靈魂的好奇心？",
-    cn: "在你看来，相爱的两个人在日久天长之后，该如何维持那份对彼此身体与灵魂的好奇心？",
-    en: "How do two people keep learning each other after years together without assuming they already know it all?"
+    tw: "在一起相處久了之後，我們要怎麼做，才能在每天看見對方時依然覺得對方很有吸引力、想多看兩眼？",
+    cn: "在一起相处久了之后，我们要怎么做，才能在每天看见对方时依然觉得对方很有吸引力、想多看两眼？",
+    en: "After years together, what can we do so that catching sight of each other across the kitchen still sparks a double take?"
   },
   {
-    tw: "有沒有哪一次我為你準備的一頓簡單飯菜，因為充滿了愛意而讓你覺得勝過所有的米其林餐廳？",
-    cn: "有没有哪一次我为你准备的一顿简单饭菜，因为充满了爱意而让你觉得胜过所有的米其林餐厅？",
-    en: "What humble bowl of noodles or midnight toast made with love by my hands beat any five-star restaurant?"
+    tw: "有沒有哪一次我替你準備的家常飯菜或宵夜，雖然很簡單，但吃進肚子裡讓你覺得特別幸福？",
+    cn: "有没有哪一次我替你准备的家常饭菜或宵夜，虽然很简单，但吃进肚子里让你觉得特别幸福？",
+    en: "What simple home-cooked meal or midnight snack I made for you tasted ten times better because of the care behind it?"
   },
   {
-    tw: "當你看著我對你深情凝望時，你內心最希望聽到我對你許下的下一個承諾是什麼？",
-    cn: "当你看owner我对你深情凝望时，你内心最希望听到我对你许下的下一个承诺是什么？",
-    en: "When my eyes hold yours with deep reverence, what next promise are you yearning to hear me make?"
+    tw: "如果今晚睡前你可以向我許一個關於我們兩個人相處的小願望，你最希望我為你做什麼？",
+    cn: "如果今晚睡前你可以向我许一个关于我们两个人相处的小愿望，你最希望我为你做什么？",
+    en: "If you could whisper one small relationship wish before falling asleep tonight, what would you ask me to do for you?"
   },
   {
-    tw: "在我們相擁入眠的所有習慣裡，你最喜歡把腳悄悄冰在我的小腿上，還是把頭枕在我的手臂上？",
-    cn: "在我们相拥入眠的所有习惯里，你最喜欢把脚悄悄冰在我的小腿上，还是把头枕在我的手臂上？",
-    en: "Do you get more satisfaction from resting your head in the crook of my arm, or warming your cold toes on my calves?"
+    tw: "在我們相擁入眠的所有習慣裡，你最喜歡把腳冰在我的小腿上取暖，還是把頭枕在我的手臂上？",
+    cn: "在我们相拥入眠的所有习惯里，你最喜欢把脚冰在我的小腿上取暖，还是把头枕在我的手臂上？",
+    en: "When we cuddle to sleep, do you get more joy from warming icy toes on my calves, or resting your head in the nook of my arm?"
   },
   {
-    tw: "如果有機會一起逃離現實去一個沒有人認識我們的小鎮生活一週，你最想跟我每天做什麼？",
-    cn: "如果有机会一起逃离现实去一个没有人认识我们的小镇生活一周，你最想跟我每天做什么？",
-    en: "If we vanished to an anonymous seaside village where nobody knew us for a week, how would our days unfold?"
+    tw: "如果有機會拋下所有工作和手機去海邊民宿放空三天兩夜，你最想跟我每天做什麼？",
+    cn: "如果有机会抛下所有工作和手机去海边民宿放空三天两夜，你最想跟我每天做什么？",
+    en: "If we vanished to a coastal hideaway for three days with zero phones, what would our ideal daily rhythm look like?"
   },
   {
-    tw: "在你看來，兩個人之間最動人的默契，是彼此說話時的心領神會，還是靜默無語時的舒適踏實？",
-    cn: "在你看来，两个人之间最动人的默契，是彼此说话时的心领神会，还是静默无语时的舒适踏实？",
-    en: "Which represents peak intimacy: bouncing words off each other in witty harmony, or companionable silence with zero anxiety?"
+    tw: "在你看來，兩個人之間最舒服的狀態，是話題聊個不停，還是各做各的事、偶爾抬頭笑一下？",
+    cn: "在你看来，两个人之间最舒服的状态，是话题聊个不停，还是各做各的事、偶尔抬头笑一下？",
+    en: "What feels sweeter: non-stop lively conversation, or quietly doing your own thing in the same room with gentle smiles?"
   },
   {
-    tw: "當我將手伸進你的指縫緊緊扣住時，你能不能感受到那份我想牽著你走過一輩子的堅定？",
-    cn: "当我将手伸进你的指缝紧紧扣住时，你能不能感受到那份我想牵着你走过一辈子的坚定？",
-    en: "When our knuckles link tight, do you feel my marrow-deep resolve to walk this crazy life with you to the end?"
+    tw: "當我們走在人很多的夜市或馬路上，我抓緊你的手腕或手指，那一刻你的心裡在想什麼？",
+    cn: "当我们走在人很多的夜市或马路上，我抓紧你的手腕或手指，那一刻你的心里在想什么？",
+    en: "When navigating a chaotic night market crowd and I firmly grip your hand or wrist, what crosses your mind?"
   },
   {
-    tw: "如果把我們相愛的所有溫度匯聚成一個詞彙，你會用「熾熱」、「深邃」還是「溫潤」來形容？",
-    cn: "如果把我们相爱的所有温度汇聚成一个词汇，你会用「炽热」、「深邃」还是「温润」来形容？",
-    en: "If you distilled the warmth of our bond into a single adjective, is it fiery, oceanic deep, or gently constant?"
+    tw: "如果用一杯飲料來形容我們在一起的感覺，你覺得是熱美式、溫熱的奶茶，還是加了冰塊的汽水？",
+    cn: "如果用一杯饮料来形容我们在一起的感觉，你觉得是热美式、温热的奶茶，还是加了冰块的汽水？",
+    en: "If our dynamic were a drink, would it be a hot Americano, a warm sweet milk tea, or a fizzy soda on ice?"
   },
   {
-    tw: "在你看來，激情是愛情的火花，而真正支撐兩個人長廂廝守的，究竟是怎樣的一份溫柔？",
-    cn: "在你看来，激情是爱情的火花，而真正支撑两个人长厢厮守的，究竟是怎样的一份温柔？",
-    en: "Passion sparks the flame, but what variety of daily tender kindness keeps the home fires burning for fifty years?"
+    tw: "當兩個人激情退去、回歸平凡日子之後，你覺得最能證明我們依然深愛著對方的舉動是什麼？",
+    cn: "当两个人激情退去、回归平凡日子之后，你觉得最能证明我们依然深爱着对方的举动是什么？",
+    en: "Once honeymoon excitement fades into ordinary routine, what small action best proves we're still fiercely in love?"
   },
   {
-    tw: "回想起我們相識以來最打動你的那一次真情流露，是在什麼樣的背景下發生的？",
-    cn: "回想起我们相识以来最打动你的那一次真情流露，是在怎样的背景下发生的？",
-    en: "What was the single most heart-shattering, beautiful declaration of love ever exchanged between us?"
+    tw: "回想我們交往或結婚到現在，哪一次我為你哭或心疼你，最讓你知道我是真的把你放在心尖上？",
+    cn: "回想我们交往或结婚到现在，哪一次我为你哭或心疼你，最让知道我是真的把你放在心尖上？",
+    en: "Thinking back over our relationship, when did my tears or worry for you show beyond doubt how deeply I cherish you?"
   },
   {
-    tw: "當我們白髮蒼蒼坐在長椅上看著夕陽西下時，你希望我們彼此牽著的手依然有著怎樣的溫度？",
-    cn: "当我们白发苍苍坐在长椅上看著夕阳西下时，你希望我们彼此牵着的手依然有着怎样的温度？",
-    en: "When we are fragile elderly lovers resting on an autumn bench, what electric current will our wrinkled hands still send?"
+    tw: "當我們七八十歲老了走在路上，如果我依然習慣牽著你的手，你會覺得很自然還是覺得有點害羞？",
+    cn: "当我们七八十岁老了走在路上，如果我依然习惯牵着你的手，你会觉得很自然还是觉得有点害羞？",
+    en: "When we're in our eighties shuffling down the sidewalk, will holding hands feel totally natural or adorably shy?"
   },
   {
-    tw: "如果愛是一種可以被看見的色彩，在你的心目中，我們兩個人交融在一起的光芒是什麼顏色？",
-    cn: "如果爱是一种可以被看见的色彩，在你的心目中，我们两个人交融在一起的光芒是什么颜色？",
-    en: "If our intertwined love cast a visible aurora in the room right now, what radiant color palette would it paint?"
+    tw: "在我們平時相處的所有時刻裡，你最喜歡看我穿什麼風格的衣服，或是什麼樣的日常打扮？",
+    cn: "在我们平时相处的所有时刻里，你最喜欢看我穿什么风格的衣服，或是什么样的日常打扮？",
+    en: "Out of all my daily looks, what style of clothing or casual home outfit do you secretly love seeing me in most?"
   },
   {
-    tw: "此時此刻，當你凝視著我的雙眼時，你的心底最想得到的那個確認是什麼？",
-    cn: "此时此刻，当你凝视着我的双眼时，你的心底最想得到的那个确认是什么？",
-    en: "Looking into my eyes in this very breath, what final quiet confirmation is your heart seeking?"
+    tw: "此時此刻，當你認真看著我的眼睛時，你有沒有哪一句平常不好意思說的稱讚想對我說？",
+    cn: "此时此刻，当你认真看着我的眼睛时，你有没有哪一句平常不好意思说的称赞想对我说？",
+    en: "Looking directly into my eyes right now, what is one genuine compliment you're usually too shy to say out loud?"
   },
   {
-    tw: "如果能把我們的每一次親吻都賦予一種意義，你最希望我每一次吻你時都在對你傳達什麼？",
-    cn: "如果能把我们的每一次亲吻都赋予一种意义，你最希望我每一次吻你时都在对你传达什么？",
-    en: "If every kiss of mine carried a translated subtitle, what timeless message would you always want to read?"
+    tw: "當我們出門上班前互道再見時，如果我忘了給你一個吻或擁抱，你那一整天心裡會有點失落嗎？",
+    cn: "当我们出门上班前互道再见时，如果我忘了给你一个吻或拥抱，你那一整天心里会有点失落吗？",
+    en: "If I rush out the door for work in the morning and forget our goodbye kiss or hug, does it bug you all day?"
   },
   {
-    tw: "在未來的歲月裡，無論世界如何更迭，你是否相信我們始終是彼此最安全也最渴望的港灣？",
-    cn: "在未来的岁月里，无论世界如何更迭，你是否相信我们始终是彼此最安全也最渴望的港湾？",
-    en: "Through whatever trials the future throws, do you trust in your bones that we will always be each other's haven?"
+    tw: "在外面遇到委屈或不順心的事時，我是不是你第一個會想打電話或傳訊息傾訴的人？",
+    cn: "在外面遇到委屈或不顺心的事时，我是不是你第一个会想打电话或发消息倾诉的人？",
+    en: "When unfair nonsense hits you out in the world, am I the very first person you reach for to vent?"
   },
   {
-    tw: "當今晚這場對話結束、我們互道晚安時，你最希望我給你一個怎樣長度與深度的擁抱？",
-    cn: "当今晚这场对话结束、我们互道晚安时，你最希望我给你一个怎样长度与深度的拥抱？",
-    en: "When we tuck in and whisper goodnight after this card, how long of an unbroken embrace do you want to fall asleep inside?"
+    tw: "當今晚這場對話結束、我們準備關燈睡覺時，你希望我把你摟在懷裡多久？",
+    cn: "当今晚这场对话结束、我们准备关灯睡觉时，你希望我把你搂在怀里多久？",
+    en: "When we finally turn off the bedside lamp tonight, how long do you want me to hold you close before we drift off?"
   },
   {
-    tw: "在愛的世界裡，你最想感謝命運讓我們相遇的哪一個奇蹟？",
-    cn: "在爱的世界里，你最想感谢命运让我们相遇的哪一个奇迹？",
-    en: "In the giant tapestry of life, what miraculous turn of fate are you most grateful brought our paths crashing together?"
+    tw: "回頭看我們當初是怎麼一步步走到現在的，你覺得哪一個關鍵瞬間讓我們的心真正靠在一起了？",
+    cn: "回头看我们当初是怎么一步步走到现在的，你觉得哪一个关键瞬间让我们的心真正靠在一起了？",
+    en: "Tracing our journey from strangers to partners, what pivotal turning point fused our hearts together for good?"
   },
   {
-    tw: "如果要給我們之間的深情許下一個永遠不變的誓言，你今晚最想對我說出哪四個字？",
-    cn: "如果要给我们之间的深情许下一个永远不变的誓言，你今晚最想对我讲出哪四个字？",
-    en: "If you sealed the truth of your heart in four simple words tonight, what would they be?"
+    tw: "今晚聊了這麼多親密的話題，在睡覺前，你最想聽我對你說哪一句真心話？",
+    cn: "今晚聊了这么多亲密的话题，在睡觉前，你最想听我对你说哪一句真心话？",
+    en: "After sharing all these vulnerable truths tonight, what is the single sentence you most want to hear from my lips?"
   }
 ];

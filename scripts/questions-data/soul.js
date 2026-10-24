@@ -393,9 +393,9 @@ module.exports = [
     en: "When you notice me beating myself up over an insecurity, how do your eyes actually see me in that moment?"
   },
   {
-    tw: "你有沒有覺得我們最近在生活琐事上花了太多力氣，反而少了靈魂深處的交流？",
-    cn: "你有没有觉得我们最近在生活琐事上花了太多力气，反而少了灵魂深处的交流？",
-    en: "Do you feel like logistics and household errands have been crowding out real soul-level connection lately?"
+    tw: "你有沒有覺得我們最近都在忙著應付上班跟做家事，反而很少坐下來好好聊聊彼此最近的心情？",
+    cn: "你有没有觉得我们最近都在忙着应付上班跟做家务，反而很少坐下来好好聊聊彼此最近的心情？",
+    en: "Do you feel like running errands and daily chores have crowded out simply sitting down to talk about how we're doing?"
   },
   {
     tw: "如果要你用一種天氣來形容你此刻內心的真實狀態，會是怎樣的風景？",
@@ -488,9 +488,9 @@ module.exports = [
     en: "When a horrible day ends, is your first refuge a hot comforting meal or stepping into a steamy shower?"
   },
   {
-    tw: "在你看來，真愛的本質究竟是激情燃燒，還是彼此願意在最不堪的時候依然相守？",
-    cn: "在你看来，真爱的本质究竟是激情燃烧，还是彼此愿意在最不堪的时候依然相守？",
-    en: "In your bones, is love measured more by fireworks and romance, or staying planted through the messy unglamorous valleys?"
+    tw: "你覺得要維持一段長久的感情，最考驗兩個人的是熱戀退去後的平淡，還是遇到困難時能不能共同承擔？",
+    cn: "你觉得要维持一段长久的感情，最考验两个人的是热恋退去后的平淡，还是遇到困难时能不能共同承担？",
+    en: "To keep a relationship strong over decades, what tests two people more: boring daily routines, or weathering heavy storms together?"
   },
   {
     tw: "此時此刻坐在我面前，你最想對我說出的一句真心話是什麼？",
@@ -498,8 +498,8 @@ module.exports = [
     en: "Sitting right here across from me right now, what is the truest, rawest thing on your heart?"
   },
   {
-    tw: "在未來的漫長歲月裡，你最希望我們的關係成為彼此心靈深處怎樣的存在？",
-    cn: "在未来的漫长岁月里，你最希望我们的关系成为彼此心灵深处怎样的存在？",
-    en: "Through all the decades ahead, what kind of sacred sanctuary do you hope our love always remains?"
+    tw: "不管過多少年，你最希望我們兩個人的相處，能給彼此帶來什麼樣的踏實感？",
+    cn: "不管过多少年，你最希望我们两个人的相处，能给彼此带来什么样的踏实感？",
+    en: "No matter how many years go by, what kind of steady grounding do you most hope our relationship brings to your life?"
   }
 ];

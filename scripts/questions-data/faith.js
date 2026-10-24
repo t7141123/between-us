@@ -1,505 +1,506 @@
 /**
- * Category: faith (信念與人生) - 100 curated authentic conversation prompts
+ * Category: faith (信念與人生) - 100 concrete, deep, and conversational prompts
+ * Free of literary fluff, idioms, and statement pledges; grounded in real-life dilemmas and values.
  */
 module.exports = [
   {
-    tw: "在你的為人處事底線裡，有哪一條原則是你寧可吃大虧，也絕對不會妥協退讓的？",
-    cn: "在你的为人处事底线里，有哪一条原则是你宁可吃大亏，也绝对不会妥协退让的？",
-    en: "In your moral compass, what is the non-negotiable line in the sand you would suffer immense losses rather than cross?"
+    tw: "在你的為人處事底線裡，有哪一條原則是你寧可吃大虧，也絕對不會退讓的？",
+    cn: "在你的为人处事底线里，有哪一条原则是你宁可吃大亏，也绝对不会退让的？",
+    en: "Among your personal core boundaries, what is one line you would never cross, even if standing firm costs you dearly?"
   },
   {
-    tw: "當生命遇到突如其來的重大難關時，你覺得支撐我們兩個人不被打垮的核心信念是什麼？",
-    cn: "当生命遇到突如其来的重大难关时，你觉得支撑我们两个人不被打垮的核心信念是什么？",
-    en: "When unexpected tragedy or hardship strikes, what foundational truth anchors our household against collapsing?"
+    tw: "如果未來家裡遇到很大的難關，連吃飯都要精打細算，你覺得我們該怎麼維持家裡的氣氛？",
+    cn: "如果未来家里遇到很大的难关，连吃饭都要精打细算，你觉得我们该怎么维持家里的气氛？",
+    en: "If we ever faced tough times and had to pinch pennies just to eat, how do you think we could keep spirits high at home?"
   },
   {
-    tw: "如果把健康、家人、事業、金錢與心靈自由排個先後，你此刻內心最真實的排序是什麼？",
-    cn: "如果把健康、家人、事业、金钱与心灵自由排个先后，你此刻内心最真实的排序是什么？",
-    en: "Ranking health, marriage, career, wealth, and inner peace honestly tonight, what order reflects your actual soul?"
+    tw: "如果把自己的健康、家人的平安、賺錢跟個人自由排個先後，你心裡最真實的排序是什麼？",
+    cn: "如果把自己的健康、家人的平安、赚钱跟个人自由排个先后，你心里最真实的排序是什么？",
+    en: "Ranking personal health, family well-being, earning money, and freedom, what is your most honest order of priorities?"
   },
   {
-    tw: "在我們相處的這段歲月裡，有沒有哪一個瞬間讓你深深確信「這輩子非這個人莫屬了」？",
-    cn: "在我们相处的这段岁月里，有没有哪一个瞬间让你深深确信「这辈子非这个人莫属了」？",
-    en: "Was there a specific, crystal-clear epiphany where you thought, 'There is no doubt in my bones; this is my person'?"
+    tw: "在我們交往或結婚到現在，有沒有哪一個平常的小瞬間，讓你心裡突然覺得「就是這個人了」？",
+    cn: "在我们交往或结婚到现在，有没有哪一个平常的小瞬间，让你心里突然觉得「就是这个人了」？",
+    en: "Since we got together, was there an ordinary little moment that suddenly made you feel in your gut, 'This is my person'?"
   },
   {
-    tw: "面對人世間必然經歷的生老病死，你最希望我們如何以平靜而深刻的愛陪伴彼此到最後？",
-    cn: "面对人世间必然经历的生老病死，你最希望我们如何以平静而深刻的爱陪伴彼此到最后？",
-    en: "Facing the tender reality of human mortality, what mindset do you hope cushions our hearts as autumn years arrive?"
+    tw: "如果有一天我們其中一個突然生了重病躺在醫院，你最希望另一個人怎麼陪在你身邊？",
+    cn: "如果有一天我们其中一个突然生了重病躺在医院，你最希望另一个人怎么陪在你身边？",
+    en: "If one of us fell seriously ill in the hospital, how would you most want the other person to be there for you?"
   },
   {
-    tw: "在你看來，這世界上最值得敬畏的事物是什麼？是大自然、良知，還是人與人之間的信任？",
-    cn: "在你看来，这世界上最值得敬畏的事物是什么？是大自然、良知，还是人与人之间的信任？",
-    en: "What inspires the deepest reverence in you: the quiet majesty of nature, moral conscience, or sacrificial love?"
+    tw: "如果醫生私下告訴我們只剩下最後半年的時間，你最想跟我一起去完成哪三件事？",
+    cn: "如果医生私下告诉我们只剩下最后半年的时间，你最想跟我一起去完成哪三件事？",
+    en: "If a doctor told us we only had six months left, what three things would you most want us to do together?"
   },
   {
-    tw: "當我們兩個人對某件重大事情的價值觀產生嚴重分歧時，我們該如何守護彼此的尊重？",
-    cn: "当我们两个人对某件重大事情的价值观产生严重分歧时，我们该如何守护彼此的尊重？",
-    en: "When we clash on a deeply held worldview or conviction, how can we keep our debate holy and respectful?"
+    tw: "當我們兩個人對一件大事的看法完全相反、誰也說服不了誰的時候，你覺得我們該怎麼辦？",
+    cn: "当我们两个人对一件大事的看法完全相反、谁也说服不了谁的时候，你觉得我们该怎么办？",
+    en: "When we strongly disagree on a major decision and neither can convince the other, how should we resolve it?"
   },
   {
-    tw: "回想你人生中遇過最感恩的一個奇蹟，那一刻有沒有讓你感受到某種冥冥之中的庇佑？",
-    cn: "回想你人生中遇过最感恩的一个奇迹，那一刻有没有让你感受到某种冥冥之中的庇佑？",
-    en: "Looking back at a narrow escape or unexpected blessing, did you sense the gentle hand of providence at work?"
+    tw: "回想你從小到大遇過最幸運的一件事，那時候你有沒有覺得是冥冥之中有人在幫你？",
+    cn: "回想你从小到大遇过最幸运的一件事，那时候你有没有觉得是冥冥之中有人在帮你？",
+    en: "Looking back at the luckiest break you've ever had, did it feel like some kind of quiet providence helped you out?"
   },
   {
-    tw: "如果能給我們未來的家庭定下一句「精神傳家寶」，你最希望孩子世世代代記住什麼？",
-    cn: "如果能给我们将来的家庭定下一句「精神传家宝」，你最希望孩子世世代代记住什么？",
-    en: "If we bequeathed a single sentence of spiritual inheritance to our descendants, what truth must never be lost?"
+    tw: "如果能給未來的孩子留下一句最重要的人生忠告，你最希望他一輩子記住什麼？",
+    cn: "如果能给未来的孩子留下一句最重要的人生忠告，你最希望他一辈子记住什么？",
+    en: "If you could pass down just one piece of life advice to our future kids, what would you want them to never forget?"
   },
   {
-    tw: "在你看來，人活在這個世界上最根本的意義，是體驗萬物的美好，還是學會如何去愛？",
-    cn: "在你看来，人活在这个世界上最根本的意义，是体验万物的美好，还是学会如何去爱？",
-    en: "In your deepest philosophy, is human purpose found in tasting the beauty of creation or learning radical love?"
+    tw: "如果這輩子我們過得很普通，沒有發大財也沒有買大房子，就這樣平淡過完一生，你會覺得遺憾嗎？",
+    cn: "如果这辈子我们过得很普通，没有发大财也没有买大房子，就这样平淡过完一生，你会觉得遗憾吗？",
+    en: "If we live a totally ordinary life without making a fortune or owning a huge house, would you look back with regret?"
   },
   {
-    tw: "當身邊的生活環境充滿喧囂與比較時，你通常是如何讓自己的內心回歸平靜與純粹的？",
-    cn: "当身边的生活环境充满喧嚣与比较时，你通常是如何让自己的内心回归平静与纯粹的？",
-    en: "When modern culture screams noise, status, and comparison, how do you detox your soul back to quiet contentment?"
+    tw: "當工作壓力大到懷疑人生的時候，你通常做什麼事情最能讓自己的心真正安靜下來？",
+    cn: "当工作压力大到怀疑人生的时候，你通常做什么事情最能让自己的心真正安静下来？",
+    en: "When work stress gets so overwhelming that you question everything, what reliably helps calm your mind?"
   },
   {
-    tw: "在我們倆這段感情裡，你有沒有感受過一種超越現實條件、近乎無條件的接納與包容？",
-    cn: "在我们俩这段感情里，你有没有感受过一种超越现实条件、近乎无条件的接纳与包容？",
-    en: "Have you felt a grace in our love that transcends worldly metrics—a total, unconditional 'I am safe here'?"
+    tw: "在我們相處的過程裡，有沒有哪一次你犯了錯，但我的反應讓你覺得很有安全感？",
+    cn: "在我们相处的过程中，有没有哪一次你犯了错，但我的反应让你觉得很有安全感？",
+    en: "Was there a time you messed up, but the way I reacted made you feel truly safe and supported?"
   },
   {
-    tw: "如果有一天我們面臨極端貧困或一無所有的困境，你相信我們兩個人依然能相濡以沫嗎？",
-    cn: "如果有一天我们面临极端贫困或一无所有的困境，你相信我们两个人依然能相濡以沫吗？",
-    en: "If a fire burned away every material asset we own tomorrow, do you believe our love would still sing in the ashes?"
+    tw: "要是身邊很好的朋友找你去投資，聽起來很好賺但有點踩在灰色地帶，你會怎麼跟我商量？",
+    cn: "要是身边很好的朋友找你去投资，听起来很好赚但有点踩在灰色地带，你会怎么跟我商量？",
+    en: "If a close friend pitched a lucrative investment that sits in a legal grey area, how would you talk it through with me?"
   },
   {
-    tw: "在你心目中，真正的「善良」究竟是一種性格上的軟弱，還是一種充滿勇氣的選擇？",
-    cn: "在你心目中，真正的「善良」究竟是一种性格上的软弱，还是一种充满勇气的选择？",
-    en: "Is authentic kindness a naive vulnerability that gets exploited, or the fiercest form of moral strength?"
+    tw: "在你心裡，對別人好是因為怕被討厭，還是單純覺得做人本來就該厚道？",
+    cn: "在你心里，对别人好是因为怕被讨厌，还是单纯觉得做人本来就该厚道？",
+    en: "In your heart, are you kind because you dislike being disliked, or because you genuinely believe in treating people decently?"
   },
   {
-    tw: "每當夜晚抬頭仰望滿天星斗時，那種宇宙的浩瀚與自身的渺小，帶給你的是釋懷還是敬畏？",
-    cn: "每当夜晚抬头仰望满天星斗时，那种宇宙的浩瀚与自身的渺小，带给你的是释怀还是敬畏？",
-    en: "Gazing into an ocean of stars, does our cosmic smallness bring you profound peace or breathless awe?"
+    tw: "在路上看到生活很辛苦的老人家在賣玉蘭花或口香糖，你會想買嗎？那時候你的心裡在想什麼？",
+    cn: "在路上看到生活很辛苦的老人家在卖玉兰花或口香糖，你会想买吗？那时候你的心里在想什么？",
+    en: "When you see an elderly person selling small items on the street in bad weather, do you buy something? What runs through your mind?"
   },
   {
-    tw: "在我們共同度過的時光中，哪一次我們彼此原諒、放下芥蒂的過程，最讓你感受到恩典？",
-    cn: "在我们共同度过的时光中，哪一次我们彼此原谅、放下芥蒂的过程，最让你感受到恩典？",
-    en: "When did an exchange of true forgiveness between us feel like a sacred weight being lifted from your ribs?"
+    tw: "回想我們吵過最兇的那一次架，後來是哪一句話或哪件事讓我們決定把這件事翻頁的？",
+    cn: "回想我们吵过最凶的那一次架，后来是哪一句话或哪件事让我们决定把这件事翻页的？",
+    en: "Thinking back to our worst fight, what specific word or gesture finally made us put down our guard and move on?"
   },
   {
-    tw: "你覺得在一個家庭中，最不可被犧牲的基石是什麼？是彼此的忠誠、坦白，還是共同信仰？",
-    cn: "你觉得在一个家庭中，最不可被牺牲的基石是什么？是彼此的忠诚、坦白，还是共同信仰？",
-    en: "What is the non-negotiable cornerstone of a thriving home: unflinching fidelity, transparency, or shared spirit?"
+    tw: "你覺得在一個家裡面，什麼東西是一旦被破壞就很難再修補回來的？",
+    cn: "你觉得在一个家里面，什么东西是一旦被破坏就很难再修补回来的？",
+    en: "In a family, what is the one thing that, once broken, is almost impossible to fully repair?"
   },
   {
-    tw: "面對社會上的不公不義或是苦難新聞時，你最常浮現的心情是憤怒、無力，還是想做點什麼？",
-    cn: "面对社会上的不公不义或是苦难新闻时，你最常浮现的心情是愤怒、无力，还是想做点什么？",
-    en: "When tragedy dominates the headlines, does your heart default to righteous anger, paralysis, or active compassion?"
+    tw: "在滑手機看到那些社會不公的新聞時，你通常心裡最大的感覺是什麼？",
+    cn: "在刷手机看到那些社会不公的新闻时，你通常心里最大的感觉是什么？",
+    en: "When scrolling past news about blatant social injustice, what is your most immediate gut reaction?"
   },
   {
-    tw: "如果有機會為這個世界留下一點微小而美好的改變，你最希望自己被記住的是哪種溫暖？",
-    cn: "如果有机会为这个世界留下一小而美好的改变，你最希望自己被记住的是哪种温暖？",
-    en: "When your footprints on this earth are finished, what legacy of quiet warmth do you hope lingers behind you?"
+    tw: "如果有一天我們不得不辦一場告別式，你希望大家聚在一起時，聊起我們是什麼樣的人？",
+    cn: "如果有一天我们不得不办一场告别式，你希望大家聚在一起时，聊起我们是什么样的人？",
+    en: "When our time eventually comes, what kind of people do you hope our friends and family remember us as?"
   },
   {
-    tw: "在你看來，兩個人相伴一生的婚姻誓言，究竟是一份法律契約，還是一份神聖的靈魂盟約？",
-    cn: "在你看来，两个人相伴一生的婚姻誓言，究竟是一份法律契约，还是一份神圣的灵魂盟约？",
-    en: "In your deepest soul, is marriage a practical social contract or a transcendent, sacred covenant?"
+    tw: "你覺得結婚對你來說，最核心的意義是找個人一起分擔生活，還是有別的？",
+    cn: "你觉得结婚对你来说，最核心的意义是找个人一起分担生活，还是有别的？",
+    en: "To you, is the heart of marriage having someone to share daily burdens with, or something else entirely?"
   },
   {
-    tw: "當你在人生十字路口感到徬徨無助時，你習慣向誰傾訴、或者如何尋求內在力量的指引？",
-    cn: "当你在人生十字路口感到彷徨无助时，你习惯向谁倾诉、或者如何寻求内在力量的指引？",
-    en: "When thick fog covers your path, do you seek stillness in prayer, mentor counsel, or intuitive meditation?"
+    tw: "當你在人生遇到很大的挫折想放棄時，你通常會找誰聊，還是自己一個人躲起來消化？",
+    cn: "当你在人生遇到很大的挫折想放弃时，你通常会找谁聊，还是自己一个人躲起来消化？",
+    en: "When you hit a rough patch and want to give up, do you lean on someone to vent, or retreat to process it alone?"
   },
   {
-    tw: "回顧我們倆這段緣分，你覺得是命運的巧妙安排，還是我們彼此在對的時間做了對的選擇？",
-    cn: "回顾我们俩这段缘分，你觉得是命运的巧妙安排，还是我们彼此在对的时间做了对的选择？",
-    en: "Looking at our love story, was it orchestrated by the unseen hand of destiny, or intentional choices made in season?"
+    tw: "回頭看我們當初認識的過程，你覺得這是純粹巧合，還是注定會遇見？",
+    cn: "回头看我们当初认识的过程，你觉得这是纯粹巧合，还是注定会遇见？",
+    en: "Looking back at how we first met, does it feel like a random coincidence or something that was meant to happen?"
   },
   {
-    tw: "在面對金錢誘惑或捷徑利益時，你覺得是什麼力量在牢牢守護著我們的道德清白？",
-    cn: "在面对金钱诱惑或捷径利益时，你觉得是什么力量在牢牢守护着我们的道德清白？",
-    en: "What internal fortress keeps our household from compromising integrity when lucrative shortcuts tempt us?"
+    tw: "如果買彩券中了兩億台幣，你覺得這筆錢會讓我們過得更輕鬆，還是會給我們帶來新的煩惱？",
+    cn: "如果买彩票中了五千万，你觉得这笔钱会让我们过得更轻松，还是会给我们带来新的烦恼？",
+    en: "If we unexpectedly won the lottery tomorrow, do you think it would make life easier or bring an entirely new set of headaches?"
   },
   {
-    tw: "你覺得我們倆在日常生活中，有沒有足夠花時間去感恩那些已經擁有、看似理所當然的恩惠？",
-    cn: "你觉得我们俩在日常生活中，有没有足够花时间去感恩那些已经拥有、看似理所当然的恩惠？",
-    en: "Do we pause frequently enough to bow our heads in grateful awe for all the quiet miracles already filling our lives?"
+    tw: "在日常生活中，有哪件我為你做的小事，是你雖然沒天天說、但心裡一直很感激的？",
+    cn: "在日常生活中，有哪件我为你做的小事，是你虽然没天天说、但心里一直很感激的？",
+    en: "What is an everyday thing I do for you that you rarely talk about, but quietly appreciate all the time?"
   },
   {
-    tw: "如果把我們這輩子最大的幸運做一個盤點，排在你心目中第一位的恩賜會是什麼？",
-    cn: "如果把我们这辈子最大的幸运做一个盘点，排在你心目中第一位的恩赐会是什么？",
-    en: "Counting your ultimate blessings across this lifetime, what single gift stands towering at the very top?"
+    tw: "回想你從小長大到現在，你覺得自己身上最值得感謝的一個優點是從誰身上學來的？",
+    cn: "回想你从小长大到现在，你觉得对自己身上最值得感谢的一个优点是从谁身上学来的？",
+    en: "Looking back at how you grew up, who taught you the personal quality you value most in yourself?"
   },
   {
-    tw: "在你看來，一個人要如何才能在面對衰老、病痛與未知時，依然保有從容優雅的姿態？",
-    cn: "在你看来，一个人要如何才能在面对衰老、病痛与未知时，依然保有从容优雅的姿态？",
-    en: "What spiritual maturity enables someone to face aging, illness, and the unknown with poise and quiet grace?"
+    tw: "當我們年紀越來越大、身體開始出現小毛病的時候，你最擔心自己會變成什麼樣子？",
+    cn: "当我们年纪越来越大、身体开始出现小毛病的时候，你最担心自己会变成什么样子？",
+    en: "As we get older and small health aches crop up, what kind of person do you most fear turning into?"
   },
   {
-    tw: "當我們經歷了世俗的風雨回到家時，你希望我們的客廳永遠飄盪著怎樣的一種寧靜？",
-    cn: "当我们经历了世俗的风雨回到家时，你希望我们的客厅永远飘荡着怎样的一种宁静？",
-    en: "Stepping inside from the brutal world, what quality of sanctuary calm must our home always radiate?"
+    tw: "每天下班回到家關上大門的那一刻，你最希望家裡帶給你的第一種感覺是什麼？",
+    cn: "每天下班回到家关上大门的那一刻，你最希望家里带给你的第一种感觉是什么？",
+    en: "The moment you shut the front door after work, what is the very first feeling you want our home to give you?"
   },
   {
-    tw: "在你看來，痛苦與苦難在人生的畫卷裡，究竟是毫無意義的折磨，還是雕刻靈魂的鑿刀？",
-    cn: "在你看来，痛苦与苦难在人生的画卷里，究竟是毫无意义的折磨，还是雕刻灵魂的凿刀？",
-    en: "In the grand architecture of character, is suffering merely pointless pain, or the chisel that carves depth?"
+    tw: "回想你以前吃過最難受的一次苦，現在回頭看，那件事有讓你在哪一方面變得更堅強嗎？",
+    cn: "回想你以前吃过最难受的一次苦，现在回头看，那件事有让哪一方面变得更坚强吗？",
+    en: "Looking back on the hardest season of your past, did going through that pain make you stronger in any clear way?"
   },
   {
-    tw: "如果在我們臨終之際回首這漫長的一生，你最希望我們倆能相視一笑、說出哪一句無憾的話？",
-    cn: "如果在我们临终之际回首这漫长的一生，你最希望我们俩能相视一笑、讲出哪一句无憾的话？",
-    en: "When the curtain falls on our earthly journey, what parting sentence of zero regret do you hope we whisper?"
+    tw: "如果我們兩個活到八十歲，你最希望我們坐在一起聊天時，能驕傲地說出哪一句話？",
+    cn: "如果我们两个活到八十岁，你最希望我们坐在一起聊天时，能骄傲地说出哪一句话？",
+    en: "If we make it to eighty together, what is one sentence you hope we can look back and say with pride?"
   },
   {
-    tw: "在你看來，這世上最深沈的一種信任，是不是即使彼此不在眼前，心底依然完全沒有懷疑？",
-    cn: "在你看来，这世上最深沉的一种信任，是不是即使彼此不在眼前，心底依然完全没有怀疑？",
-    en: "Is the purest form of fidelity knowing with ironclad serenity that your partner's devotion never waivers?"
+    tw: "如果借了一大筆錢給家裡親戚但對方一直拖著不還，影響到我們自己的生活，你會主張怎麼辦？",
+    cn: "如果借了一大笔钱给家里亲戚但对方一直拖着不还，影响到我们自己的生活，你会主张怎么办？",
+    en: "If a relative borrowed a significant sum from us and kept dodging payback, hurting our budget, how would you handle it?"
   },
   {
-    tw: "當我們兩個人坐在安靜的長椅上看著落日餘暉時，那一刻你心中最想感謝造物主的是什麼？",
-    cn: "当我们两个人坐在安静的长椅上看著落日余晖时，那一刻你心中最想感谢造物主的是什么？",
-    en: "Soaking in a crimson sunset side-by-side, what silent gratitude to heaven rises instinctively in your chest?"
+    tw: "哪一次我們兩個人一起出遊或是散步，安靜不說話時，反而讓你覺得特別舒服踏實？",
+    cn: "哪一次我们两个人一起出游或是散步，安静不说话时，反而让你觉得特别舒服踏实？",
+    en: "Was there a road trip or quiet walk where neither of us said a word, yet the silence felt completely comfortable?"
   },
   {
-    tw: "在我們追求世俗成就的過程中，你最希望我們如何提醒彼此「莫忘最初純粹的真心」？",
-    cn: "在我们追求世俗成就的过程中，你最希望我们如何提醒彼此「莫忘最初纯粹的真心」？",
-    en: "As career success compounds, how can we check each other so our egos never crowd out childlike humility?"
+    tw: "當我們為了工作或賺錢忙昏頭的時候，我該用什麼方式提醒你該停下來休息了？",
+    cn: "当我们为了工作或赚钱忙昏头的时候，我该用什么方式提醒你该停下来休息了？",
+    en: "When either of us gets consumed by work or chasing income, how can the other best gently hit the pause button?"
   },
   {
-    tw: "如果把我們相愛的故事獻給未來的兒孫閱讀，你最希望他們從中汲取到哪一種勇氣？",
-    cn: "如果把我们相爱的故事献给未来的儿孙阅读，你最希望他们从中汲取到哪一种勇气？",
-    en: "If our marriage legacy becomes folklore for future generations, what moral courage should it impart to them?"
+    tw: "如果未來的孩子長大談戀愛被傷害了，你最想跟他說的第一句話會是什麼？",
+    cn: "如果未来的孩子长大谈恋爱被伤害了，你最想跟他说的第一句话会是什么？",
+    en: "If our future kid gets their heart broken for the first time, what is the very first thing you'd want to say to them?"
   },
   {
-    tw: "在你看來，一個人對死亡的豁達與坦然，是不是取決於他在活著的時候是否真正好好愛過？",
-    cn: "在你看来，一个人对死亡的豁达与坦然，是不是取决于他在活着的时候是否真正好好爱过？",
-    en: "Does peace at the finish line of life come directly from having loved radically and held nothing back?"
+    tw: "如果醫生突然通知我們其中一位長輩需要長期臥床照顧，我們該怎麼分工才不會把彼此累垮？",
+    cn: "如果医生突然通知我们其中一位长辈需要长期卧床照顾，我们该怎么分工才不会把彼此累垮？",
+    en: "If an elderly parent suddenly needed full-time caregiving, how would we divide the load so neither of us burns out?"
   },
   {
-    tw: "當我們面對身邊至親的離世悲傷時，你希望我們用怎樣溫柔而堅韌的方式彼此扶持度過？",
-    cn: "当我们面对身边至亲的离世悲伤时，你希望我们用怎样温柔而坚韧的方式彼此扶持度过？",
-    en: "When grief empties a family chair, how can we hold each other's trembling hands without rushing the tears?"
+    tw: "面臨家裡長輩離世的大難關時，你希望我那幾天多幫你處理雜事，還是多在旁邊聽你哭？",
+    cn: "面临家里长辈离世的大难关时，你希望我那几天多帮你看顾杂事，还是多在旁边听你哭？",
+    en: "When dealing with the grief of losing a parent, would you prefer me handling logistics or simply holding space for your tears?"
   },
   {
-    tw: "在你看來，人與人之間最神聖的一種連結，是不是兩個人靈魂深處對同一個崇高目標的共鳴？",
-    cn: "在你看来，人与人之间最神圣的一种连接，是不是两个人灵魂深处对同一个崇高目标的共鸣？",
-    en: "Is the deepest bond between souls forged when two humans look up at the same North Star of transcendent purpose?"
+    tw: "你覺得兩個人要能一起走一輩子，最重要的共通點是脾氣合得來，還是做人原則一樣？",
+    cn: "你觉得两个人要能一起走一辈子，最重要的共通点是脾气合得来，还是做人原则一样？",
+    en: "For two people to go the distance, is it more essential to have compatible temperaments or shared core principles?"
   },
   {
-    tw: "如果在我們平凡的生活中能實踐一種微小但長久的善行，你最想帶著我每週一起做什麼？",
-    cn: "如果在我们平凡的生活中能实践一种微小但长久的善行，你最想带着我每周一起做什么？",
-    en: "What quiet, unsung weekly kindness—visiting the lonely, feeding the hungry—would you love us to practice?"
+    tw: "如果每個月挑一天跟著我去當志工，或者一起整理舊衣服捐出去，你會想參加嗎？",
+    cn: "如果每个月挑一天跟着我去当志工，或者一起整理旧衣服捐出去，你会想参加吗？",
+    en: "If we set aside one Saturday a month to volunteer or donate gently used clothes, would you be up for that?"
   },
   {
-    tw: "回顧我們克服重重阻礙走到今天的這段旅程，你有沒有哪一刻深深體會到「愛能遮掩一切過錯」？",
-    cn: "回顾我们克服重重阻碍走到今天的这段旅程，你有没有哪一刻深深体会到「爱能遮掩一切过错」？",
-    en: "Has our story proven to you that genuine love covers a multitude of flaws, misunderstandings, and missteps?"
+    tw: "回想我們在一起最辛苦的那陣子，是哪一句話或哪件事，讓你覺得我們一定能撐過去？",
+    cn: "回想我们在一起最辛苦的那阵子，是哪一句话或哪件事，让你觉得我们一定能撑过去？",
+    en: "During the toughest stretch of our relationship, what specific word or moment convinced you we'd pull through?"
   },
   {
-    tw: "在你看來，這輩子最重要的一場修行，是學會如何贏過別人，還是學會如何善待身邊的人？",
-    cn: "在你看来，这辈子最重要的一场修行，是学会如何赢过别人，还是学会如何善待身边的人？",
-    en: "What is life's ultimate curriculum: learning how to outcompete the world, or how to love the person beside you?"
+    tw: "當你身邊有朋友靠投機或不老實的手段賺了大錢過得很風光時，你心裡會有不平衡的感覺嗎？",
+    cn: "当你身边有朋友靠投机或不老实的手段赚了大钱过得很风光时，你心里会有不平衡的感觉吗？",
+    en: "When an acquaintance strikes it rich through shortcuts or shady moves, do you ever feel a twinge of resentment?"
   },
   {
-    tw: "當生活的大浪排山倒海而來時，你深信只要我們兩個人站在一起，任何風暴都終將過去嗎？",
-    cn: "当生活的大浪排山倒海而来时，你深信只要我们两个人站在一起，任何风暴都终将过去吗？",
-    en: "When heavy waves crash against our bow, do you anchor in the rock-solid certainty that storm clouds always pass?"
+    tw: "如果有一天我們在路上撿到一個裝滿幾萬塊現金但沒有任何證件的錢包，你會怎麼做？",
+    cn: "如果有一天我们在路上捡到一个装满几万块现金但没有任何证件的钱包，你会怎么做？",
+    en: "If we found an unmarked wallet on the street packed with cash and zero ID, what would you do first?"
   },
   {
-    tw: "在我們倆的生活中，如果能保留一個每天感恩默想的三分鐘，你希望那是放在清晨還是睡前？",
-    cn: "在我们俩的生活中，如果能保留一个每天感恩默想的三分钟，你希望那是放在清晨还是睡前？",
-    en: "If we sanctified three quiet minutes for gratitude daily, does it belong with the dawn coffee or before sleep?"
+    tw: "如果工作上主管要求你做一件違背你良心、但大家都在做的事，你會硬著頭皮做還是直接辭職？",
+    cn: "如果工作上主管要求你做一件违背你良心、但大家都在做的事，你会硬着头皮做还是直接辞职？",
+    en: "If your boss demanded you do something unethical that everyone else turns a blind eye to, would you comply or walk away?"
   },
   {
-    tw: "在你看來，什麼是比海誓山盟更堅固的承諾？是不是幾十年如一日平凡早晨為對方端上的一杯溫水？",
-    cn: "在你看来，什么是比海誓山盟更坚固的承诺？是不是几十年如一日平凡早晨为对方端上的一杯温水？",
-    en: "Isn't a steaming cup of tea brought to bed every morning for thirty years a stronger covenant than gilded poetry?"
+    tw: "你覺得人活著最大的安全感，是戶頭裡的數字，還是知道身邊隨時有人挺你？",
+    cn: "你觉得人活着最大的安全感，是户头里的数字，还是知道身边随时有人挺你？",
+    en: "Does genuine security come from the balance in your bank account, or knowing someone has your back no matter what?"
   },
   {
-    tw: "如果把我們這段婚姻當成一件需要終生守護的聖物，你最想為它築起怎樣一座堅不可摧的堡壘？",
-    cn: "如果把我们这段婚姻当成一件需要终生守护的圣物，你最想为它筑起怎样一座坚不可摧的堡垒？",
-    en: "If our marital bond is a sacred flame entrusted to us, what fortress of boundaries must shield it from worldliness?"
+    tw: "如果有一天你對目前的生活感到非常迷惘、想暫停工作半年去沈澱，你希望我怎麼回應你？",
+    cn: "如果有一天你对目前的生活感到非常迷惘、想暂停工作半年去调整，你希望我怎么回应你？",
+    en: "If you felt completely burned out and wanted to take six months off work to reset, how would you hope I'd respond?"
   },
   {
-    tw: "在你看來，一個人內心深處真正的富足，究竟是擁有多少外界資產，還是心中毫無匱乏之感？",
-    cn: "在你看来，一个人内心深处真正的富足，究竟是拥有多少外界资产，还是心中毫无匮乏之感？",
-    en: "Is true prosperity having a vault overflowing with gold, or a soul that genuinely sighs, 'I already have enough'?"
+    tw: "在我們的家庭裡，如果遇到重大災難或意外，你覺得我們第一個要聯絡和保護的人是誰？",
+    cn: "在我们的家庭里，如果遇到重大灾难或意外，你觉得我们第一个要联络和保护的人是谁？",
+    en: "If a natural disaster or major emergency hit our area, who is the very first person we should call and look after?"
   },
   {
-    tw: "面對身邊親友對名利地位的追逐，我們該如何守住自己心中那方清澈安詳的寧靜小天地？",
-    cn: "面对身边亲友对名利地位的追逐，我们该如何守住自己心中那方清澈安详的宁静小天地？",
-    en: "When the treadmill of materialism speeds up around us, what reminds us that simple joys are the richest treasures?"
+    tw: "回想小時候父母給你的教育裡，哪一條觀念是你長大後覺得「我以後絕對不要這樣對家人」的？",
+    cn: "回想小时候父母给你的教育里，哪一条观念是你长大后觉得「我以后绝对不要这样对家人」的？",
+    en: "Looking back at your upbringing, what is one parenting habit you vowed you would never repeat with our family?"
   },
   {
-    tw: "回想起我們曾一起站在雄偉大山或浩瀚大海前的那一刻，你有沒有感受到彼此靈魂的深深相通？",
-    cn: "回想起我们曾一起站在雄伟大山或浩瀚大海前的那一刻，你有没有感受到彼此灵魂的深深相通？",
-    en: "Standing before a thundering waterfall or mountain canyon, did our souls touch in silent communion with eternity?"
+    tw: "當看到身邊很要好的朋友突然生了大病或是發生意外，這件事對你的生活心態有什麼改變？",
+    cn: "当看到身边很要好的朋友突然生了大病或是发生意外，这件事对你的生活心态有什么改变？",
+    en: "When a close peer faces a sudden illness or accident, how does that shake up your perspective on everyday life?"
   },
   {
-    tw: "在你看來，寬恕一個曾經傷害過自己的人，最大的受益者究竟是對方，還是釋放了仇恨的自己？",
-    cn: "在你看来，宽恕一个曾经伤害过自己的人，最大的受益者究竟是对方，还是释放了仇恨的自己？",
-    en: "When we unlock the prison of resentment through forgiveness, isn't the freed prisoner our very own heart?"
+    tw: "你覺得我們兩個人如果突然中風或失能，在醫療急救的意願上，你希望對方幫你簽放棄急救同意書嗎？",
+    cn: "你觉得我们两个人如果突然重病或失能，在医疗急救的意愿上，你希望对方帮你签放弃急救同意书吗？",
+    en: "If either of us were terminally ill or incapacitated, do you want the other to sign a DNR order on your behalf?"
   },
   {
-    tw: "如果能給我們這段深情的旅程寫下一句註腳，你最希望它是一首激昂的交響樂，還是一曲悠長的讚歌？",
-    cn: "如果能给我们这段深情的旅程写下一句注脚，你最希望它是一首激昂的交响乐，还是一曲悠长的赞歌？",
-    en: "Is our lifelong love better scored as an epic triumphant symphony or an intimate, acoustic hymn of thanks?"
+    tw: "如果把我們相處的這些年拍成一部記錄片，你覺得整部片最打動人的核心主題會是什麼？",
+    cn: "如果把我们相处的这些年拍成一部纪录片，你觉得整部片最打动人的核心主题会是什么？",
+    en: "If someone made an honest documentary about our journey together, what would the central theme be?"
   },
   {
-    tw: "在面對未來的種種考驗時，你願不願意永遠相信：只要愛在我們中間，一切盼望就永遠不會熄滅？",
-    cn: "在面对未来的种种考验时，你愿不愿意永远相信：只要爱在我们中间，一切盼望就永远不会熄灭？",
-    en: "Through every twist in the road ahead, will you join me in anchoring to hope that never burns out?"
+    tw: "你覺得一個人在生活裡最難學會的功課，是承認自己錯了，還是學會開口向另一半求助？",
+    cn: "你觉得一个人在生活里最难学会的功课，是承认自己错了，还是学会开口向另一半求助？",
+    en: "What is tougher to learn in a partnership: admitting you were wrong, or asking the other person for help?"
   },
   {
-    tw: "此時此刻，當你握著我的手感受著掌心的溫度時，你的心底是不是也升起了一份深深的感恩與敬畏？",
-    cn: "此时此刻，当你握着我的手感受着掌心的温度时，你的心底是不是也升起了一份深深的感恩与敬畏？",
-    en: "Fingers curled into mine in this stillness, does a profound wave of gratitude for our shared breath wash over you?"
+    tw: "當我們兩個人同時在工作上遇到大挫折、心情都很差回到家時，我們該怎麼避免把氣出在對方身上？",
+    cn: "当我们两个人同时在工作上遇到大挫折、心情都很差回到家时，我们该怎么避免把气出在对方身上？",
+    en: "When both of us have a terrible day at work and come home irritated, how can we avoid taking it out on each other?"
   },
   {
-    tw: "在你看來，人的一生中最值得追求的榮譽，是功成名就，還是成為一個對伴侶全心全意的人？",
-    cn: "在你看来，人的一生中最值得追求的荣誉，是功成名就，还是成为一个对伴侣全心全意的人？",
-    en: "At the end of days, what title shines brighter: worldly executive, or one who loved their spouse with every drop of blood?"
+    tw: "在你看來，一對夫妻感情能好三十年，靠的主要是講話算話的責任感，還是彼此依然覺得對方可愛？",
+    cn: "在你看来，一对夫妻感情能好三十年，靠的主要是说话算话的责任感，还是彼此依然觉得对方可爱？",
+    en: "For a couple to stay tight for thirty years, is it mostly about honoring commitment or still finding each other charming?"
   },
   {
-    tw: "當我們兩個人回首凝望最初許下的誓言時，你覺得那份誓詞在今天聽起來是更加沉重還是更加甜蜜？",
-    cn: "当我们两个人回首凝望最初许下的誓言时，你觉得那份誓词在今天听起来是更加沉重还是更加甜蜜？",
-    en: "Hearing our vows echoed across the years today, do the words feel heavier with lived reality, or infinitely sweeter?"
+    tw: "如果長輩對我們的居住地點或生小孩計畫過度插手干涉，你覺得由誰出面去跟長輩溝通比較好？",
+    cn: "如果长辈对我们的居住地点或生小孩计划过度插手干涉，你觉得由谁出面去跟长辈沟通比较好？",
+    en: "If parents overstep boundaries on where we live or having kids, who should take the lead on setting clear boundaries?"
   },
   {
-    tw: "如果這輩子只能向天祈求一個祝福降臨在我們家，你最渴望得到的是世俗的順遂，還是靈魂的安康？",
-    cn: "如果这辈子只能向天祈求一个祝福降临在我们家，你最渴望得到的是世俗的顺遂，还是灵魂的安康？",
-    en: "If heaven granted only one umbrella of favor over our house, would you ask for worldly luck or an unbroken soul?"
+    tw: "如果只能向老天爺求一個願望保佑我們的家庭，你會求一家人身體健康，還是衣食無憂？",
+    cn: "如果只能向老天求一个愿望保佑我们的家庭，你会求一家人身体健康，还是衣食无忧？",
+    en: "If you could ask for just one blessing on our household, would you pick sound physical health or financial stability?"
   },
   {
-    tw: "在你看來，相伴幾十年的兩位老人之間，那種不需要言語就能讀懂彼此的心神相通，是不是世間最美的奇蹟？",
-    cn: "在你看来，相伴几十年的两位老人之间，那种不需要言语就能读懂彼此的心神相通，是不是世间最美的奇迹？",
-    en: "Watching an elderly couple communicate whole paragraphs with a single gentle nod—is there any greater miracle?"
+    tw: "當我們去菜市場買菜或小吃店結帳時，如果老闆多找了幾百塊給你，你通常會怎麼反應？",
+    cn: "当我们去菜市场买菜或小吃店结账时，如果老板多找了几百块给你，你通常会怎么反应？",
+    en: "If a busy cashier accidentally hands you back way too much change, what is your immediate reflex?"
   },
   {
-    tw: "面對生命中那些我們竭盡全力依然無法改變的缺憾，你學會如何帶著平靜的心去接納與放下它了嗎？",
-    cn: "面对生命中那些我们竭尽全力依然无法改变的缺憾，你学会如何带着平静的心去接纳与放下它了吗？",
-    en: "Have you found the serenity prayer's grace to accept the jagged realities we fought hard for but couldn't change?"
+    tw: "你覺得在日常生活中，誠實跟善良起衝突的時候，哪一個應該擺在第一位？",
+    cn: "你觉得在日常生活中，诚实跟善良起冲突的时候，哪一个应该摆在第一位？",
+    en: "In everyday situations where brutal honesty clashes with being kind, which should come first?"
   },
   {
-    tw: "如果把我們兩個人靈魂深處的信念凝結成一座燈塔，你希望這座燈塔為我們身邊的人照亮怎樣的前路？",
-    cn: "如果把我们两个人灵魂深处的信念凝结成一座灯塔，你希望这座灯塔为我们身边的人照亮怎样的前路？",
-    en: "If the quiet integrity of our marriage cast a beacon into our community, what safe harbor should it guide ships to?"
+    tw: "如果我們鄰居半夜常常大吵大鬧甚至傳出摔東西的聲音，你會想報警還是當作沒聽到？",
+    cn: "如果我们邻居半夜常常大吵大闹甚至传出摔东西的声音，你会想报警还是当作没听到？",
+    en: "If a neighbor frequently shouted and slammed things late at night, would you call the police or keep out of it?"
   },
   {
-    tw: "在你看來，真正的堅強是永不流淚、硬碰硬，還是心中懷抱著傷痕依然溫柔地擁抱這個世界？",
-    cn: "在你看来，真正的坚强是永不流泪、硬碰硬，还是心中怀抱着伤痕依然温柔地拥抱这个世界？",
-    en: "Does peak strength mean never weeping, or standing tall with battle scars and still choosing gentle tenderness?"
+    tw: "在你看來，一個人真正成熟的標誌，是懂得壓抑情緒，還是懂得把情緒好好說清楚？",
+    cn: "在你看来，一个人真正成熟的标志，是懂得压抑情绪，还是懂得把情绪好好说清楚？",
+    en: "What is the truer mark of emotional maturity: holding your temper in, or calmly putting your feelings into words?"
   },
   {
-    tw: "回想起我們相遇的那一天，你有沒有在某個瞬間突然覺得，一切都是宇宙中最好也最美麗的安排？",
-    cn: "回想起我们相遇的那一天，你有没有在某个瞬间突然觉得，一切都是宇宙中最好也最美丽的安排？",
-    en: "Remembering the random hour our orbits collided, does your spirit smile at how perfectly orchestrating life was?"
+    tw: "如果有一天我們因為意外突然失去了房子或現有的工作，你覺得我們第一步該做什麼？",
+    cn: "如果有一天我们因为意外突然失去了房子或现有的工作，你觉得我们第一步该做什么？",
+    en: "If a freak accident suddenly cost us our home or our steady jobs, what would our very first move be?"
   },
   {
-    tw: "在我們共同生活的這間屋子裡，如果能留下一個永遠不滅的精神象徵，你最希望那是仁愛、喜樂還是和平？",
-    cn: "在我们共同生活的这间屋子里，如果能留下一个永远不灭的精神象征，你最希望那是仁爱、喜乐还是和平？",
-    en: "What fruit of the spirit must permanently permeate the walls of our dwelling: unconditional love, joy, or unshakeable peace?"
+    tw: "當你看到年邁的父母頭髮越來越白、走路越來越慢時，你心裡最大的遺憾或牽掛是什麼？",
+    cn: "当你看到年迈的父母头发越来越白、走路越来越慢时，你心里最大的遗憾或牵挂是什么？",
+    en: "When you notice your parents graying and moving a little slower, what is your deepest worry or heartache?"
   },
   {
-    tw: "當你在長夜漫漫中感到身心孤寂時，只要一想起身邊熟睡的我，心底是不是就有一盞燈為你重新亮起？",
-    cn: "当你在长夜漫漫中感到身心孤寂时，只要一想起身边熟睡的我，心底是不是就有一盏灯为你重新亮起？",
-    en: "In cold midnights of the soul, does the steady breathing of my body beside you act like a nightlight in the dark?"
+    tw: "如果回顧你至今的人生，有沒有哪一個決定是你當時猶豫很久，但現在非常慶幸自己選對了的？",
+    cn: "如果回顾你至今的人生，有没有哪一个决定是你当时犹豫很久，但现在非常庆幸自己选对了的？",
+    en: "Looking back at your life so far, what choice did you agonizingly debate, but are now so grateful you made?"
   },
   {
-    tw: "在你看來，這世上最勇敢的一種生活態度，是不是看清了生活的殘酷真相之後，依然熱愛生活與身邊的人？",
-    cn: "在你看来，这世上最勇敢的一种生活态度，是不是看清了生活的残酷真相之后，依然热爱生活与身边的人？",
-    en: "Is Romain Rolland right: that only true heroism is seeing the world as it is, and still loving it fiercely?"
+    tw: "你覺得我們兩個人在一起生活，最珍貴的一種自由是各做各的事互不打擾，還是無話不聊？",
+    cn: "你觉得我们两个人在一起生活，最珍贵的一种自由是各做各的事互不打扰，还是无话不聊？",
+    en: "Living together, is the sweeter freedom doing your own thing side-by-side without guilt, or talking about anything?"
   },
   {
-    tw: "如果能給這世界上一對正在迷惘中摸索的年輕伴侶一句最真摯的忠告，你最想跟他們分享什麼？",
-    cn: "如果能给这世界上一对正在迷惘中摸索的年轻伴侣一句最真挚的忠告，你最想跟他们分享什么？",
-    en: "What hard-won revelation would you hand down to a young couple struggling through their first cold season?"
+    tw: "如果有一個機會可以讓我們的收入翻倍，但代價是每天加班到半夜且很少見面，你會願意嗎？",
+    cn: "如果有一个机会可以让我们的收入翻倍，但代价是每天加班到半夜且很少见面，你会愿意吗？",
+    en: "If a job offered to double our income but required working until midnight every day, would you want to take it?"
   },
   {
-    tw: "在我們相依為命的這條長路上，你最感激的是彼此在每一次人生抉擇時，始終把對方放在第一位嗎？",
-    cn: "在我们相依为命的这条长路上，你最感激的是彼此在每一次人生抉择时，始终把对方放在第一位吗？",
-    en: "Are you grateful that across every pivot, we consistently placed the sanctity of our 'we' above the selfish 'me'?"
+    tw: "在你看來，真正講義氣的朋友，是在你需要錢時立刻借你，還是敢當面指責你做錯事的人？",
+    cn: "在你看来，真正讲义气的朋友，是在你需要钱时立刻借你，还是敢当面指责你做错事的人？",
+    en: "Who is a truer friend: someone who wires you cash without hesitation, or someone who calls you out to your face?"
   },
   {
-    tw: "在你看來，什麼是比財富更加珍貴的傳家之寶？是不是兩顆乾淨純粹、相愛相敬的心？",
-    cn: "在你看来，什么是比财富更加珍贵的传家之宝？是不是两颗干净纯粹、相爱相敬的心？",
-    en: "Isn't leaving behind two hearts that loved without blemish a trillion times richer than leaving bank vaults?"
+    tw: "如果有一天你發現我無意間做了一件讓很失望的事，你希望自己怎麼開口問我？",
+    cn: "如果有一天你发现我无意间做了一件让你很失望的事，你希望自己怎么开口问我？",
+    en: "If you discovered I did something disappointing without realizing it, how would you approach asking me about it?"
   },
   {
-    tw: "當我們兩個人攜手走過幾十年的歲月時，你希望我們的眼神裡依然保有怎樣的光芒？",
-    cn: "当我们两个人携手走过几十年的岁月时，你希望我们的眼神里依然保有怎样的光芒？",
-    en: "Decades from this hour, what luminous flame of youthful tenderness do you want still dancing in our pupils?"
+    tw: "當我們兩個人年紀都很大、滿臉皺紋的時候，你覺得我們會因為什麼事情跟對方鬥嘴？",
+    cn: "当我们两个人年纪都很大、满脸皱纹的时候，你觉得我们会因为什么事情跟对方斗嘴？",
+    en: "When we're wrinkled and old, what silly daily habits do you picture us playfully bickering over?"
   },
   {
-    tw: "如果把我們這輩子一起走過的路畫成一條長長的朝聖之路，你覺得我們現在走到了哪一個美麗的驛站？",
-    cn: "如果把我们这辈子一起走过的路画成一条长长的朝圣之路，你觉得我们现在走到了哪一个美丽的驿站？",
-    en: "If marriage is a lifelong Camino pilgrimage, what breathtaking scenic overlook are we resting at right now?"
+    tw: "回想我們一起克服過最艱難的一場考驗，那時候有沒有哪一個畫面讓你記到現在？",
+    cn: "回想我们一起克服过最艰难的一场考验，那时候有没有哪一个画面让你记到现在？",
+    en: "Thinking back to the hardest trial we tackled together, is there a specific image burned into your memory?"
   },
   {
-    tw: "在你看來，這世間所有的相聚與分離中，最動人的一種相守，是不是生生世世的深情以赴？",
-    cn: "在你看来，这世间所有的相聚与分离中，最动人的一种相守，是不是生生世世的深情以赴？",
-    en: "In a world of fleeting connections, isn't sticking by someone through thick and thin the highest poetry written?"
+    tw: "你覺得做人如果太老實，在現在的社會上真的比較容易吃虧嗎？你會因此改變自己嗎？",
+    cn: "你觉得做人如果太老实，在现在的社会上真的比较容易吃亏吗？你会因此改变自己吗？",
+    en: "Do honest folks truly finish last in modern society? Does knowing that ever make you want to change your ways?"
   },
   {
-    tw: "此時此刻，當我們坐在這盞微光下凝視著彼此的臉龐時，你願不願意再次對我許下一生相守的承諾？",
-    cn: "此时此刻，当我们坐在这盏微光下凝视着彼此的脸庞时，你愿不愿意再次对我许下一生相守的承诺？",
-    en: "Bathed in this soft light, looking into the eyes that know you best, will you re-seal your promise to walk with me to the end?"
+    tw: "當家裡長輩提出一些不合時宜、甚至不講理的要求時，我們該怎麼保護好我們小家庭的界線？",
+    cn: "当家里长辈提出一些不合时宜、甚至不讲理的要求时，我们该怎么保护好我们小家庭的界线？",
+    en: "When extended family makes unreasonable demands, how can we protect the healthy boundaries of our household?"
   },
   {
-    tw: "在未來的漫長歲月裡，無論命運賜予我們的是花開滿地還是漫天風雪，你是否深信我們的心永遠同在？",
-    cn: "在未来的漫长岁月里，无论命运赐予我们的是花开满地还是漫天风雪，你是否深信我们的心永远同在？",
-    en: "Whether life brings blooming springs or blizzard winters, does your heart know we will face it as one soul?"
+    tw: "如果在路上看到有人發生車禍倒在地上，你敢第一時間下車去幫忙，還是會擔心被誣陷？",
+    cn: "如果在路上看到有人发生车祸倒在地上，你敢第一时间下车去帮忙，还是会担心被误会？",
+    en: "If you saw someone injured in a roadside accident, would you jump in to help or hesitate over liability?"
   },
   {
-    tw: "謝謝你成為我生命中最明亮的那道光。在即將入睡的這個夜晚，你最想對我留下的最後一句悄悄話是什麼？",
-    cn: "谢谢你成为我生命中最明亮的那道光。在即将入睡的这个夜晚，你最想对我留下的最后一句悄悄话是什么？",
-    en: "Thank you for being the steadiest light of my life. As we prepare to sleep, what final whisper do you leave in my heart?"
+    tw: "你覺得我們兩個人在面對人生的低潮時，誰的心態通常比較樂觀，誰比較容易鑽牛角尖？",
+    cn: "你觉得我们两个人在面对人生的低潮时，谁的心态通常比较乐观，谁比较容易钻牛角尖？",
+    en: "When life takes a hit, who between us tends to bounce back faster, and who is more prone to overthinking?"
   },
   {
-    tw: "在我們共同擁有的這份深情裡，你是否感受到了那種能超越時空與歲月的永恆力量？",
-    cn: "在我们共同拥有的这份深情里，你是否感受到了那种能超越时空与岁月的永恒力量？",
-    en: "In this love we share, do you feel that sacred spark that time, age, and eternity cannot extinguish?"
+    tw: "如果這輩子只能送給彼此一件看不見的禮物，你希望那是「無條件的信任」還是「永遠的耐心」？",
+    cn: "如果这辈子只能送给彼此一件看不见的礼物，你希望那是「无条件的信任」还是「永远的耐心」？",
+    en: "If you could gift our marriage one intangible quality, would you pick unquestioned trust or endless patience?"
   },
   {
-    tw: "如果把我們的一生比喻成一本書，你覺得我們現在共同寫下的，是不是最精彩動人的核心章節？",
-    cn: "如果把我们的一生比喻成一本书，你觉得我们现在共同写下的，是不是最精彩动人的核心章节？",
-    en: "If our union is an epic novel, aren't the chapters being inked right now the very heart and glory of the story?"
+    tw: "回想你這輩子哭得最慘的一次，那時候是因為受了委屈、失去了至親，還是心裡覺得無能為力？",
+    cn: "回想你这辈子哭得最惨的一次，那时候是因为受了委屈、失去了至亲，还是心里觉得无能为力？",
+    en: "Thinking back to the hardest cry of your life, was it from feeling wronged, losing someone, or sheer helplessness?"
   },
   {
-    tw: "在你看來，這世上最值得為之奮鬥一生的，是不是一個溫暖的家與一個真心相愛相惜的人？",
-    cn: "在你看来，这世上最值得为之奋斗一生的，是不是一个温暖的家与一个真心相爱相惜的人？",
-    en: "Is there anything on this globe more worthy of a lifetime's labor than building a warm home with the one you adore?"
+    tw: "如果我們去算命，算命師說我們未來會遇到一個大關卡，你會相信他的話還是笑笑帶過？",
+    cn: "如果我们去算命，算命师说我们未来会遇到一个大坎，你会相信他的话还是笑笑带过？",
+    en: "If a fortune teller warned us of a major crisis ahead, would you worry about it or laugh it off?"
   },
   {
-    tw: "當我們白髮蒼蒼牽手坐在老房子的門廊上時，你最希望微風拂過時帶給我們的是怎樣的安詳與滿足？",
-    cn: "当我们白发苍苍牵手坐在老房子的门廊上时，你最希望微风拂过时带给我们的是怎样的安详与满足？",
-    en: "When we sit as wrinkled sweethearts on the porch, what golden peace will the evening breeze blow through our hair?"
+    tw: "當你看到身邊有些夫妻因為做家事或帶小孩這些生活瑣事越走越遠，你覺得最根本的原因通常是什麼？",
+    cn: "当你看到身边有些夫妻因为做家务或带小孩这些生活琐事越走越远，你觉得最根本的原因通常是什么？",
+    en: "When couples drift apart over housework and childrearing stress, what do you think is the real root cause underneath?"
   },
   {
-    tw: "回顧我們一起走過的每一個腳印，你願不願意發自內心地跟我說一聲：「這一生有你，真的太好了」？",
-    cn: "回顾我们一起走过的每一个脚印，你愿不愿意发自内心地跟我讲一声：「这一生有你，真的太好了」？",
-    en: "Tracing every footprint behind us, can you look at me and say with your whole soul: 'Life with you has been a dream'?"
+    tw: "在你看來，人到底是因為得到了很多愛才變得大方，還是因為學會付出才懂得愛？",
+    cn: "在你看来，人到底是因为得到了很多爱才变得大方，还是因为学会付出才懂得爱？",
+    en: "Do people become generous because they received plenty of love, or do they learn to love by giving first?"
   },
   {
-    tw: "在所有的信仰與人生觀中，你最確信不疑的一條真理是什麼？是不是愛能勝過一切？",
-    cn: "在所有的信仰与人生观中，你最确信不疑的一条真理是什么？是不是爱能胜过一切？",
-    en: "Of all truths under the sun, do you stand on the conviction that steadfast love truly conquers and redeems all things?"
+    tw: "如果有一天我們不得不搬去一個完全陌生的偏遠地方生活，你覺得我們會過得更緊密還是更孤單？",
+    cn: "如果有一天我们不得不搬去一个完全陌生的偏远地方生活，你觉得我们会过得更紧密还是更孤单？",
+    en: "If we had to move to an isolated town where we knew nobody, would it bring us closer or make us feel lonely?"
   },
   {
-    tw: "如果在歲月長河的盡頭我們能再次相認，你最希望憑藉著我們彼此之間的哪一個眼神找到我？",
-    cn: "如果在岁月长河的尽头我们能再次相认，你最希望凭借着我们彼此之间的哪一个眼神找到我？",
-    en: "Across oceans of time, by what signature look in my eyes will your soul instantly recognize me across eternity?"
+    tw: "當你在外面被別人誤會或批評得很難聽時，你回到家最希望我說哪一句話來安慰你？",
+    cn: "当你在外面被别人误会或批评得很难听时，你回到家最希望我说哪一句话来安慰你？",
+    en: "If you got unfairly criticized or badmouthed by others, what words from me at home would soothe you most?"
   },
   {
-    tw: "在我們相知相守的這段歲月裡，你覺得自己在哪一個瞬間最深刻地體會到了「被神聖眷顧」的感動？",
-    cn: "在我们相知相守的这段岁月里，你觉得自己在哪一个瞬间最深刻地体会到了「被神圣眷顾」的感动？",
-    en: "In our years together, when did you feel most pierced by the awe of being miraculously blessed by heaven?"
+    tw: "在你看來，一個人願意開口跟你道歉，是因為他真的覺得自己錯了，還是因為他更珍惜這段關係？",
+    cn: "在你看来，一个人愿意开口跟你道歉，是因为他真的觉得自己错了，还是因为他更珍惜这段关系？",
+    en: "When someone apologizes, is it usually because they realize their fault, or because they care more about the bond?"
   },
   {
-    tw: "面對未來的每一個黎明與黃昏，你是否願意像此刻一樣，永遠堅定地守護在彼此的身旁？",
-    cn: "面对未来的每一个黎明与黄昏，你是否愿意像此刻一样，永远坚定地守护在彼此的身旁？",
-    en: "Through every sunrise and dusk granted to us, will you hold this ground and cherish this love with me?"
+    tw: "如果我們在路上看到有人在欺負弱小或流浪動物，你覺得我們該用什麼方式介入比較安全？",
+    cn: "如果我们在路上看到有人在欺负弱小或流浪动物，你觉得我们该用什么方式介入比较安全？",
+    en: "If we witnessed someone bullying a vulnerable person or stray animal, how could we safely step in?"
   },
   {
-    tw: "如果今晚要給我們的靈魂相遇下一個最深刻的定義，你最想對我說出的那一聲承諾會是什麼？",
-    cn: "如果今晚要给我们的灵魂相遇下一个最深刻的定义，你最想对我讲出的那一声音承诺会是什么？",
-    en: "To seal this sacred moment between our souls tonight, what final vow of eternal devotion do you whisper to me?"
+    tw: "當你對未來感到害怕或是睡不著覺的時候，你最希望我做些什麼來讓你感到安心？",
+    cn: "当你对未来感到害怕或是睡不着觉的时候，你最希望我做些什么来让你感到安心？",
+    en: "When anxiety about the future keeps you awake at night, what small thing can I do to bring comfort?"
   },
   {
-    tw: "在生命這趟不可思議的奇蹟旅程中，能與你相遇相愛相伴一生，是我這輩子最深沈的感激。你也是嗎？",
-    cn: "在生命这趟不可思议的奇迹旅程中，能与你相遇相爱相伴一生，是我这辈子最深沉的感激。你也是吗？",
-    en: "Walking this wild, miraculous existence as your partner is the supreme honor of my life. Does your heart feel it too?"
+    tw: "如果有一天我們兩個人在生活習慣上出現了嚴重的代溝，你願意為了我做出多大的讓步？",
+    cn: "如果有一天我们两个人在生活习惯上出现了严重的摩擦，你愿意为了我做出多大的让步？",
+    en: "If our daily living habits clash down the road, how much compromise are you willing to bring to the table?"
   },
   {
-    tw: "此生有幸與你結髮為伴，無論前路是繁花似錦還是雨雪霏霏，只要有你在身邊，我就一無所懼。好嗎？",
-    cn: "此生有幸与你结发为伴，无论前路是繁花似锦还是雨雪霏霏，只要有你在身边，我就一无所惧。好吗？",
-    en: "With your fingers laced in mine, I fear nothing the world can bring. We walk this path together, forever. Deal?"
+    tw: "你覺得在家庭開銷跟人情往來上，我們兩個人誰比較容易心軟、比較不懂得拒絕別人？",
+    cn: "你觉得在家庭开销跟人情往来上，我们两个人谁比较容易心软、比较不懂得拒绝别人？",
+    en: "When it comes to family favors or social obligations, who between us is softer-hearted and struggles to say no?"
   },
   {
-    tw: "當這趟深度的靈魂對話告一段落時，讓我牽著你的手，安靜地在彼此的呼吸聲中睡去，好嗎？",
-    cn: "当这趟深度的灵魂对话告一段落时，让我牵着你的手，安静地在彼此的呼吸声中睡去，好吗？",
-    en: "As we close this deck, take my hand. Let's drift off into dreams to the steady, peaceful rhythm of each other's breathing."
+    tw: "如果長輩留下一筆遺產引發兄弟姊妹吵架，你會主張爭取到底，還是為了家庭和氣主動退讓？",
+    cn: "如果长辈留下一笔遗产引发兄弟姐妹争执，你会主张争取到底，还是为了家庭和气主动退让？",
+    en: "If an inheritance sparked fights among siblings, would you stand on principle or step back to keep peace?"
   },
   {
-    tw: "如果把我們的一生化作一顆恆星，你覺得它在夜空中所綻放出的光芒，是不是就是我們相愛的溫度？",
-    cn: "如果把我们的一生化作一颗恒星，你觉得它在夜空中所绽放出的光芒，是不是就是我们相爱的温度？",
-    en: "If our lifetime together shone as a distant star in the galaxy, would its warm light be the enduring glow of our love?"
+    tw: "當你在路邊看到有人錢包掉了，你是那種會立刻追上去喊他的人，還是會默默撿起來送去警局？",
+    cn: "当你在路边看到有人钱包掉了，你是那种会立刻追上去喊他的人，还是会默默捡起来送去警局？",
+    en: "If you see a stranger drop their wallet, do you chase after them shouting, or quietly take it to a police post?"
   },
   {
-    tw: "願我們在歲月的淘洗之下，心靈永遠保有一份最初的澄澈與溫柔，這輩子不離不棄，直到永遠。",
-    cn: "愿我们在岁月的淘洗之下，心灵永远保有一份最初的澄澈与温柔，这辈子不离不弃，直到永远。",
-    en: "May the passing years only purify our tenderness, keeping us fiercely devoted, grounded, and in love until the end of days."
+    tw: "你覺得人到了什麼年紀，才會真正明白「一家人平平安安坐在一起吃飯」才是最大的幸福？",
+    cn: "你觉得人到了什么年纪，才会真正明白「一家人平平安安坐在一起吃饭」才是最大的幸福？",
+    en: "At what age do people truly grasp that sharing an ordinary meal with healthy loved ones is peak happiness?"
   },
   {
-    tw: "在你看來，人的一生最大的圓滿，是不是找到了那個懂你的脆弱、陪你笑傲江湖的靈魂伴侶？",
-    cn: "在你看来，人的一生最大的圆满，是不是找到了那个懂你的脆弱、陪你笑傲江湖的灵魂伴侣？",
-    en: "Isn't the highest wholeness finding the one who shelters your fragility and laughs through life's storms by your side?"
+    tw: "如果我們之中有一個人突然失業長達一年找不到工作，另一半該怎麼說話才不會傷到他的自尊？",
+    cn: "如果我们之中有一个人突然失业长达一年找不到工作，另一半该怎么说话才不会伤到他的自尊？",
+    en: "If one of us lost their job for a year, how could the other talk about daily finances without stinging their pride?"
   },
   {
-    tw: "當我們在未來的某一天步履蹣跚時，你是否願意繼續聽我講那些你早就聽過幾百遍的老故事？",
-    cn: "当我们在未来的某一天步履蹒跚时，你是否愿意继续听我讲那些你早就听过几百遍的老故事？",
-    en: "When we are old and forgetful, will you still smile patiently when I tell that same favorite story for the hundredth time?"
+    tw: "在你看來，生活裡那些看似不起眼的日常規律，比如一起吃早餐或道晚安，對一個家有多重要？",
+    cn: "在你看来，生活里那些看似不起眼的日常规律，比如一起吃早餐或道晚安，对一个家有多重要？",
+    en: "How vital are little daily rituals—like having breakfast or saying goodnight—to keeping a home together?"
   },
   {
-    tw: "在你看來，真正的幸福是不是就是此時此刻：一盞溫暖的燈、一張柔軟的床，以及眼前的你？",
-    cn: "在你看来，真正的幸福是不是就是此时此刻：一盏温暖的灯、一张柔软的床，以及眼前的你？",
-    en: "Isn't true paradise simply this very room: a warm golden lamp, a soft bed, and you sitting right across from me?"
+    tw: "當我們遇到挫折想抱怨的時候，你覺得抱怨真的能宣洩心情，還是反而會讓兩個人都變負面？",
+    cn: "当我们遇到挫折想抱怨的时候，你觉得抱怨真的能宣泄心情，还是反而会让两个人都变负面？",
+    en: "When frustrated, does venting genuinely relieve pressure, or end up pulling both of us into a negative spiral?"
   },
   {
-    tw: "如果歲月是一首長長的詩，你願意做我唯一的讀者與共同執筆人，一起寫到最後一行嗎？",
-    cn: "如果岁月是一首长长的诗，你愿意做我唯一的读者与共同执笔人，一起写到最后一行吗？",
-    en: "If life is an unfinished poem, will you be my only reader and fellow author, composing all the way to the final verse?"
+    tw: "如果有一天你必須為了照顧生病的我而放棄自己熱愛的嗜好或社交，你會心甘情願嗎？",
+    cn: "如果有一天你必须为了照顾生病的我而放弃自己热爱的爱好或社交，你会心甘情愿吗？",
+    en: "If you had to put your favorite hobbies on pause to nurse me through an illness, would you do so willingly?"
   },
   {
-    tw: "無論明天世界將會發生什麼，只要轉身能看見你熟睡的側臉，我就有了面對一切的勇氣。",
-    cn: "无论明天世界将会发生什么，只要转身能看见你熟睡的侧脸，我就有了面对一切的勇气。",
-    en: "No matter what headlines break tomorrow, turning to see your peaceful sleeping face gives me all the bravery I need."
+    tw: "在你看來，一個人如果對家人說話很不客氣但對外人很客氣，這算不算是一種虛偽？",
+    cn: "在你看来，一个人如果对家人说话很不客气但对外人很客气，这算不算是一种虚伪？",
+    en: "When someone is impatient with their spouse yet polite to outsiders, do you consider that a form of hypocrisy?"
   },
   {
-    tw: "在你看來，相伴到老的意義，是不是就是一起把這個不完美的世界，過成我們心中最溫暖的樣子？",
-    cn: "在你看来，相伴到老的意义，是不是就是一起把这个不完美的世界，过成我们心中最温暖的样子？",
-    en: "Isn't growing old together simply turning this flawed, wild world into our own private sanctuary of warmth?"
+    tw: "如果醫生跟我們說我們生小孩的機率非常低，你會想嘗試人工受孕、領養，還是兩個人好好過？",
+    cn: "如果医生跟我们说我们生小孩的概率非常低，你会想尝试试管、领养，还是两个人好好过？",
+    en: "If doctors said our odds of having kids were slim, would you want to try IVF, adopt, or enjoy life as just us two?"
   },
   {
-    tw: "謝謝你讓我明白：原來在這個世界上，真的有那麼一個人，願意無條件包容我所有的任性與不安。",
-    cn: "谢谢你让我明白：原来在这个世界上，真的有那么一个人，愿意无条件包容我所有的任性与不安。",
-    en: "Thank you for showing me that someone on this earth could love and shelter all my messy insecurities without flinching."
+    tw: "當你在路上看到有些老夫妻走路還會互相攙扶著，那樣的畫面會不會讓你對未來多了一份踏實？",
+    cn: "当你在路上看到有些老夫妻走路还会互相搀扶着，那样的画面会不会让你对未来多了一份踏实？",
+    en: "When you spot an elderly couple supporting each other while crossing the road, does that warm your view of our future?"
   },
   {
-    tw: "在我們共同構築的這座愛的小屋裡，你最想銘刻在門楣上的那一句神聖祝福是什麼？",
-    cn: "在我们共同构筑的这座爱的小屋里，你最想铭刻在门楣上的那一句神圣祝福是什么？",
-    en: "What sacred blessing of peace and mercy would you carve above the lintel of our home's front doorway?"
+    tw: "你覺得我們兩個人在面對外界的壓力和評價時，有沒有足夠做到「對外同一陣線」？",
+    cn: "你觉得我们两个人在面对外界的压力和评价时，有没有足够做到「对外同一阵线」？",
+    en: "When facing unsolicited opinions or social pressure from relatives, are we solid at presenting a united front?"
   },
   {
-    tw: "如果把我們所有的回憶串成一條珍珠項鍊，每一顆珍珠是不是都閃耀著我們相愛的淚水與歡笑？",
-    cn: "如果把我们所有的回忆串成一条珍珠项链，每一颗珍珠是不是都闪耀着我们相爱的泪水与欢笑？",
-    en: "If our years were strung like pearls on a necklace, wouldn't every bead glow with the beauty of tears and triumphs we shared?"
+    tw: "如果有一天我們家裡突然遇到了大麻煩，你最害怕發生的是什麼？那時候你希望我第一個動作是什麼？",
+    cn: "如果有一天我们家里突然遇到了大麻烦，你最害怕发生的是什么？那时候你希望我第一个动作是什么？",
+    en: "If a crisis blindsided our home, what would you fear most, and what first step would you want me to take?"
   },
   {
-    tw: "此時此刻，當這張卡片即將翻向終點時，請讓我緊緊擁抱你一分鐘，什麼話都不用說，好嗎？",
-    cn: "此时此刻，当这张卡片即将翻向终点时，请让我紧紧拥抱你一分钟，什么话都不用说，好吗？",
-    en: "As this card turns to mark the close of our reflection tonight, let me hold you tight for sixty silent seconds."
+    tw: "回想我們在一起到現在，你覺得自己在哪一方面受我的影響最大，甚至連自己都沒料到？",
+    cn: "回想我们在一起到现在，你觉得自己在哪一方面受我的影响最大，甚至连自己都没料到？",
+    en: "Since being together, in what area have you picked up my habits or perspective without even planning to?"
   },
   {
-    tw: "在漫漫人生路上，謝謝有你做我的避風港、我的戰友，和我一生摯愛的唯一靈魂伴侶。",
-    cn: "在漫漫人生路上，谢谢有你做我的避风港、我的战友，和我一生挚爱的唯一灵魂伴侣。",
-    en: "Thank you for being my harbor in the tempest, my fiercest comrade in the battle, and the only love of my soul."
+    tw: "如果能穿越時空對十年前正在徬徨的自己說一句話，你最想拍拍他的肩膀對他說什麼？",
+    cn: "如果能穿越时空对十年前正在迷茫的自己说一句话，你最想拍拍他的肩膀对他说什么？",
+    en: "If you could time-travel to your anxious 10-years-younger self, what would you pat them on the back and say?"
   },
   {
-    tw: "願我們的愛如盤石般堅定，如清泉般甘甜，無論時光如何流轉，依然熱烈純粹如初。",
-    cn: "愿我们的爱如磐石般坚定，如清泉般甘甜，无论时光如何流转，依然热烈纯粹如初。",
-    en: "May our love stand rooted like granite, sweet as mountain spring water, and burn as brightly fifty years from today."
+    tw: "在你看來，兩個人在一起過日子，最大的底氣是彼此相愛，還是兩個人都有解決問題的能力？",
+    cn: "在你看来，两个人在一起过日子，最大的底气是彼此相爱，还是两个人都有解决问题的能力？",
+    en: "In the long run, does the deepest confidence come from love, or both partners knowing how to solve problems?"
   },
   {
-    tw: "在愛的世界裡，你就是我走遍千山萬水之後，最想抵達也最不願離開的那個家。",
-    cn: "在爱的世界里，你就是我走遍千山万水之后，最想抵达也最不愿离开的那个家。",
-    en: "Across every road I have ever walked, you are the single destination my weary heart was searching for. You are my home."
+    tw: "當我們兩個人年老躺在床上回顧這一生時，你最希望我們慶幸自己沒有錯過什麼？",
+    cn: "当我们两个人年老躺在床上回顾这一生时，你最希望我们庆幸自己没有错过什么？",
+    en: "When we look back on our lives in our golden years, what do you most hope we're glad we didn't miss out on?"
   },
   {
-    tw: "今晚，讓我們帶著這份溫暖與踏實入眠。明天早晨當第一縷陽光灑落時，我們依然牽著彼此的手。",
-    cn: "今晚，让我们带着这份温暖与踏实入眠。明天早晨当第一缕阳光洒落时，我们依然牵着彼此的手。",
-    en: "Sleep tonight in absolute peace. When the first golden dawn arrives tomorrow, my hand will still be wrapped in yours."
+    tw: "如果只能選一件事代表我們家庭最重要的傳統，你希望是每週一次的家庭晚餐，還是一年一次的旅行？",
+    cn: "如果只能选一件事代表我们家庭最重要的传统，你希望是每周一次的家庭晚餐，还是一年一次的旅行？",
+    en: "If you had to pick one signature family tradition, would it be a weekly Sunday dinner or an annual getaway?"
   },
   {
-    tw: "在我們之間，沒有遺憾，沒有保留，只有一場想要和你好好走完一生的深情誓約。",
-    cn: "在我们之间，没有遗憾，没有保留，只有一场想要和你好好走完一生的深情誓约。",
-    en: "Between us: zero regrets, zero holding back, and an ironclad vow to live this beautiful, breathtaking life together."
+    tw: "今晚聊了這麼多心裡話，你有沒有哪一個很久沒說的心願，想趁現在跟我好好說出來？",
+    cn: "今晚聊了这么多心里话，你有没有哪一个很久没说的心愿，想趁现在跟我好好说出来？",
+    en: "After sharing all these real thoughts tonight, what is one quiet wish you've kept to yourself that you'd like to voice?"
   }
 ];

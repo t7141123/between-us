@@ -38,9 +38,9 @@ module.exports = [
     en: "If we wrote a wish list for our five-years-older selves, what's the first thing you'd put down?"
   },
   {
-    tw: "在你心目中，「把日子過好」最不可或缺的生活能力是什麼？",
-    cn: "在你心目中，「把日子过好」最不可或缺的生活能力是什么？",
-    en: "In your eyes, what is the single most essential habit for living life well together?"
+    tw: "在你心目中，兩個人要把日子過得舒服，最要緊的生活能力是什麼？",
+    cn: "在你心目中，两个人要把日子过得舒服，最要紧的生活能力是什么？",
+    en: "In your eyes, what is the single most essential daily habit for two people to live comfortably together?"
   },
   {
     tw: "如果我們家要建立一個每晚都會做的默契習慣，你希望是什麼？",

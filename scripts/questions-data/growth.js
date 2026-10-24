@@ -373,133 +373,133 @@ module.exports = [
     en: "Standing on the terrifying edge of a high-stakes challenge, what word of absolute faith from me steadies your pulse?"
   },
   {
-    tw: "在你看來，人生的後半場要活得精彩，最關鍵的究竟是保有對世界的熱愛，還是身邊相伴的人？",
-    cn: "在你看来，人生的后半场要活得精彩，最关键的究竟是保有对世界的热爱，还是身边相伴的人？",
-    en: "For the second half of life to be magnificent, which engine matters more: insatiable curiosity for the world, or who holds your hand?"
+    tw: "當我想學習一個新專長或考證照，但需要花很多下班時間和一筆學費時，你會怎麼看？",
+    cn: "当我想学习一个新专长或考证，但需要花很多下班时间和一笔学费时，你会怎么看？",
+    en: "If I wanted to pick up a new skill or certification that cost a good chunk of tuition and evening hours, how would you feel?"
   },
   {
-    tw: "如果我們可以一起養成一個每晚睡前感恩三個小細節的習慣，你覺得這會改變我們的生活嗎？",
-    cn: "如果我们能够一起养成一个每晚睡前感恩三个小细节的习惯，你觉得这会改变我们的生活吗？",
-    en: "If we made a sacred ritual of naming three specific appreciations before sleep every night, how would it shift our atmosphere?"
+    tw: "如果有一天我想辭掉現在穩定的工作去嘗試創業或轉行，你最希望我事先準備好什麼，你才會放心？",
+    cn: "如果有一天我想辞掉现在稳定的工作去尝试创业或转行，你最希望我事先准备好什么，你才会放心？",
+    en: "If I wanted to quit my stable job to launch a business or switch careers, what would I need in place for you to feel secure?"
   },
   {
-    tw: "在你看來，什麼樣的時刻最能展現一個人的格局與修養？是得意時的謙遜，還是逆境時的從容？",
-    cn: "在你看来，什么样的时刻最能展现一个人的格局与修养？是得意时的谦逊，还是逆境时的从容？",
-    en: "Where does nobility of soul shine clearest: carrying victory with modest humility, or meeting adversity with poise?"
+    tw: "當我被身邊的朋友或主管公開稱讚時，你心裡是真的替我高興，還是偶爾也會有一點被比較的壓力？",
+    cn: "当我被身边的朋友或主管公开称赞时，你心里是真的替我高兴，还是偶尔也会有一点被比较的压力？",
+    en: "When friends or bosses publicly sing my praises, do you feel pure joy, or does a tiny part of you feel comparison pressure?"
   },
   {
-    tw: "回顧我們倆一路走來的蛻變，你最感謝的是彼此在彼此身上播下了哪一顆善良而堅定的種子？",
-    cn: "回顾我们俩一路走来的蜕变，你最感谢的是彼此在彼此身上播下了哪一颗善良而坚定的种子？",
-    en: "Looking at the garden of our shared years, what seed of courage or kindness did you plant in me that bloomed into joy?"
+    tw: "在我們平時的相處裡，我有沒有哪一個無心的習慣或說話口氣，其實一直在打擊你的自信心？",
+    cn: "在我们平时的相处里，我有没有哪一个无心的习惯或说话口气，其实一直在打击你的自信心？",
+    en: "In our day-to-day rhythm, is there an offhand remark or habit of mine that inadvertently chips away at your confidence?"
   },
   {
-    tw: "當你在專注追求個人抱負時，你有沒有感受到我的存在始終是為你加分，而不是絆腳石？",
-    cn: "当你在专注追求个人抱负时，你有没有感受到我的存在始终是为你加分，而不是绊脚石？",
-    en: "Deep down, does our marriage feel like rocket fuel propelling your biggest ambitions, or an anchor dragging on your speed?"
+    tw: "如果我們其中一個人想每週固定挑兩天晚上去運動或上課，家裡的家事和煮飯要怎麼重新分擔？",
+    cn: "如果我们其中一个人想每周固定挑两天晚上去运动或上课，家里的家务和做饭要怎么重新分担？",
+    en: "If one of us dedicated two evenings a week to workouts or classes, how should we reshuffle chores and meals?"
   },
   {
-    tw: "在你看來，這世界上最浪漫的一種成就，是不是兩個人一起慢慢變老，而且一年比一年更有智慧？",
-    cn: "在你看来，这世界上最浪漫的一种成就，是不是两个人一起慢慢变老，而且一年比一年更有智慧？",
-    en: "Isn't the highest triumph in life growing old side-by-side, becoming wiser, kinder, and more deeply in love every single year?"
+    tw: "回想你出社會至今遇到過最挫折的一次工作經驗，那時候你是怎麼讓自己熬過來的？",
+    cn: "回想你出社会至今遇到过最挫折的一次工作经验，那时候你是怎么让自己熬过来的？",
+    en: "Thinking back to the most bruising professional setback of your career, how did you grit your teeth and claw through it?"
   },
   {
-    tw: "如果這輩子只能送給未來的自己一份最珍貴的心靈禮物，你希望那是內心深處永恆的平靜嗎？",
-    cn: "如果这辈子只能送给未来的自己一份最珍贵的心灵礼物，你希望那是内心深处永恒的平静吗？",
-    en: "If you could bequeath one supreme gift to your future soul, would it be an unshakeable, deeply rooted internal peace?"
+    tw: "當你看到我在某件事上一直拖延、一直逃避的時候，你通常會怎麼提醒我，才不會讓我聽了惱羞成怒？",
+    cn: "当你看到我在某件事上一直拖延、一直逃避的时候，你通常会怎么提醒我，才不会让我听了恼羞成怒？",
+    en: "When you notice me procrastinating on something important, how can you nudge me without making me defensive?"
   },
   {
-    tw: "在我們倆攜手前行的這趟旅程中，你最想對我說的一句感謝，是謝謝我陪伴你成為了怎樣的人？",
-    cn: "在我们俩携手前行的这趟旅程中，你最想对我讲出的一句感谢，是谢谢我陪伴你成为了怎样的人？",
-    en: "What is your deepest thank-you for the unique human being you have blossomed into because I walked beside you?"
+    tw: "如果有一天我們兩個人的收入差距變大，比如一個人賺的是另一個人的好幾倍，你會擔心我們的關係失衡嗎？",
+    cn: "如果有一天我们两个人的收入差距变大，比如一个人赚的是另一个人的好几倍，你会担心我们的关系失衡吗？",
+    en: "If our income gap widened significantly down the road, would you worry about that creating an imbalance between us?"
   },
   {
-    tw: "如果今晚我們要為彼此立下一個成長的約定，你最希望我們在明年此時共同見證怎樣的自己？",
-    cn: "如果今晚我们要为彼此立下一个成长的约定，你最希望我们在明年此时共同见证怎样的自己？",
-    en: "If we made a pact under the stars tonight, what refined version of ourselves do you want to toast to 365 days from now?"
+    tw: "你覺得你這幾年身上最大的改變，是變得更有主見了，還是變得比較懂得體諒別人？",
+    cn: "你觉得你这几年身上最大的改变，是变得更有主见了，还是变得比较懂得体谅别人？",
+    en: "Looking at who you've become recently, have you grown more assertive with your opinions, or more empathetic toward others?"
   },
   {
-    tw: "在愛的世界裡，你是否深信，最美好的愛情不是彼此凝視，而是兩個人攜手望向同一個遠方？",
-    cn: "在爱的世界里，你是否深信，最美好的爱情不是彼此凝视，而是两个人携手望向同一个远方？",
-    en: "Do you believe Saint-Exupéry was right: that love does not consist in gazing at each other, but looking outward in the same direction?"
+    tw: "在你的夢想清單裡，有沒有哪一件事情是你覺得如果這輩子沒去試過一次，老了絕對會後悔的？",
+    cn: "在你的梦想清单里，有没有哪一件事情是你觉得如果这辈子没去试过一次，老了绝对会后悔的？",
+    en: "On your personal bucket list, what is the one daring thing you'd deeply regret never attempting when you're eighty?"
   },
   {
-    tw: "此時此刻，當你審視自己的內心時，你覺得自己準備好迎接人生下一個階段的破繭而出了嗎？",
-    cn: "此时此刻，当你审视自己的内心时，你觉得自己准备好迎接人生下一个阶段的破茧而出了吗？",
-    en: "Taking a deep breath right now, do you feel the quiet readiness stirring within you to step into your next chapter?"
+    tw: "當你遇到不懂的事情或是犯蠢的時候，你在我面前會覺得不好意思、想硬凹，還是可以很大方地承認？",
+    cn: "当你遇到不懂的事情或是犯蠢的时候，你在我面前会觉得不好意思、想硬撑，还是可以很大方地承认？",
+    en: "When you don't understand something or do something silly, do you feel an urge to bluff, or can you easily laugh it off with me?"
   },
   {
-    tw: "在未來的漫長歲月裡，無論狂風暴雨如何吹襲，你最堅信我們兩個人會永遠一起學習與進步嗎？",
-    cn: "在未来的漫长岁月里，无论狂风暴雨如何吹袭，你最坚信我们两个人会永远一起学习与进步吗？",
-    en: "Whatever storms rage across the horizon, do you have absolute faith that we will never stop growing together?"
+    tw: "如果我想自己一個人去單獨旅行三天兩夜放空，你會答應嗎？你會希望我每天怎麼跟你報備？",
+    cn: "如果我想自己一个人去单独旅行三天两夜放空，你会答应吗？你会希望我每天怎么跟你报备？",
+    en: "If I wanted to take a solo 3-day getaway just to recharge in silence, would you support it? How would you like me to check in?"
   },
   {
-    tw: "當你望向身邊的我時，你是否看見了一個願意為你赴湯蹈火、陪伴你探索星辰大海的靈魂伴侶？",
-    cn: "当你望向身边的我时，你是否看见了一个愿意为你赴汤蹈火、陪伴你探索星辰大海的灵魂伴侣？",
-    en: "Looking at me across this table, do you see a devoted co-pilot ready to cross oceans and uncharted frontiers with you?"
+    tw: "你覺得我們兩個人在面對壓力的時候，誰比較容易發脾氣，誰比較習慣冷處理？我們要怎麼改善？",
+    cn: "你觉得我们两个人你在面对压力的时候，谁比较容易发脾气，谁比较习惯冷处理？我们要怎么改善？",
+    en: "Under heavy stress, who snaps faster and who tends to stonewall? How can we meet somewhere healthier in the middle?"
   },
   {
-    tw: "如果把我們相伴相生的成長寫成一首詩，你希望這首詩最動人的高潮是哪一段奮不顧身的堅持？",
-    cn: "如果把我们相伴相生的成长写成一首诗，你希望这首诗最动人的高潮是哪一段奋不顾身的坚持？",
-    en: "If our mutual transformation were written as an epic poem, what moment of fierce resilience would be its crowning verse?"
+    tw: "回想你以前的脾氣，你覺得跟我在一起生活之後，你是被磨平了稜角，還是變得更有安全感了？",
+    cn: "回想你以前的脾气，你觉得跟我在一起生活之后，你是被磨平了脾气，还是变得更有安全感了？",
+    en: "Compared to your temper before we met, do you feel living together softened your sharp edges or gave you true security?"
   },
   {
-    tw: "在愛與成長的交會點上，你最想對那個最初與我相遇的自己，說上一句怎樣溫暖而驕傲的讚美？",
-    cn: "在爱与成长的交会点上，你最想对那个最初与我相遇的自己，讲出一句怎样温暖而骄傲的赞美？",
-    en: "Standing where you stand today, what proud words of encouragement would you whisper to the person who first met me?"
+    tw: "在我們兩個人之間，如果遇到要公開發言或跟外人協調事情的場合，你通常希望誰站出來？",
+    cn: "在我们两个人之间，如果遇到要公开发言或跟外人协调事情的场合，你通常希望谁站出来？",
+    en: "When we need to negotiate with landlords, mechanics, or speak in public, who do you naturally prefer takes the lead?"
   },
   {
-    tw: "如果要給我們倆未來的自我蛻變下一個莊嚴的承諾，你想對我許下一個怎樣共同向上的諾言？",
-    cn: "如果要给我们俩未来的自我蜕变下一个庄严的承诺，你想对我许下一个怎样共同向上的诺言？",
-    en: "What sacred vow of lifelong mutual elevation do you want to stamp into the bedrock of our union tonight?"
+    tw: "如果你發現我最近整個人狀態很差、眼神很空洞，你會怎麼主動關心我，而不是只問一句「你還好嗎」？",
+    cn: "如果你发现我最近整个人状态很差、眼神很空洞，你会怎么主动关心我，而不是只问一句「你还好吗」？",
+    en: "If you noticed me completely depleted and zoning out, how would you reach out beyond just asking, 'Are you okay'?"
   },
   {
-    tw: "在你看來，能夠在一個人的陪伴下安心做自己，同時又渴望成為一個更好的人，這是不是最頂級的幸福？",
-    cn: "在你看来，能够在一个人的陪伴下安心做自己，同时又渴望成为一个更好的人，这辈子是不是最顶级的幸福？",
-    en: "Is there any greater luxury on earth than feeling utterly safe to be your flawed self, while inspired to become even better?"
+    tw: "你覺得我們兩個人現在的生活節奏，有沒有留給彼此足夠的個人空間去安靜做自己的事？",
+    cn: "你觉得我们两个人现在的生活节奏，有没有留给彼此足够的个人空间去安静做自己的事？",
+    en: "With our current weekly routines, do we give each other enough breathing room to just be alone and do our own thing?"
   },
   {
-    tw: "此時此刻，當這張卡片即將翻過去時，你最想從我這裡得到的一記堅定的擊掌，還是一個深情的擁抱？",
-    cn: "此时此刻，当这张卡片即将翻过去时，你最想从我这里得到的一记坚定的击掌，还是一个深情的拥抱？",
-    en: "As this card turns, do you need a fierce high-five of shared ambition, or a long, tender embrace of unwavering belief?"
+    tw: "如果要戒掉一個目前最浪費你時間的壞習慣，你最希望戒掉哪一個？你希望我怎麼監督你？",
+    cn: "如果要戒掉一个目前最浪费你时间的新坏习惯，你最希望戒掉哪一个？你希望我怎么监督你？",
+    en: "If you could eliminate your single biggest time-wasting bad habit, which one would it be, and how can I help keep you honest?"
   },
   {
-    tw: "在漫長的一生中，只要我們彼此相扶相持，你是否深信沒有任何一座高山是我們無法共同跨越的？",
-    cn: "在漫长的一生中，只要我们彼此相扶相持，你是否深信没有任何一座高山是我们无法共同跨越的？",
-    en: "Standing side by side, hand in hand, is there any mountain peak on this earth too steep for us to conquer together?"
+    tw: "回想過去這半年，有沒有哪一個瞬間你為自己感到很驕傲，而且立刻想跟我分享？",
+    cn: "回想过去这半年，有没有哪一个瞬间你为自己感到很骄傲，而且立刻想跟我分享？",
+    en: "Over the last six months, what was a quiet moment where you felt genuinely proud of yourself and couldn't wait to tell me?"
   },
   {
-    tw: "如果把我們相識至今的所有進步匯聚成一句最真切的心聲，今晚你最想對我說的那句話會是什麼？",
-    cn: "如果把我们相识至今的所有进步汇聚成一句最真切的心声，今晚你最想对我讲出的那句话会是什么？",
-    en: "Distilling all our growth into one final pure heartbeat tonight, what is the single sentence you want to leave with me?"
+    tw: "你希望五年後的自己，在心態上最大的進步是什麼？不要那麼焦慮、還是更能勇敢拒絕別人？",
+    cn: "你希望五年后的自己，在心态上最大的进步是什么？不要那么焦虑、还是更能勇敢拒绝别人？",
+    en: "Five years from today, what personal shift would you be proudest of: worrying less, or getting braver at saying no?"
   },
   {
-    tw: "在我們兩個人共同書寫的生命故事裡，你最期待下一章節綻放出怎樣充滿勇氣與光芒的新篇章？",
-    cn: "在我们两个人共同书写的生命故事里，你最期待下一章节绽放出怎样充满勇气与光芒的新篇章？",
-    en: "In the unfolding epic of our joint life story, what brilliant new chapter of bravery are you most eager to turn the page to?"
+    tw: "當你在工作中遇到很難搞的同事或主管時，你最希望我聽你抱怨，還是幫你分析應對方法？",
+    cn: "当你在工作中遇到很难搞的同事或主管时，你最希望我听你抱怨，还是帮你分析应对方法？",
+    en: "When a coworker or toxic boss drives you crazy, do you want me to just listen to you vent, or brainstorm practical solutions?"
   },
   {
-    tw: "如果成長是一場永無止境的修行，你是否願意牽著我的手，在這條路上一直堅定地並肩走下去？",
-    cn: "如果成长是一场永无止境的修行，你是否愿意牵着我的手，在这条路上一直坚定地并肩走下去？",
-    en: "If becoming who we were born to be is a lifelong pilgrimage, will you promise to keep your fingers laced in mine all the way?"
+    tw: "在我們相處的這些年裡，有沒有哪一次我的建議，真的幫你避開了一個大坑或做對了決定？",
+    cn: "在我们相处的这些年里，有没有哪一次我的建议，真的帮你避开了一个大坑或做对了决定？",
+    en: "Looking back at our shared years, when did a piece of honest advice from me actually save you from a major blunder?"
   },
   {
-    tw: "當我們今晚相視而笑、準備入睡時，你的心底是不是已經充滿了對明天展開全新冒險的踏實期待？",
-    cn: "当我们今晚相视而笑、准备入睡时，你的心底是不是已经充满了对明天展开全新冒险的踏实期待？",
-    en: "As we turn out the light tonight, does your soul feel anchored with calm, joyful anticipation for the dawn ahead?"
+    tw: "你覺得我們兩個人在面對新科技或新生活方式時，誰的心態比較開放，誰比較容易抗拒改變？",
+    cn: "你觉得我们两个人我们在面对新科技或新生活方式时，谁的心态比较开放，谁比较容易抗拒改变？",
+    en: "When adopting new tech tools or changing household ways, who is quicker to adapt and who drags their feet?"
   },
   {
-    tw: "在我們共同擁有的無數個明天裡，你最渴望看見我為你綻放出怎樣自信耀眼的笑容？",
-    cn: "在我们共同拥有的无数个明天里，你最渴望看见我为你绽放出怎样自信耀眼的笑容？",
-    en: "Across all our tomorrows, what radiant smile of breakthrough and victory do you most long to see spreading across my face?"
+    tw: "當你心裡有想做的事卻因為害怕失敗而猶豫不決時，你最希望我推你一把，還是陪你待在舒適圈？",
+    cn: "当你心里有想做的事却因为害怕失败而犹豫不决时，你最希望我推你一把，还是陪你待在舒适圈？",
+    en: "When you have a project you're scared to launch, do you need me to give you a loving kick in the butt, or validate your caution?"
   },
   {
-    tw: "如果能給這場關於成長的對話畫下一個最完美的句點，你最想對我說的一句悄悄話是什麼？",
-    cn: "如果能给这场关于成长的对话画下一个最完美的句点，你最想对我讲出的一句悄悄话是什么？",
-    en: "To put the golden ribbon on this conversation about growth, what tender secret whisper will you leave in my ear?"
+    tw: "如果我們可以一起培養一個新的健康習慣，比如每天早起半小時或戒掉含糖飲料，你會想挑戰哪一個？",
+    cn: "如果我们可以一起培养一个新的健康习惯，比如每天早起半小时或戒掉含糖饮料，你会想挑战哪一个？",
+    en: "If we teamed up on one simple healthy upgrade—like waking up 30 minutes earlier or cutting sugary drinks—which would you pick?"
   },
   {
-    tw: "謝謝你一直陪在我身邊，見證了我所有的青澀、掙扎與蛻變。你願意繼續陪我見證下一個十年嗎？",
-    cn: "谢谢你一直陪在我身边，见证了我所有的青涩、挣扎与蜕变。你愿意继续陪我见证下一个十年吗？",
-    en: "Thank you for walking with me through every clumsy stumble, doubt, and triumph. Will you walk the next ten years with me?"
+    tw: "謝謝你一直陪著我經歷生活的高低起伏。回看剛認識時的自己，你覺得現在的自己哪裡變成熟了？",
+    cn: "谢谢你一直陪着我经历生活的高低起伏。回看刚认识时的自己，你觉得现在的自己哪里变成熟了？",
+    en: "Thank you for riding all of life's twists and turns with me. Compared to when we first met, where do you feel most grown up?"
   }
 ];

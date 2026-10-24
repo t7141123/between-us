@@ -38,8 +38,8 @@ module.exports = [
     en: "If we competed as a duo on The Amazing Race, at what obstacle would our communication comically fall apart?"
   },
   {
-    tw: "每次逛夜市、超市或是超商時，你有一進去就忍不住抓進籃子裡的「靈魂零食」嗎？",
-    cn: "每次逛夜市、超市或是便利店时，你有一进去就忍不住抓进篮子里的「灵魂零食」吗？",
+    tw: "每次逛夜市、超市或是超商時，你有一進去就忍不住抓進籃子裡的「必買零食」嗎？",
+    cn: "每次逛夜市、超市或是便利店时，你有一进去就忍不住抓进篮子里的「必买零食」吗？",
     en: "What guilty-pleasure convenience store junk food can you never walk past without throwing in the basket?"
   },
   {
@@ -248,8 +248,8 @@ module.exports = [
     en: "At the beach, are you happily parked under the umbrella with a cold drink, or body-surfing the tide?"
   },
   {
-    tw: "你覺得我們倆共同生活至今，哪一個默契小動作最能證明我們已經變成靈魂老夫老妻了？",
-    cn: "你觉得我们俩共同生活至今，哪一个默契小动作最能证明我们已经变成灵魂老夫老妻了？",
+    tw: "你覺得我們倆共同生活至今，哪一個默契小動作最能證明我們已經變成真正的老夫老妻了？",
+    cn: "你觉得我们俩共同生活至今，哪一个默契小动作最能证明我们已经变成真正的老夫老妻了？",
     en: "What unglamorous domestic habit proves beyond doubt that we've graduated to comfortable old-married-couple status?"
   },
   {
