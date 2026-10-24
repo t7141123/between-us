@@ -25,7 +25,11 @@ import { I18nService } from './services/i18n';
 import { StorageService } from './services/storage';
 import { TelemetryService } from './services/telemetry';
 import { PaymentService } from './services/payment';
-import { MARRIAGE_PACK_DATA, SENSUAL_PACK_DATA } from './constants/packs';
+import {
+  MARRIAGE_PACK_DATA,
+  PARENTING_PACK_DATA,
+  SENSUAL_PACK_DATA,
+} from './constants/packs';
 
 import { HeaderBar } from './components/HeaderBar';
 import { CategorySelect } from './components/CategorySelect';
@@ -111,10 +115,88 @@ export const MainApp: React.FC = () => {
 
   // Rebuild deck when locale or category changes
   useEffect(() => {
+    if (currentCategory === 'pack_sensual') {
+      const isUnlocked = unlockedPacks.includes('sensual');
+      const packQuestions = SENSUAL_PACK_DATA.map((item, idx) => ({
+        id: `sensual-${idx + 1}`,
+        categoryKey: 'intimacy' as const,
+        categoryLabel: I18nService.t(locale, 'pack_sensual_title', '🔥 深夜私語'),
+        text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
+        index: idx + 1,
+      }));
+      if (isUnlocked) {
+        setDeck(shuffleDeck(packQuestions));
+      } else {
+        const trials = packQuestions.slice(0, 3);
+        const lockCard: QuestionEntry = {
+          id: 'sensual-lock',
+          categoryKey: 'intimacy' as const,
+          categoryLabel: I18nService.t(locale, 'pack_sensual_title', '🔥 深夜私語'),
+          text: I18nService.t(locale, 'trial_ended_hint'),
+          index: 4,
+        };
+        setDeck([...trials, lockCard]);
+      }
+      setCurrentIndex(0);
+      return;
+    }
+
+    if (currentCategory === 'pack_marriage') {
+      const isUnlocked = unlockedPacks.includes('marriage');
+      const packQuestions = MARRIAGE_PACK_DATA.map((item, idx) => ({
+        id: `marriage-${idx + 1}`,
+        categoryKey: 'vision' as const,
+        categoryLabel: I18nService.t(locale, 'pack_marriage_title', '💍 婚姻誓約前夕'),
+        text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
+        index: idx + 1,
+      }));
+      if (isUnlocked) {
+        setDeck(shuffleDeck(packQuestions));
+      } else {
+        const trials = packQuestions.slice(0, 3);
+        const lockCard: QuestionEntry = {
+          id: 'marriage-lock',
+          categoryKey: 'vision' as const,
+          categoryLabel: I18nService.t(locale, 'pack_marriage_title', '💍 婚姻誓約前夕'),
+          text: I18nService.t(locale, 'trial_ended_hint'),
+          index: 4,
+        };
+        setDeck([...trials, lockCard]);
+      }
+      setCurrentIndex(0);
+      return;
+    }
+
+    if (currentCategory === 'pack_parenting') {
+      const isUnlocked = unlockedPacks.includes('parenting');
+      const packQuestions = PARENTING_PACK_DATA.map((item, idx) => ({
+        id: `parenting-${idx + 1}`,
+        categoryKey: 'growth' as const,
+        categoryLabel: I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母'),
+        text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
+        index: idx + 1,
+      }));
+      if (isUnlocked) {
+        setDeck(shuffleDeck(packQuestions));
+      } else {
+        const trials = packQuestions.slice(0, 3);
+        const lockCard: QuestionEntry = {
+          id: 'parenting-lock',
+          categoryKey: 'growth' as const,
+          categoryLabel: I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母'),
+          text: I18nService.t(locale, 'trial_ended_hint'),
+          index: 4,
+        };
+        setDeck([...trials, lockCard]);
+      }
+      setCurrentIndex(0);
+      return;
+    }
+
     const rawQuestions = I18nService.getQuestions(locale, currentCategory);
     setDeck(shuffleDeck(rawQuestions));
     setCurrentIndex(0);
-  }, [locale, currentCategory, shuffleDeck]);
+  }, [locale, currentCategory, shuffleDeck, unlockedPacks]);
 
   const currentQuestion = useMemo(() => {
     if (deck.length === 0) return null;
@@ -229,6 +311,30 @@ export const MainApp: React.FC = () => {
         setDeck([...trials, lockCard]);
       }
       setCurrentIndex(0);
+    } else if (packId === 'parenting') {
+      const isUnlocked = unlockedPacks.includes('parenting');
+      const packQuestions = PARENTING_PACK_DATA.map((item, idx) => ({
+        id: `parenting-${idx + 1}`,
+        categoryKey: 'growth' as const,
+        categoryLabel: I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母'),
+        text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
+        index: idx + 1,
+      }));
+
+      if (isUnlocked) {
+        setDeck(shuffleDeck(packQuestions));
+      } else {
+        const trials = packQuestions.slice(0, 3);
+        const lockCard: QuestionEntry = {
+          id: 'parenting-lock',
+          categoryKey: 'growth' as const,
+          categoryLabel: I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母'),
+          text: I18nService.t(locale, 'trial_ended_hint'),
+          index: 4,
+        };
+        setDeck([...trials, lockCard]);
+      }
+      setCurrentIndex(0);
     }
   }, [locale, playClick, shuffleDeck, unlockedPacks]);
 
@@ -258,6 +364,20 @@ export const MainApp: React.FC = () => {
         id: `marriage-${idx + 1}`,
         categoryKey: 'vision' as const,
         categoryLabel: I18nService.t(locale, 'pack_marriage_title', '💍 婚姻誓約前夕'),
+        text: locale === 'zh-TW' ? p.tw : locale === 'zh-CN' ? p.cn : p.en,
+        index: idx + 1,
+      }));
+      setDeck(packQuestions);
+      const foundIdx = packQuestions.findIndex((q) => q.text === item.text);
+      setCurrentIndex(foundIdx >= 0 ? foundIdx : 0);
+      return;
+    }
+
+    if (item.id.startsWith('parenting-')) {
+      const packQuestions = PARENTING_PACK_DATA.map((p, idx) => ({
+        id: `parenting-${idx + 1}`,
+        categoryKey: 'growth' as const,
+        categoryLabel: I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母'),
         text: locale === 'zh-TW' ? p.tw : locale === 'zh-CN' ? p.cn : p.en,
         index: idx + 1,
       }));
@@ -396,6 +516,7 @@ export const MainApp: React.FC = () => {
           currentCategory={currentCategory}
           locale={locale}
           colors={colors}
+          unlockedPacks={unlockedPacks}
           onSelectCategory={(cat) => {
             playClick();
             setCurrentCategory(cat);
@@ -420,6 +541,10 @@ export const MainApp: React.FC = () => {
             }}
             onNextQuestion={handleNextQuestion}
             onFlipCard={handleFlipCard}
+            onOpenStore={() => {
+              playClick();
+              setIsStoreOpen(true);
+            }}
           />
         </View>
 

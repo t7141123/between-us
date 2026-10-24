@@ -22,6 +22,15 @@ export const EXPANSION_PACKS: ExpansionPack[] = [
     freeTrialCount: 3,
     priceText: 'NT$ 90',
   },
+  {
+    id: 'parenting',
+    titleKey: 'pack_parenting_title',
+    descKey: 'pack_parenting_desc',
+    badgeKey: 'pack_parenting_badge',
+    totalCount: 50,
+    freeTrialCount: 3,
+    priceText: 'NT$ 90',
+  },
 ];
 
 export interface CardSkinConfig {
@@ -85,6 +94,12 @@ export const SENSUAL_PACK_DATA = require('../../scripts/questions-data/sensual.j
 }[];
 
 export const MARRIAGE_PACK_DATA = require('../../scripts/questions-data/marriage.js') as {
+  tw: string;
+  cn: string;
+  en: string;
+}[];
+
+export const PARENTING_PACK_DATA = require('../../scripts/questions-data/parenting.js') as {
   tw: string;
   cn: string;
   en: string;

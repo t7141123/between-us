@@ -18,6 +18,13 @@ export const STORE_ITEMS = {
     type: 'pack',
     target: 'marriage',
   },
+  pack_parenting: {
+    id: 'pack_parenting',
+    name: '在我們之間 - 新生兒與新手父母擴充包',
+    amount: 90,
+    type: 'pack',
+    target: 'parenting',
+  },
   tip_coffee: {
     id: 'tip_coffee',
     name: '在我們之間 - 贊助小杯咖啡',

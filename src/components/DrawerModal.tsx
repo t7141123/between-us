@@ -17,7 +17,11 @@ import {
 import { X, Search, Bookmark, ShieldCheck, Lock, Sparkles } from 'lucide-react-native';
 import { LocaleKey, QuestionEntry, ThemeColors } from '../types';
 import { I18nService } from '../services/i18n';
-import { MARRIAGE_PACK_DATA, SENSUAL_PACK_DATA } from '../constants/packs';
+import {
+  MARRIAGE_PACK_DATA,
+  PARENTING_PACK_DATA,
+  SENSUAL_PACK_DATA,
+} from '../constants/packs';
 import { InfoModal } from './InfoModal';
 
 interface DrawerModalProps {
@@ -31,7 +35,7 @@ interface DrawerModalProps {
   onOpenStore?: () => void;
 }
 
-type DrawerTab = 'all' | 'fav' | 'sensual' | 'marriage';
+type DrawerTab = 'all' | 'fav' | 'sensual' | 'marriage' | 'parenting';
 
 export const DrawerModal: React.FC<DrawerModalProps> = ({
   visible,
@@ -49,6 +53,7 @@ export const DrawerModal: React.FC<DrawerModalProps> = ({
 
   const isSensualUnlocked = unlockedPacks.includes('sensual');
   const isMarriageUnlocked = unlockedPacks.includes('marriage');
+  const isParentingUnlocked = unlockedPacks.includes('parenting');
 
   const sensualQuestions = useMemo<QuestionEntry[]>(() => {
     return SENSUAL_PACK_DATA.map((item, idx) => ({
@@ -70,6 +75,16 @@ export const DrawerModal: React.FC<DrawerModalProps> = ({
     }));
   }, [locale]);
 
+  const parentingQuestions = useMemo<QuestionEntry[]>(() => {
+    return PARENTING_PACK_DATA.map((item, idx) => ({
+      id: `parenting-${idx + 1}`,
+      categoryKey: 'growth',
+      categoryLabel: I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母'),
+      text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
+      index: idx + 1,
+    }));
+  }, [locale]);
+
   const currentDeck = useMemo<QuestionEntry[]>(() => {
     if (activeTab === 'sensual') {
       return sensualQuestions;
@@ -77,12 +92,15 @@ export const DrawerModal: React.FC<DrawerModalProps> = ({
     if (activeTab === 'marriage') {
       return marriageQuestions;
     }
+    if (activeTab === 'parenting') {
+      return parentingQuestions;
+    }
     const all = I18nService.getQuestions(locale, 'all');
     if (activeTab === 'fav') {
       return all.filter((item) => favorites[item.text]);
     }
     return all;
-  }, [activeTab, locale, sensualQuestions, marriageQuestions, favorites]);
+  }, [activeTab, locale, sensualQuestions, marriageQuestions, parentingQuestions, favorites]);
 
   const filteredQuestions = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -100,6 +118,7 @@ export const DrawerModal: React.FC<DrawerModalProps> = ({
   const handleItemPress = (item: QuestionEntry) => {
     const isSensualItem = item.id.startsWith('sensual-');
     const isMarriageItem = item.id.startsWith('marriage-');
+    const isParentingItem = item.id.startsWith('parenting-');
 
     if (isSensualItem && !isSensualUnlocked) {
       if (item.index <= 3) {
@@ -111,6 +130,15 @@ export const DrawerModal: React.FC<DrawerModalProps> = ({
     }
 
     if (isMarriageItem && !isMarriageUnlocked) {
+      if (item.index <= 3) {
+        onSelectQuestion(item);
+      } else {
+        onOpenStore?.();
+      }
+      return;
+    }
+
+    if (isParentingItem && !isParentingUnlocked) {
       if (item.index <= 3) {
         onSelectQuestion(item);
       } else {
@@ -210,6 +238,21 @@ export const DrawerModal: React.FC<DrawerModalProps> = ({
                   {I18nService.t(locale, 'pack_marriage_title', '💍 婚姻誓約')}{!isMarriageUnlocked ? ' 🔒' : ''}
                 </Text>
               </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setActiveTab('parenting')}
+                style={[
+                  styles.filterBtn,
+                  activeTab === 'parenting'
+                    ? { backgroundColor: colors.clay }
+                    : { borderColor: colors.line, backgroundColor: colors.card },
+                ]}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.filterBtnText, { color: activeTab === 'parenting' ? '#FFFFFF' : colors.muted }]}>
+                  {I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒')}{!isParentingUnlocked ? ' 🔒' : ''}
+                </Text>
+              </TouchableOpacity>
             </ScrollView>
 
             <View style={[styles.searchBar, { borderColor: colors.line, backgroundColor: colors.card }]}>
@@ -244,12 +287,15 @@ export const DrawerModal: React.FC<DrawerModalProps> = ({
               const isFav = Boolean(favorites[item.text]);
               const isSensualItem = item.id.startsWith('sensual-');
               const isMarriageItem = item.id.startsWith('marriage-');
+              const isParentingItem = item.id.startsWith('parenting-');
               const isLocked =
                 (isSensualItem && !isSensualUnlocked && item.index > 3) ||
-                (isMarriageItem && !isMarriageUnlocked && item.index > 3);
+                (isMarriageItem && !isMarriageUnlocked && item.index > 3) ||
+                (isParentingItem && !isParentingUnlocked && item.index > 3);
               const isTrial =
                 (isSensualItem && !isSensualUnlocked && item.index <= 3) ||
-                (isMarriageItem && !isMarriageUnlocked && item.index <= 3);
+                (isMarriageItem && !isMarriageUnlocked && item.index <= 3) ||
+                (isParentingItem && !isParentingUnlocked && item.index <= 3);
 
               return (
                 <TouchableOpacity

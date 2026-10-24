@@ -13,7 +13,12 @@ export type CategoryKey =
   | 'growth'
   | 'faith';
 
-export type CategoryFilter = CategoryKey | 'all';
+export type CategoryFilter =
+  | CategoryKey
+  | 'all'
+  | 'pack_sensual'
+  | 'pack_marriage'
+  | 'pack_parenting';
 
 export interface CategoryData {
   label: string;
@@ -39,7 +44,7 @@ export type ThemeMode = 'light' | 'dark';
 
 export type CardSkinId = 'classic' | 'noir_gold' | 'midnight' | 'caramel';
 
-export type ExpansionPackId = 'sensual' | 'marriage';
+export type ExpansionPackId = 'sensual' | 'marriage' | 'parenting';
 
 export interface ExpansionPack {
   id: ExpansionPackId;

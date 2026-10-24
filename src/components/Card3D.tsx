@@ -2,7 +2,7 @@
  * 3D Interactive Card Component supporting smooth Y-axis flip rotation,
  * dual face rendering, gestures, and gold accent styling.
  */
-import React, { useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import Svg, { Path, Circle, Line } from 'react-native-svg';
-import { Bookmark, Timer, RefreshCw, RotateCcw } from 'lucide-react-native';
+import { Bookmark, Timer, RefreshCw, RotateCcw, Share2, Lock } from 'lucide-react-native';
 import { CardSkinId, LocaleKey, QuestionEntry, ThemeColors } from '../types';
 import { I18nService } from '../services/i18n';
 import { CARD_SKINS } from '../constants/packs';
@@ -35,6 +35,7 @@ interface Card3DProps {
   onOpenTimer: () => void;
   onNextQuestion: () => void;
   onFlipCard?: () => void;
+  onOpenStore?: () => void;
 }
 
 export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
@@ -49,6 +50,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
   onOpenTimer,
   onNextQuestion,
   onFlipCard,
+  onOpenStore,
 }, ref) => {
   const { width, height } = useWindowDimensions();
   const isMobile = width < 600 || height < 750;
@@ -58,6 +60,34 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
 
   const animatedValue = useRef(new Animated.Value(0)).current;
   const isFlippedRef = useRef(false);
+  const [shareToast, setShareToast] = useState(false);
+
+  const isLocked = Boolean(question?.id.endsWith('-lock'));
+
+  const handleShare = async () => {
+    if (!question || isLocked) return;
+    const shareText = `${I18nService.t(locale, 'share_prefix', '💌 在我們之間：「')}${question.text}${I18nService.t(locale, 'share_suffix', '」\n\n今晚我們來聊聊這題吧 ✨')}`;
+
+    if (Platform.OS === 'web' && typeof navigator !== 'undefined') {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: '在我們之間 Between Us',
+            text: shareText,
+            url: window.location.href,
+          });
+          return;
+        } catch {
+          // Fallback to clipboard
+        }
+      }
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareText);
+        setShareToast(true);
+        setTimeout(() => setShareToast(false), 2500);
+      }
+    }
+  };
 
   // Reset flip state when question changes
   useEffect(() => {
@@ -186,6 +216,18 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
             </View>
 
             <View style={styles.headerActions}>
+              {!isLocked && (
+                <TouchableOpacity
+                  onPress={handleShare}
+                  style={styles.actionBtn}
+                  activeOpacity={0.7}
+                  accessibilityLabel="分享題目"
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                >
+                  <Share2 size={isMobile ? 15 : 17} color={shareToast ? colors.clay : colors.muted} />
+                </TouchableOpacity>
+              )}
+
               <TouchableOpacity
                 onPress={onOpenTimer}
                 style={styles.actionBtn}
@@ -212,23 +254,68 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
             </View>
           </View>
 
+          {/* Share Toast Banner */}
+          {shareToast && (
+            <View style={[styles.shareToastBanner, { backgroundColor: colors.clay }]}>
+              <Text style={styles.shareToastText}>
+                {I18nService.t(locale, 'share_question_copied', '已複製題目！快分享給另一半吧 💌')}
+              </Text>
+            </View>
+          )}
+
           {/* Question Text Body */}
           <View style={[styles.bodyContainer, isMobile && styles.bodyContainerMobile]}>
-            <Text style={[styles.questionNumber, { color: colors.clay }]}>
-              NO. {padIndex}
-            </Text>
-            <Text
-              style={[
-                styles.questionText,
-                {
-                  color: colors.ink,
-                  fontSize: isMobile ? 19 : (Platform.OS === 'web' ? 24 : 21),
-                  lineHeight: isMobile ? 29 : (Platform.OS === 'web' ? 38 : 34),
-                },
-              ]}
-            >
-              {question?.text || I18nService.t(locale, 'deck_empty')}
-            </Text>
+            {isLocked ? (
+              <View style={styles.lockContent}>
+                <View style={[styles.lockIconCircle, { backgroundColor: colors.badgeBg }]}>
+                  <Lock size={26} color={colors.clay} />
+                </View>
+                <Text
+                  style={[
+                    styles.questionText,
+                    {
+                      color: colors.ink,
+                      fontSize: isMobile ? 17 : 20,
+                      lineHeight: isMobile ? 26 : 30,
+                      textAlign: 'center',
+                      marginTop: 12,
+                      marginBottom: 16,
+                    },
+                  ]}
+                >
+                  {question?.text}
+                </Text>
+                {onOpenStore && (
+                  <TouchableOpacity
+                    onPress={onOpenStore}
+                    style={[styles.unlockCardBtn, { backgroundColor: colors.clay }]}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.unlockCardBtnText}>
+                      {I18nService.t(locale, 'pack_unlock_now', '前往典藏沙龍解鎖')}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            ) : (
+              <>
+                <Text style={[styles.questionNumber, { color: colors.clay }]}>
+                  NO. {padIndex}
+                </Text>
+                <Text
+                  style={[
+                    styles.questionText,
+                    {
+                      color: colors.ink,
+                      fontSize: isMobile ? 19 : (Platform.OS === 'web' ? 24 : 21),
+                      lineHeight: isMobile ? 29 : (Platform.OS === 'web' ? 38 : 34),
+                    },
+                  ]}
+                >
+                  {question?.text || I18nService.t(locale, 'deck_empty')}
+                </Text>
+              </>
+            )}
           </View>
 
           {/* Front Footer */}
@@ -492,6 +579,57 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '400',
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+  },
+  shareToastBanner: {
+    position: 'absolute',
+    top: 54,
+    left: 20,
+    right: 20,
+    zIndex: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  shareToastText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  lockContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+  },
+  lockIconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
+  },
+  unlockCardBtn: {
+    paddingHorizontal: 18,
+    paddingVertical: 9,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  unlockCardBtnText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   cardFooter: {
     flexDirection: 'row',

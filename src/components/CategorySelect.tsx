@@ -13,6 +13,7 @@ interface CategorySelectProps {
   currentCategory: CategoryFilter;
   locale: LocaleKey;
   colors: ThemeColors;
+  unlockedPacks?: string[];
   onSelectCategory: (cat: CategoryFilter) => void;
 }
 
@@ -20,9 +21,14 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
   currentCategory,
   locale,
   colors,
+  unlockedPacks = [],
   onSelectCategory,
 }) => {
   const options: SelectOption<CategoryFilter>[] = useMemo(() => {
+    const isSensualUnlocked = unlockedPacks.includes('sensual');
+    const isMarriageUnlocked = unlockedPacks.includes('marriage');
+    const isParentingUnlocked = unlockedPacks.includes('parenting');
+
     return [
       {
         value: 'all',
@@ -34,8 +40,23 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
         label: `${I18nService.getCategoryLabel(locale, key)} (100)`,
         badge: '100',
       })),
+      {
+        value: 'pack_sensual',
+        label: `${I18nService.t(locale, 'pack_sensual_title', '🔥 深夜私語')} (50)${isSensualUnlocked ? '' : ' 🔒'}`,
+        badge: '50',
+      },
+      {
+        value: 'pack_marriage',
+        label: `${I18nService.t(locale, 'pack_marriage_title', '💍 婚姻誓約前夕')} (50)${isMarriageUnlocked ? '' : ' 🔒'}`,
+        badge: '50',
+      },
+      {
+        value: 'pack_parenting',
+        label: `${I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母')} (50)${isParentingUnlocked ? '' : ' 🔒'}`,
+        badge: '50',
+      },
     ];
-  }, [locale]);
+  }, [locale, unlockedPacks]);
 
   return (
     <View style={styles.container}>
