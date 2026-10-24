@@ -37,6 +37,26 @@ export interface QuestionEntry {
 
 export type ThemeMode = 'light' | 'dark';
 
+export type CardSkinId = 'classic' | 'noir_gold' | 'midnight' | 'caramel';
+
+export type ExpansionPackId = 'sensual';
+
+export interface ExpansionPack {
+  id: ExpansionPackId;
+  titleKey: string;
+  descKey: string;
+  badgeKey?: string;
+  totalCount: number;
+  freeTrialCount: number;
+  priceText: string;
+}
+
+export interface StoreState {
+  isSupporter: boolean;
+  unlockedPacks: string[];
+  selectedSkin: CardSkinId;
+}
+
 export interface ThemeColors {
   clay: string;
   clayHover: string;

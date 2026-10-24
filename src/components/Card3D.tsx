@@ -15,8 +15,9 @@ import {
 } from 'react-native';
 import Svg, { Path, Circle, Line } from 'react-native-svg';
 import { Bookmark, Timer, RefreshCw, RotateCcw } from 'lucide-react-native';
-import { LocaleKey, QuestionEntry, ThemeColors } from '../types';
+import { CardSkinId, LocaleKey, QuestionEntry, ThemeColors } from '../types';
 import { I18nService } from '../services/i18n';
+import { CARD_SKINS } from '../constants/packs';
 
 export interface Card3DHandle {
   flip: () => void;
@@ -28,6 +29,7 @@ interface Card3DProps {
   currentIndex: number;
   locale: LocaleKey;
   colors: ThemeColors;
+  skinId?: CardSkinId;
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onOpenTimer: () => void;
@@ -41,6 +43,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
   currentIndex,
   locale,
   colors,
+  skinId = 'classic',
   isFavorite,
   onToggleFavorite,
   onOpenTimer,
@@ -49,6 +52,9 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
 }, ref) => {
   const { width, height } = useWindowDimensions();
   const isMobile = width < 600 || height < 750;
+
+  const skinConfig = CARD_SKINS.find((s) => s.id === skinId) || CARD_SKINS[0];
+  const hasCustomSkin = skinConfig.id !== 'classic';
 
   const animatedValue = useRef(new Animated.Value(0)).current;
   const isFlippedRef = useRef(false);
@@ -250,8 +256,8 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
           styles.cardFace,
           styles.cardBack,
           {
-            backgroundColor: colors.cardBack,
-            borderColor: colors.line,
+            backgroundColor: hasCustomSkin ? skinConfig.bgColor : colors.cardBack,
+            borderColor: hasCustomSkin ? skinConfig.borderColor : colors.line,
             minHeight: isMobile ? 300 : (Platform.OS === 'web' ? 380 : 350),
             borderRadius: isMobile ? 22 : 28,
             transform: [{ rotateY: backInterpolate }],
@@ -269,18 +275,34 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
           accessibilityHint={backHint}
         >
           {/* Inner decorative gold border */}
-          <View pointerEvents="none" style={[styles.innerBorder, { borderColor: colors.gold }]} />
+          <View
+            pointerEvents="none"
+            style={[
+              styles.innerBorder,
+              { borderColor: hasCustomSkin ? skinConfig.accentColor : colors.gold },
+            ]}
+          />
 
           {/* Back Header */}
           <View style={styles.cardHeader}>
-            <Text style={[styles.backBrandText, { color: colors.muted }]}>BETWEEN US</Text>
+            <Text
+              style={[
+                styles.backBrandText,
+                { color: hasCustomSkin ? skinConfig.accentColor : colors.muted },
+              ]}
+            >
+              BETWEEN US
+            </Text>
             <TouchableOpacity
               onPress={flipCard}
               style={styles.actionBtn}
               accessibilityLabel="翻回正面"
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <RotateCcw size={15} color={colors.muted} />
+              <RotateCcw
+                size={15}
+                color={hasCustomSkin ? skinConfig.accentColor : colors.muted}
+              />
             </TouchableOpacity>
           </View>
 
@@ -314,7 +336,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
               style={[
                 styles.backTitle,
                 {
-                  color: colors.ink,
+                  color: hasCustomSkin ? skinConfig.textColor : colors.ink,
                   fontSize: isMobile ? 20 : 24,
                   marginBottom: isMobile ? 4 : 8,
                 },
@@ -322,12 +344,18 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
             >
               {backTitle}
             </Text>
-            <View style={[styles.goldDivider, { backgroundColor: colors.gold }]} />
+            <View
+              style={[
+                styles.goldDivider,
+                { backgroundColor: hasCustomSkin ? skinConfig.accentColor : colors.gold },
+              ]}
+            />
             <Text
               style={[
                 styles.backQuote,
                 {
-                  color: colors.muted,
+                  color: hasCustomSkin ? skinConfig.textColor : colors.muted,
+                  opacity: hasCustomSkin ? 0.85 : 1,
                   fontSize: isMobile ? 13 : 14,
                   lineHeight: isMobile ? 20 : 22,
                 },
@@ -338,11 +366,25 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
           </View>
 
           {/* Back Footer */}
-          <View style={[styles.cardFooter, { borderTopColor: colors.line, justifyContent: 'center' }]}>
+          <View
+            style={[
+              styles.cardFooter,
+              {
+                borderTopColor: hasCustomSkin ? skinConfig.borderColor : colors.line,
+                justifyContent: 'center',
+              },
+            ]}
+          >
             <View style={styles.footerPrompt}>
-              <RotateCcw size={12} color={colors.muted} />
+              <RotateCcw
+                size={12}
+                color={hasCustomSkin ? skinConfig.accentColor : colors.muted}
+              />
               <Text
-                style={[styles.promptText, { color: colors.muted }]}
+                style={[
+                  styles.promptText,
+                  { color: hasCustomSkin ? skinConfig.accentColor : colors.muted },
+                ]}
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >

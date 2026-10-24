@@ -17,19 +17,21 @@ import {
 import { Shuffle, BookOpen } from 'lucide-react-native';
 import confetti from 'canvas-confetti';
 
-import { LocaleKey, CategoryFilter, QuestionEntry } from './types';
+import { LocaleKey, CategoryFilter, QuestionEntry, CardSkinId } from './types';
 import { useTheme } from './hooks/useTheme';
 import { useSound } from './hooks/useSound';
 import { useHaptics } from './hooks/useHaptics';
 import { I18nService } from './services/i18n';
 import { StorageService } from './services/storage';
 import { TelemetryService } from './services/telemetry';
+import { SENSUAL_PACK_DATA } from './constants/packs';
 
 import { HeaderBar } from './components/HeaderBar';
 import { CategorySelect } from './components/CategorySelect';
 import { Card3D, Card3DHandle } from './components/Card3D';
 import { DrawerModal } from './components/DrawerModal';
 import { TimerModal } from './components/TimerModal';
+import { StoreModal } from './components/StoreModal';
 
 export const MainApp: React.FC = () => {
   const { width, height } = useWindowDimensions();
@@ -45,8 +47,13 @@ export const MainApp: React.FC = () => {
   const [deck, setDeck] = useState<QuestionEntry[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  const [unlockedPacks, setUnlockedPacks] = useState<string[]>([]);
+  const [selectedSkin, setSelectedSkin] = useState<CardSkinId>('classic');
+  const [isSupporter, setIsSupporter] = useState(false);
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
+  const [isStoreOpen, setIsStoreOpen] = useState(false);
 
   const cardRef = useRef<Card3DHandle>(null);
 
@@ -57,10 +64,16 @@ export const MainApp: React.FC = () => {
     Promise.all([
       StorageService.getLocale('zh-TW'),
       StorageService.getFavorites(),
-    ]).then(([savedLocale, savedFavs]) => {
+      StorageService.getUnlockedPacks(),
+      StorageService.getCardSkin('classic'),
+      StorageService.getIsSupporter(),
+    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter]) => {
       if (!mounted) return;
       setLocale(savedLocale);
       setFavorites(savedFavs);
+      setUnlockedPacks(savedPacks);
+      setSelectedSkin(savedSkin);
+      setIsSupporter(savedSupporter);
     });
     return () => {
       mounted = false;
@@ -126,6 +139,56 @@ export const MainApp: React.FC = () => {
     StorageService.setLocale(newLocale);
   }, []);
 
+  const handleSelectSkin = useCallback((skinId: CardSkinId) => {
+    playClick();
+    setSelectedSkin(skinId);
+    StorageService.setCardSkin(skinId);
+  }, [playClick]);
+
+  const handleUnlockPack = useCallback((packId: string) => {
+    playSuccess();
+    triggerNotification();
+    StorageService.unlockPack(packId).then((updated) => {
+      setUnlockedPacks(updated);
+    });
+  }, [playSuccess, triggerNotification]);
+
+  const handleSetSupporter = useCallback((supporter: boolean) => {
+    playSuccess();
+    triggerNotification();
+    setIsSupporter(supporter);
+    StorageService.setIsSupporter(supporter);
+  }, [playSuccess, triggerNotification]);
+
+  const handleLoadPackSample = useCallback((packId: string) => {
+    playClick();
+    if (packId === 'sensual') {
+      const isUnlocked = unlockedPacks.includes('sensual');
+      const packQuestions = SENSUAL_PACK_DATA.map((item, idx) => ({
+        id: `sensual-${idx + 1}`,
+        categoryKey: 'intimacy' as const,
+        categoryLabel: I18nService.t(locale, 'pack_sensual_title', '🔥 深夜私語'),
+        text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
+        index: idx + 1,
+      }));
+
+      if (isUnlocked) {
+        setDeck(shuffleDeck(packQuestions));
+      } else {
+        const trials = packQuestions.slice(0, 3);
+        const lockCard: QuestionEntry = {
+          id: 'sensual-lock',
+          categoryKey: 'intimacy' as const,
+          categoryLabel: I18nService.t(locale, 'pack_sensual_title', '🔥 深夜私語'),
+          text: I18nService.t(locale, 'trial_ended_hint'),
+          index: 4,
+        };
+        setDeck([...trials, lockCard]);
+      }
+      setCurrentIndex(0);
+    }
+  }, [locale, playClick, shuffleDeck, unlockedPacks]);
+
   const handleFlipCard = useCallback(() => {
     playFlip();
   }, [playFlip]);
@@ -188,9 +251,14 @@ export const MainApp: React.FC = () => {
           colors={colors}
           isDark={isDark}
           muted={muted}
+          isSupporter={isSupporter}
           onToggleTheme={toggleTheme}
           onToggleMute={toggleMute}
           onSelectLocale={handleSelectLocale}
+          onOpenStore={() => {
+            playClick();
+            setIsStoreOpen(true);
+          }}
         />
 
         {/* Category Dropdown Select */}
@@ -213,6 +281,7 @@ export const MainApp: React.FC = () => {
             currentIndex={currentIndex}
             locale={locale}
             colors={colors}
+            skinId={selectedSkin}
             isFavorite={Boolean(currentQuestion && favorites[currentQuestion.text])}
             onToggleFavorite={handleToggleFavorite}
             onOpenTimer={() => {
@@ -294,6 +363,22 @@ export const MainApp: React.FC = () => {
         colors={colors}
         onClose={() => setIsTimerOpen(false)}
         onPlaySuccessSound={playSuccess}
+      />
+
+      {/* Store Modal */}
+      <StoreModal
+        visible={isStoreOpen}
+        locale={locale}
+        onClose={() => setIsStoreOpen(false)}
+        theme={isDark ? 'dark' : 'light'}
+        colors={colors}
+        unlockedPacks={unlockedPacks}
+        selectedSkin={selectedSkin}
+        isSupporter={isSupporter}
+        onSelectSkin={handleSelectSkin}
+        onUnlockPack={handleUnlockPack}
+        onSetSupporter={handleSetSupporter}
+        onLoadPackSample={handleLoadPackSample}
       />
     </SafeAreaView>
   );

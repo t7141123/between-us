@@ -3,13 +3,16 @@
  * Guards against data corruption and prototype pollution.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LocaleKey, ThemeMode } from '../types';
+import { CardSkinId, LocaleKey, ThemeMode } from '../types';
 
 const STORAGE_KEYS = {
   LANG: 'betweenus.lang',
   FAV: 'betweenus.fav',
   MUTED: 'betweenus.muted',
   THEME: 'betweenus.theme',
+  UNLOCKED_PACKS: 'betweenus.unlocked_packs',
+  CARD_SKIN: 'betweenus.card_skin',
+  SUPPORTER: 'betweenus.supporter',
 } as const;
 
 export const StorageService = {
@@ -91,6 +94,72 @@ export const StorageService = {
   async setTheme(theme: ThemeMode): Promise<void> {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.THEME, theme);
+    } catch {
+      // Storage write error
+    }
+  },
+
+  async getUnlockedPacks(): Promise<string[]> {
+    try {
+      const raw = await AsyncStorage.getItem(STORAGE_KEYS.UNLOCKED_PACKS);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          return parsed;
+        }
+      }
+    } catch {
+      // Ignore read error
+    }
+    return [];
+  },
+
+  async unlockPack(packId: string): Promise<string[]> {
+    try {
+      const current = await this.getUnlockedPacks();
+      if (!current.includes(packId)) {
+        const updated = [...current, packId];
+        await AsyncStorage.setItem(STORAGE_KEYS.UNLOCKED_PACKS, JSON.stringify(updated));
+        return updated;
+      }
+      return current;
+    } catch {
+      return [];
+    }
+  },
+
+  async getCardSkin(fallback: CardSkinId = 'classic'): Promise<CardSkinId> {
+    try {
+      const val = await AsyncStorage.getItem(STORAGE_KEYS.CARD_SKIN);
+      if (val === 'classic' || val === 'noir_gold' || val === 'midnight' || val === 'caramel') {
+        return val;
+      }
+    } catch {
+      // Ignore read error
+    }
+    return fallback;
+  },
+
+  async setCardSkin(skin: CardSkinId): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.CARD_SKIN, skin);
+    } catch {
+      // Storage write error
+    }
+  },
+
+  async getIsSupporter(): Promise<boolean> {
+    try {
+      const raw = await AsyncStorage.getItem(STORAGE_KEYS.SUPPORTER);
+      return raw === '1';
+    } catch {
+      return false;
+    }
+  },
+
+  async setIsSupporter(isSupporter: boolean): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.SUPPORTER, isSupporter ? '1' : '0');
     } catch {
       // Storage write error
     }

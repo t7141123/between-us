@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, useWindowDimensions } from 'react-native';
-import { Sun, Moon, Volume2, VolumeX, Globe } from 'lucide-react-native';
+import { Sun, Moon, Volume2, VolumeX, Globe, Sparkles } from 'lucide-react-native';
 import { LocaleKey, ThemeColors } from '../types';
 import { I18nService } from '../services/i18n';
 import { SelectPicker, SelectOption } from './SelectPicker';
@@ -13,9 +13,11 @@ interface HeaderBarProps {
   colors: ThemeColors;
   isDark: boolean;
   muted: boolean;
+  isSupporter?: boolean;
   onToggleTheme: () => void;
   onToggleMute: () => void;
   onSelectLocale: (locale: LocaleKey) => void;
+  onOpenStore?: () => void;
 }
 
 const LOCALES_OPTIONS: SelectOption<LocaleKey>[] = [
@@ -29,9 +31,11 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
   colors,
   isDark,
   muted,
+  isSupporter = false,
   onToggleTheme,
   onToggleMute,
   onSelectLocale,
+  onOpenStore,
 }) => {
   const { width, height } = useWindowDimensions();
   const isMobile = width < 600 || height < 750;
@@ -43,11 +47,36 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
     <View style={[styles.container, isMobile && styles.containerMobile]}>
       {/* Action icons row */}
       <View style={[styles.topRow, isMobile && styles.topRowMobile]}>
-        <View style={styles.brandTag}>
-          <Text style={[styles.brandText, { color: colors.clay }]}>BETWEEN US</Text>
+        <View style={styles.brandRow}>
+          <View style={styles.brandTag}>
+            <Text style={[styles.brandText, { color: colors.clay }]}>BETWEEN US</Text>
+          </View>
+          {isSupporter && (
+            <View style={styles.supporterTag}>
+              <Text style={styles.supporterTagText}>✦</Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.controlsRow}>
+          {/* Store / Atelier button */}
+          {onOpenStore && (
+            <TouchableOpacity
+              onPress={onOpenStore}
+              style={[
+                styles.storeButton,
+                { borderColor: colors.clay, backgroundColor: isDark ? 'rgba(196,112,79,0.15)' : '#FBF3EC' },
+              ]}
+              activeOpacity={0.7}
+              accessibilityLabel="典藏沙龍"
+            >
+              <Sparkles size={13} color={colors.clay} />
+              <Text style={[styles.storeButtonText, { color: colors.clay }]}>
+                {I18nService.t(locale, 'store_btn', '典藏')}
+              </Text>
+            </TouchableOpacity>
+          )}
+
           {/* Language Selection Dropdown Picker */}
           <SelectPicker<LocaleKey>
             icon={<Globe size={13} color={colors.muted} />}
@@ -147,6 +176,12 @@ const styles = StyleSheet.create({
   topRowMobile: {
     marginBottom: 6,
   },
+  brandRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flexShrink: 0,
+  },
   brandTag: {
     paddingVertical: 2,
     flexShrink: 0,
@@ -155,6 +190,33 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 2,
+  },
+  supporterTag: {
+    backgroundColor: '#F59E0B',
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  supporterTagText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  storeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  storeButtonText: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   controlsRow: {
     flexDirection: 'row',
