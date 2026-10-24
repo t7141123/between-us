@@ -11,6 +11,13 @@ export const STORE_ITEMS = {
     type: 'pack',
     target: 'sensual',
   },
+  pack_marriage: {
+    id: 'pack_marriage',
+    name: '在我們之間 - 婚姻誓約前夕擴充包',
+    amount: 90,
+    type: 'pack',
+    target: 'marriage',
+  },
   tip_coffee: {
     id: 'tip_coffee',
     name: '在我們之間 - 贊助小杯咖啡',

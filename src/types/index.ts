@@ -39,7 +39,7 @@ export type ThemeMode = 'light' | 'dark';
 
 export type CardSkinId = 'classic' | 'noir_gold' | 'midnight' | 'caramel';
 
-export type ExpansionPackId = 'sensual';
+export type ExpansionPackId = 'sensual' | 'marriage';
 
 export interface ExpansionPack {
   id: ExpansionPackId;

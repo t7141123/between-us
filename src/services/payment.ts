@@ -5,7 +5,7 @@
 import { Platform } from 'react-native';
 import { StorageService } from './storage';
 
-export type StoreItemKey = 'pack_sensual' | 'tip_coffee' | 'tip_afternoon';
+export type StoreItemKey = 'pack_sensual' | 'pack_marriage' | 'tip_coffee' | 'tip_afternoon';
 
 export interface VerifyOrderResponse {
   orderId: string;

@@ -68,6 +68,10 @@ export const StoreModal: React.FC<StoreModalProps> = ({
       onUnlockPack('sensual');
       setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
       setPromoCode('');
+    } else if (code === 'MARRIAGE' || code === 'IDO' || code === 'WEDDING') {
+      onUnlockPack('marriage');
+      setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
+      setPromoCode('');
     } else if (code === 'COFFEE' || code === 'SUPPORTER') {
       onSetSupporter(true);
       setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
@@ -83,10 +87,8 @@ export const StoreModal: React.FC<StoreModalProps> = ({
   const handlePurchasePack = async (packId: string) => {
     if (Platform.OS === 'web') {
       setRedeemFeedback('正在引導至綠界 ECPay 安全付款畫面...');
-      const res = await PaymentService.startEcpayCheckout(
-        packId === 'sensual' ? 'pack_sensual' : 'pack_sensual',
-        currentUser?.id
-      );
+      const itemKey = packId === 'marriage' ? 'pack_marriage' : 'pack_sensual';
+      const res = await PaymentService.startEcpayCheckout(itemKey, currentUser?.id);
       if (!res.success) {
         setRedeemFeedback(res.error || '啟動綠界支付失敗');
       }
