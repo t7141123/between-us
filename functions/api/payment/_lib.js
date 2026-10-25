@@ -131,6 +131,16 @@ export async function ensureOrdersTable(db) {
         PRIMARY KEY (user_id, item_key)
       );
     `),
+    db.prepare(`
+      CREATE TABLE IF NOT EXISTS sync_rooms (
+        code TEXT PRIMARY KEY,
+        category TEXT NOT NULL,
+        question_text TEXT NOT NULL,
+        is_flipped INTEGER DEFAULT 0,
+        version INTEGER DEFAULT 1,
+        updated_at INTEGER NOT NULL
+      );
+    `),
   ]);
 }
 
@@ -156,4 +166,105 @@ export async function parseFormBody(request) {
     params[k] = v;
   }
   return params;
+}
+
+/** In-memory fallback room storage if D1 is not configured in local preview */
+const memoryRooms = new Map();
+
+/** Generate 4-digit room code */
+export function generateRoomCode() {
+  return String(Math.floor(1000 + Math.random() * 9000));
+}
+
+/** Get room state */
+export async function getRoomState(db, code) {
+  if (db) {
+    await ensureOrdersTable(db);
+    const row = await db.prepare('SELECT * FROM sync_rooms WHERE code = ?')
+      .bind(code)
+      .first();
+    if (row) {
+      return {
+        code: row.code,
+        category: row.category,
+        questionText: row.question_text,
+        isFlipped: Boolean(row.is_flipped),
+        version: row.version,
+        updatedAt: row.updated_at,
+      };
+    }
+  }
+  return memoryRooms.get(code) || null;
+}
+
+/** Create or overwrite room state */
+export async function createRoom(db, code, category, questionText) {
+  const now = Date.now();
+  const room = {
+    code,
+    category,
+    questionText,
+    isFlipped: false,
+    version: 1,
+    updatedAt: now,
+  };
+  if (db) {
+    await ensureOrdersTable(db);
+    await db.prepare(`
+      INSERT INTO sync_rooms (code, category, question_text, is_flipped, version, updated_at)
+      VALUES (?, ?, ?, 0, 1, ?)
+      ON CONFLICT(code) DO UPDATE SET
+        category = excluded.category,
+        question_text = excluded.question_text,
+        is_flipped = 0,
+        version = version + 1,
+        updated_at = excluded.updated_at
+    `)
+      .bind(code, category, questionText, now)
+      .run();
+  }
+  memoryRooms.set(code, room);
+  return room;
+}
+
+/** Update room state on flip or next question */
+export async function updateRoomState(db, code, updates) {
+  const now = Date.now();
+  if (db) {
+    await ensureOrdersTable(db);
+    const current = await getRoomState(db, code);
+    if (!current) return null;
+    const nextVersion = current.version + 1;
+    const category = updates.category !== undefined ? updates.category : current.category;
+    const questionText = updates.questionText !== undefined ? updates.questionText : current.questionText;
+    const isFlipped = updates.isFlipped !== undefined ? (updates.isFlipped ? 1 : 0) : (current.isFlipped ? 1 : 0);
+
+    await db.prepare(`
+      UPDATE sync_rooms
+      SET category = ?, question_text = ?, is_flipped = ?, version = ?, updated_at = ?
+      WHERE code = ?
+    `)
+      .bind(category, questionText, isFlipped, nextVersion, now)
+      .run();
+
+    return {
+      code,
+      category,
+      questionText,
+      isFlipped: Boolean(isFlipped),
+      version: nextVersion,
+      updatedAt: now,
+    };
+  }
+
+  const current = memoryRooms.get(code);
+  if (!current) return null;
+  const updated = {
+    ...current,
+    ...updates,
+    version: current.version + 1,
+    updatedAt: now,
+  };
+  memoryRooms.set(code, updated);
+  return updated;
 }

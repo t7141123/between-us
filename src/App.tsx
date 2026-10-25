@@ -38,7 +38,9 @@ import { DrawerModal } from './components/DrawerModal';
 import { TimerModal } from './components/TimerModal';
 import { StoreModal } from './components/StoreModal';
 import { AuthModal } from './components/AuthModal';
+import { RoomModal } from './components/RoomModal';
 import { AuthService, AuthUser } from './services/auth';
+import { RoomService, RoomState } from './services/room';
 
 export const MainApp: React.FC = () => {
   const { width, height } = useWindowDimensions();
@@ -63,6 +65,8 @@ export const MainApp: React.FC = () => {
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [isStoreOpen, setIsStoreOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isRoomOpen, setIsRoomOpen] = useState(false);
+  const [currentRoom, setCurrentRoom] = useState<RoomState | null>(null);
 
   const cardRef = useRef<Card3DHandle>(null);
 
@@ -203,12 +207,23 @@ export const MainApp: React.FC = () => {
     return deck[currentIndex] ?? null;
   }, [deck, currentIndex]);
 
-  const handleNextQuestion = useCallback(() => {
+  const handleNextQuestion = useCallback((skipSync = false) => {
     playClick();
     triggerImpact();
     if (deck.length === 0) return;
-    setCurrentIndex((prev) => (prev + 1) % deck.length);
-  }, [deck.length, playClick, triggerImpact]);
+    const nextIdx = (currentIndex + 1) % deck.length;
+    setCurrentIndex(nextIdx);
+
+    if (!skipSync && currentRoom && deck[nextIdx]) {
+      RoomService.syncAction(currentRoom.code, {
+        questionText: deck[nextIdx].text,
+        category: currentCategory,
+        isFlipped: false,
+      }).then((res) => {
+        if (res.room) setCurrentRoom(res.room);
+      });
+    }
+  }, [currentIndex, currentRoom, currentCategory, deck, playClick, triggerImpact]);
 
   const handleToggleFavorite = useCallback(() => {
     if (!currentQuestion) return;
@@ -338,9 +353,18 @@ export const MainApp: React.FC = () => {
     }
   }, [locale, playClick, shuffleDeck, unlockedPacks]);
 
-  const handleFlipCard = useCallback(() => {
+  const handleFlipCard = useCallback((skipSync = false) => {
     playFlip();
-  }, [playFlip]);
+    if (!skipSync && currentRoom && currentQuestion) {
+      RoomService.syncAction(currentRoom.code, {
+        questionText: currentQuestion.text,
+        category: currentCategory,
+        isFlipped: true,
+      }).then((res) => {
+        if (res.room) setCurrentRoom(res.room);
+      });
+    }
+  }, [currentQuestion, currentRoom, currentCategory, playFlip]);
 
   const handleSelectFromDrawer = useCallback((item: QuestionEntry) => {
     setIsDrawerOpen(false);
@@ -418,6 +442,49 @@ export const MainApp: React.FC = () => {
   }, []);
 
   // Handle return from ECPay payment gateway on Web
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomParam = urlParams.get('room');
+    if (roomParam && roomParam.length === 4) {
+      RoomService.joinRoom(roomParam).then((res) => {
+        if (res.success && res.room) {
+          setCurrentRoom(res.room);
+          setIsRoomOpen(true);
+        }
+      });
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  // Room synchronization polling loop
+  useEffect(() => {
+    if (!currentRoom) return;
+
+    const interval = setInterval(async () => {
+      const res = await RoomService.pollRoom(currentRoom.code, currentRoom.version);
+      if (res.updated && res.room) {
+        setCurrentRoom(res.room);
+
+        // Sync question text if changed by partner
+        if (res.room.questionText && res.room.questionText !== currentQuestion?.text) {
+          const foundIdx = deck.findIndex((q) => q.text === res.room?.questionText);
+          if (foundIdx >= 0) {
+            setCurrentIndex(foundIdx);
+            playClick();
+          }
+        }
+
+        // Sync flip animation
+        if (res.room.isFlipped) {
+          cardRef.current?.flip();
+        }
+      }
+    }, 2800);
+
+    return () => clearInterval(interval);
+  }, [currentQuestion?.text, currentRoom, deck, playClick]);
   useEffect(() => {
     if (Platform.OS !== 'web' || typeof window === 'undefined') return;
 
@@ -502,12 +569,17 @@ export const MainApp: React.FC = () => {
           isDark={isDark}
           muted={muted}
           isSupporter={isSupporter}
+          currentRoom={currentRoom}
           onToggleTheme={toggleTheme}
           onToggleMute={toggleMute}
           onSelectLocale={handleSelectLocale}
           onOpenStore={() => {
             playClick();
             setIsStoreOpen(true);
+          }}
+          onOpenRoomSync={() => {
+            playClick();
+            setIsRoomOpen(true);
           }}
         />
 
@@ -556,7 +628,7 @@ export const MainApp: React.FC = () => {
               isMobile && styles.actionBtnMobile,
               { backgroundColor: colors.clay },
             ]}
-            onPress={handleNextQuestion}
+            onPress={() => handleNextQuestion()}
             activeOpacity={0.8}
           >
             <Shuffle size={16} color="#FFFFFF" style={{ marginRight: 6 }} />
@@ -651,6 +723,20 @@ export const MainApp: React.FC = () => {
         onClose={() => setIsAuthOpen(false)}
         onUserChanged={handleUserChanged}
         onSyncComplete={handleSyncComplete}
+      />
+
+      {/* Real-time Couple Sync Modal */}
+      <RoomModal
+        visible={isRoomOpen}
+        locale={locale}
+        theme={isDark ? 'dark' : 'light'}
+        colors={colors}
+        currentRoom={currentRoom}
+        currentCategory={currentCategory}
+        currentQuestionText={currentQuestion?.text || ''}
+        onClose={() => setIsRoomOpen(false)}
+        onRoomConnected={(room) => setCurrentRoom(room)}
+        onLeaveRoom={() => setCurrentRoom(null)}
       />
     </SafeAreaView>
   );

@@ -100,7 +100,17 @@
     "logged_in_as": "Synced Account",
     "btn_logout": "Disconnect",
     "sync_card_hint": "Want to access your purchases on other devices?",
-    "btn_open_sync": "Sync Account"
+    "btn_open_sync": "Sync Account",
+    "room_sync_btn": "Couple Sync",
+    "room_sync_title": "Real-time Couple Sync",
+    "room_sync_desc": "Play across two devices simultaneously. When either of you flips or changes questions, the other syncs in real time!",
+    "room_create_btn": "Create Session",
+    "room_join_btn": "Join Session",
+    "room_code_label": "Room Code",
+    "room_code_placeholder": "Enter 4-digit code (e.g. 8219)",
+    "room_connected_status": "🟢 In sync with your partner",
+    "room_leave_btn": "Leave Session",
+    "room_copied_invite": "Invitation copied! Send it to your partner to join ✨"
   },
   "categories": {
     "vision": {

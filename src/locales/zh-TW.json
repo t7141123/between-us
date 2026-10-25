@@ -100,7 +100,17 @@
     "logged_in_as": "已同步帳號",
     "btn_logout": "解除綁定",
     "sync_card_hint": "想要在其他手機或平台同步已購買的內容？",
-    "btn_open_sync": "帳號同步"
+    "btn_open_sync": "帳號同步",
+    "room_sync_btn": "雙人連線",
+    "room_sync_title": "伴侶雙人即時同步",
+    "room_sync_desc": "遠距離或兩台手機同時連線，任一方翻牌或換題，另一方畫面即時同步！",
+    "room_create_btn": "建立同步房間",
+    "room_join_btn": "加入房間",
+    "room_code_label": "房間邀請代號",
+    "room_code_placeholder": "輸入 4 位數代碼 (如 8219)",
+    "room_connected_status": "🟢 與另一半即時連線中",
+    "room_leave_btn": "結束連線",
+    "room_copied_invite": "已複製邀請碼與連結！傳給另一半即可連線 ✨"
   },
   "categories": {
     "vision": {

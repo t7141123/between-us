@@ -100,7 +100,17 @@
     "logged_in_as": "已同步账号",
     "btn_logout": "解除绑定",
     "sync_card_hint": "想要在其他手机或平台同步已购买的内容？",
-    "btn_open_sync": "账号同步"
+    "btn_open_sync": "账号同步",
+    "room_sync_btn": "双人连线",
+    "room_sync_title": "伴侣双人即时同步",
+    "room_sync_desc": "远距离或两台手机同时连线，任一方翻牌或换题，另一方画面即时同步！",
+    "room_create_btn": "建立同步房间",
+    "room_join_btn": "加入房间",
+    "room_code_label": "房间邀请代号",
+    "room_code_placeholder": "输入 4 位数代码 (如 8219)",
+    "room_connected_status": "🟢 与另一半即时连线中",
+    "room_leave_btn": "结束连线",
+    "room_copied_invite": "已复制邀请码与链接！传给另一半即可连线 ✨"
   },
   "categories": {
     "vision": {

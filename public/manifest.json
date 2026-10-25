@@ -1,0 +1,33 @@
+{
+  "name": "在我們之間 · Between Us",
+  "short_name": "在我們之間",
+  "description": "為伴侶深度對話設計的 700 道卡牌沙龍，慢慢說，慢慢聽，沒有標準答案。",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FAF7F2",
+  "theme_color": "#C4704F",
+  "lang": "zh-TW",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "social", "entertainment"],
+  "shortcuts": [
+    {
+      "name": "換一題對話",
+      "url": "/",
+      "icons": [{ "src": "/icon.png", "sizes": "192x192" }]
+    }
+  ]
+}

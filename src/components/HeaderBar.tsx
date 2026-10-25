@@ -3,9 +3,10 @@
  */
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, useWindowDimensions } from 'react-native';
-import { Sun, Moon, Volume2, VolumeX, Globe, Sparkles } from 'lucide-react-native';
+import { Sun, Moon, Volume2, VolumeX, Globe, Sparkles, Users } from 'lucide-react-native';
 import { LocaleKey, ThemeColors } from '../types';
 import { I18nService } from '../services/i18n';
+import { RoomState } from '../services/room';
 import { SelectPicker, SelectOption } from './SelectPicker';
 
 interface HeaderBarProps {
@@ -14,10 +15,12 @@ interface HeaderBarProps {
   isDark: boolean;
   muted: boolean;
   isSupporter?: boolean;
+  currentRoom?: RoomState | null;
   onToggleTheme: () => void;
   onToggleMute: () => void;
   onSelectLocale: (locale: LocaleKey) => void;
   onOpenStore?: () => void;
+  onOpenRoomSync?: () => void;
 }
 
 const LOCALES_OPTIONS: SelectOption<LocaleKey>[] = [
@@ -32,10 +35,12 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
   isDark,
   muted,
   isSupporter = false,
+  currentRoom,
   onToggleTheme,
   onToggleMute,
   onSelectLocale,
   onOpenStore,
+  onOpenRoomSync,
 }) => {
   const { width, height } = useWindowDimensions();
   const isMobile = width < 600 || height < 750;
@@ -59,6 +64,31 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
         </View>
 
         <View style={styles.controlsRow}>
+          {/* Room Sync button */}
+          {onOpenRoomSync && (
+            <TouchableOpacity
+              onPress={onOpenRoomSync}
+              style={[
+                styles.storeButton,
+                currentRoom
+                  ? { borderColor: '#10B981', backgroundColor: isDark ? 'rgba(16,185,129,0.15)' : '#ECFDF5' }
+                  : { borderColor: colors.line, backgroundColor: colors.card },
+              ]}
+              activeOpacity={0.7}
+              accessibilityLabel="雙人連線同步"
+            >
+              <Users size={13} color={currentRoom ? '#10B981' : colors.muted} />
+              <Text
+                style={[
+                  styles.storeButtonText,
+                  { color: currentRoom ? '#10B981' : colors.muted },
+                ]}
+              >
+                {currentRoom ? currentRoom.code : I18nService.t(locale, 'room_sync_btn', '連線')}
+              </Text>
+            </TouchableOpacity>
+          )}
+
           {/* Store / Atelier button */}
           {onOpenStore && (
             <TouchableOpacity
