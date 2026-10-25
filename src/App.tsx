@@ -14,7 +14,7 @@ import {
   ScrollView,
   useWindowDimensions,
 } from 'react-native';
-import { Shuffle, BookOpen } from 'lucide-react-native';
+import { Shuffle, Bookmark } from 'lucide-react-native';
 import confetti from 'canvas-confetti';
 
 import { LocaleKey, CategoryFilter, QuestionEntry, CardSkinId } from './types';
@@ -34,7 +34,7 @@ import {
 import { HeaderBar } from './components/HeaderBar';
 import { CategorySelect } from './components/CategorySelect';
 import { Card3D, Card3DHandle } from './components/Card3D';
-import { DrawerModal } from './components/DrawerModal';
+import { FavoritesModal } from './components/FavoritesModal';
 import { TimerModal } from './components/TimerModal';
 import { StoreModal } from './components/StoreModal';
 import { AuthModal } from './components/AuthModal';
@@ -63,7 +63,7 @@ export const MainApp: React.FC = () => {
   const [isSupporter, setIsSupporter] = useState(false);
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [isStoreOpen, setIsStoreOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -72,6 +72,8 @@ export const MainApp: React.FC = () => {
   const [currentRoom, setCurrentRoom] = useState<RoomState | null>(null);
 
   const cardRef = useRef<Card3DHandle>(null);
+
+  const favoriteCount = useMemo(() => Object.keys(favorites).length, [favorites]);
 
   // Load initial settings & initialize session duration telemetry
   useEffect(() => {
@@ -382,7 +384,7 @@ export const MainApp: React.FC = () => {
   }, [currentQuestion, currentRoom, currentCategory, playFlip]);
 
   const handleSelectFromDrawer = useCallback((item: QuestionEntry) => {
-    setIsDrawerOpen(false);
+    setIsFavoritesOpen(false);
 
     if (item.id.startsWith('sensual-')) {
       const packQuestions = SENSUAL_PACK_DATA.map((p, idx) => ({
@@ -560,7 +562,7 @@ export const MainApp: React.FC = () => {
       } else if (e.key.toLowerCase() === 't') {
         setIsTimerOpen(true);
       } else if (e.key === 'Escape') {
-        setIsDrawerOpen(false);
+        setIsFavoritesOpen(false);
         setIsTimerOpen(false);
       }
     };
@@ -570,7 +572,6 @@ export const MainApp: React.FC = () => {
   }, [handleNextQuestion, handleToggleFavorite]);
 
   const nextBtnText = I18nService.t(locale, 'next_question', '換一題');
-  const drawerBtnText = I18nService.t(locale, 'drawer_btn', '從題庫挑');
   const keyboardHint =
     isMobile || Platform.OS !== 'web'
       ? I18nService.t(locale, 'mobile_hint', '輕觸翻牌 ｜ 滑動換題 ｜ 點擊收藏')
@@ -669,16 +670,24 @@ export const MainApp: React.FC = () => {
             ]}
             onPress={() => {
               playClick();
-              setIsDrawerOpen(true);
+              setIsFavoritesOpen(true);
             }}
             activeOpacity={0.8}
+            accessibilityLabel="收藏的題目"
           >
-            <BookOpen size={16} color={colors.clay} style={{ marginRight: 6 }} />
+            <Bookmark
+              size={16}
+              color={colors.clay}
+              fill={favoriteCount > 0 ? colors.clay : 'none'}
+              style={{ marginRight: 6 }}
+            />
             <Text
               style={[styles.secondaryActionText, { color: colors.ink }]}
               numberOfLines={1}
             >
-              {drawerBtnText}
+              {favoriteCount > 0
+                ? `${I18nService.t(locale, 'favorites_btn', '收藏的題目')} (${favoriteCount})`
+                : I18nService.t(locale, 'favorites_btn', '收藏的題目')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -697,16 +706,24 @@ export const MainApp: React.FC = () => {
         </View>
       </ScrollView>
 
-      {/* Drawer Modal */}
-      <DrawerModal
-        visible={isDrawerOpen}
+      {/* Favorites Modal */}
+      <FavoritesModal
+        visible={isFavoritesOpen}
         locale={locale}
         colors={colors}
         favorites={favorites}
-        unlockedPacks={unlockedPacks}
-        onClose={() => setIsDrawerOpen(false)}
+        onClose={() => setIsFavoritesOpen(false)}
         onSelectQuestion={handleSelectFromDrawer}
-        onOpenStore={() => setIsStoreOpen(true)}
+        onToggleFavorite={(text) => {
+          playClick();
+          setFavorites((prev) => {
+            const next = { ...prev };
+            if (next[text]) delete next[text];
+            else next[text] = true;
+            StorageService.setFavorites(next);
+            return next;
+          });
+        }}
       />
 
       {/* Timer Modal */}
