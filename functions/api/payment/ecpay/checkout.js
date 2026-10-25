@@ -59,7 +59,11 @@ export async function onRequestPost(context) {
         .run();
     }
 
-    const origin = new URL(request.url).origin;
+    const isLocal =
+      request.url.includes('localhost') || request.url.includes('127.0.0.1');
+    const origin = isLocal
+      ? new URL(request.url).origin
+      : 'https://between-us.ark-studio.app';
     const tradeDate = formatEcpayDate();
 
     const ecpayParams = {

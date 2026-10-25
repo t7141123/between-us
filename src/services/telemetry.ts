@@ -12,7 +12,7 @@ const SESSION_TIMESTAMP_KEY = '@between_us_session_ts';
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes inactivity timeout
 
 const PRIMARY_ENDPOINT = 'https://between-us.ark-studio.app/api/track';
-const FALLBACK_ENDPOINT = 'https://love-between-us.pages.dev/api/track';
+const FALLBACK_ENDPOINT = 'https://between-us.ark-studio.app/api/track';
 
 export class TelemetryService {
   private static cachedUserId: string | null = null;

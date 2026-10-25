@@ -11,7 +11,11 @@ import {
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  const origin = new URL(request.url).origin;
+  const isLocal =
+    request.url.includes('localhost') || request.url.includes('127.0.0.1');
+  const origin = isLocal
+    ? new URL(request.url).origin
+    : 'https://between-us.ark-studio.app';
 
   try {
     const formData = await parseFormBody(request);

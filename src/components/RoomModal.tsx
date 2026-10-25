@@ -82,10 +82,13 @@ export const RoomModal: React.FC<RoomModalProps> = ({
 
   const handleCopyInvite = async () => {
     if (!currentRoom) return;
-    const shareUrl =
+    const baseUrl =
       Platform.OS === 'web' && typeof window !== 'undefined'
-        ? `${window.location.origin}/?room=${currentRoom.code}`
-        : currentRoom.code;
+        ? window.location.origin.includes('localhost')
+          ? window.location.origin
+          : 'https://between-us.ark-studio.app'
+        : 'https://between-us.ark-studio.app';
+    const shareUrl = `${baseUrl}/?room=${currentRoom.code}`;
 
     const inviteText = `💌 在我們之間 · 雙人連線\n房間代碼：${currentRoom.code}\n加入連結：${shareUrl}`;
 

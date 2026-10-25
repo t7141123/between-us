@@ -82,7 +82,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({
               </View>
               <View style={[styles.infoRow, { marginTop: 6 }]}>
                 <Globe size={16} color={colors.clay} style={{ marginRight: 8 }} />
-                <Text style={[styles.infoText, { color: colors.ink }]}>https://love-between-us.pages.dev</Text>
+                <Text style={[styles.infoText, { color: colors.ink }]}>https://between-us.ark-studio.app</Text>
               </View>
             </View>
 

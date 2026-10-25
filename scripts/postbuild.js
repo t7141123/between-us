@@ -9,8 +9,8 @@ const publicDir = path.join(__dirname, '..', 'public');
 const distDir = path.join(__dirname, '..', 'dist');
 const indexPath = path.join(distDir, 'index.html');
 
-// Copy public assets (manifest.json, sw.js, icon.png, favicon.ico) to dist
-const filesToCopy = ['manifest.json', 'sw.js', 'icon.png', 'favicon.ico'];
+// Copy public assets (manifest.json, sw.js, icon.png, favicon.ico, _redirects) to dist
+const filesToCopy = ['manifest.json', 'sw.js', 'icon.png', 'favicon.ico', '_redirects'];
 for (const file of filesToCopy) {
   const src = path.join(publicDir, file);
   const dest = path.join(distDir, file);
@@ -28,6 +28,7 @@ if (fs.existsSync(indexPath)) {
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/icon.png" />
     <link rel="manifest" href="/manifest.json" />
+    <link rel="canonical" href="https://between-us.ark-studio.app/" />
     <meta name="theme-color" content="#FAF7F2" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -36,6 +37,10 @@ if (fs.existsSync(indexPath)) {
     <meta property="og:title" content="在我們之間 · Between Us" />
     <meta property="og:description" content="為親密關係設計的 700 道深度對話卡牌" />
     <meta property="og:image" content="/icon.png" />
+    <meta property="og:url" content="https://between-us.ark-studio.app/" />
+    <meta property="og:site_name" content="在我們之間 · Between Us" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://between-us.ark-studio.app/" />
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

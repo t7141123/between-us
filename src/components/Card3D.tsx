@@ -78,13 +78,20 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
     if (!question || isLocked) return;
     const shareText = `${I18nService.t(locale, 'share_prefix', '💌 在我們之間：「')}${question.text}${I18nService.t(locale, 'share_suffix', '」\n\n今晚我們來聊聊這題吧 ✨')}`;
 
+    const shareUrl =
+      Platform.OS === 'web' && typeof window !== 'undefined'
+        ? window.location.origin.includes('localhost')
+          ? window.location.href
+          : 'https://between-us.ark-studio.app/'
+        : 'https://between-us.ark-studio.app/';
+
     if (Platform.OS === 'web' && typeof navigator !== 'undefined') {
       if (navigator.share) {
         try {
           await navigator.share({
             title: '在我們之間 Between Us',
             text: shareText,
-            url: window.location.href,
+            url: shareUrl,
           });
           return;
         } catch {
@@ -92,7 +99,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
         }
       }
       if (navigator.clipboard) {
-        await navigator.clipboard.writeText(shareText);
+        await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
         setShareToast(true);
         setTimeout(() => setShareToast(false), 2500);
       }
