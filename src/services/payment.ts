@@ -9,6 +9,10 @@ export type StoreItemKey =
   | 'pack_sensual'
   | 'pack_marriage'
   | 'pack_parenting'
+  | 'skin_noir_gold'
+  | 'skin_midnight'
+  | 'skin_caramel'
+  | 'bundle_skins'
   | 'tip_coffee'
   | 'tip_afternoon';
 
@@ -19,7 +23,7 @@ export interface VerifyOrderResponse {
   itemKey?: string;
   amount?: number;
   target?: string | null;
-  type?: 'pack' | 'supporter' | null;
+  type?: 'pack' | 'supporter' | 'skin' | 'bundle_skins' | null;
   error?: string;
 }
 

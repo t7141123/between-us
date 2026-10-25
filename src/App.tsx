@@ -57,6 +57,7 @@ export const MainApp: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [unlockedPacks, setUnlockedPacks] = useState<string[]>([]);
+  const [unlockedSkins, setUnlockedSkins] = useState<CardSkinId[]>(['classic']);
   const [selectedSkin, setSelectedSkin] = useState<CardSkinId>('classic');
   const [isSupporter, setIsSupporter] = useState(false);
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
@@ -81,13 +82,17 @@ export const MainApp: React.FC = () => {
       StorageService.getCardSkin('classic'),
       StorageService.getIsSupporter(),
       StorageService.getAuthUser(),
-    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter, savedUser]) => {
+      StorageService.getUnlockedSkins(),
+    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter, savedUser, savedSkins]) => {
       if (!mounted) return;
       setLocale(savedLocale);
       setFavorites(savedFavs);
       setUnlockedPacks(savedPacks);
       setSelectedSkin(savedSkin);
       setIsSupporter(savedSupporter);
+      if (savedSkins && savedSkins.length > 0) {
+        setUnlockedSkins(savedSkins);
+      }
       if (savedUser) {
         setCurrentUser(savedUser);
         // Silently sync latest entitlements from cloud on startup
@@ -274,6 +279,14 @@ export const MainApp: React.FC = () => {
     triggerNotification();
     setIsSupporter(supporter);
     StorageService.setIsSupporter(supporter);
+  }, [playSuccess, triggerNotification]);
+
+  const handleUnlockSkin = useCallback((skinId: CardSkinId) => {
+    playSuccess();
+    triggerNotification();
+    StorageService.unlockSkin(skinId).then((updated) => {
+      setUnlockedSkins(updated);
+    });
   }, [playSuccess, triggerNotification]);
 
   const handleLoadPackSample = useCallback((packId: string) => {
@@ -499,6 +512,14 @@ export const MainApp: React.FC = () => {
             handleUnlockPack(res.target);
           } else if (res.type === 'supporter') {
             handleSetSupporter(true);
+          } else if (res.type === 'skin' && res.target) {
+            const skinTarget = res.target as CardSkinId;
+            handleUnlockSkin(skinTarget);
+            handleSelectSkin(skinTarget);
+          } else if (res.type === 'bundle_skins') {
+            handleUnlockSkin('noir_gold');
+            handleUnlockSkin('midnight');
+            handleUnlockSkin('caramel');
           }
           if (currentUser) {
             AuthService.claimOrder(currentUser.id, orderId);
@@ -517,7 +538,7 @@ export const MainApp: React.FC = () => {
     } else if (payment === 'cancelled' || payment === 'failed') {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [currentUser, handleSetSupporter, handleUnlockPack]);
+  }, [currentUser, handleSelectSkin, handleSetSupporter, handleUnlockPack, handleUnlockSkin]);
 
   // Global keyboard shortcuts for web desktop
   useEffect(() => {
@@ -702,10 +723,12 @@ export const MainApp: React.FC = () => {
         theme={isDark ? 'dark' : 'light'}
         colors={colors}
         unlockedPacks={unlockedPacks}
+        unlockedSkins={unlockedSkins}
         selectedSkin={selectedSkin}
         isSupporter={isSupporter}
         currentUser={currentUser}
         onSelectSkin={handleSelectSkin}
+        onUnlockSkin={handleUnlockSkin}
         onUnlockPack={handleUnlockPack}
         onSetSupporter={handleSetSupporter}
         onLoadPackSample={handleLoadPackSample}

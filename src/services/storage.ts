@@ -12,6 +12,7 @@ const STORAGE_KEYS = {
   THEME: 'betweenus.theme',
   UNLOCKED_PACKS: 'betweenus.unlocked_packs',
   CARD_SKIN: 'betweenus.card_skin',
+  UNLOCKED_SKINS: 'betweenus.unlocked_skins',
   SUPPORTER: 'betweenus.supporter',
   AUTH_USER: 'betweenus.auth_user',
 } as const;
@@ -146,6 +147,36 @@ export const StorageService = {
       await AsyncStorage.setItem(STORAGE_KEYS.CARD_SKIN, skin);
     } catch {
       // Storage write error
+    }
+  },
+
+  async getUnlockedSkins(): Promise<CardSkinId[]> {
+    try {
+      const raw = await AsyncStorage.getItem(STORAGE_KEYS.UNLOCKED_SKINS);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          const list = Array.from(new Set(['classic', ...parsed])) as CardSkinId[];
+          return list;
+        }
+      }
+    } catch {
+      // Ignore read error
+    }
+    return ['classic'];
+  },
+
+  async unlockSkin(skinId: CardSkinId): Promise<CardSkinId[]> {
+    try {
+      const current = await this.getUnlockedSkins();
+      if (!current.includes(skinId)) {
+        const updated = [...current, skinId];
+        await AsyncStorage.setItem(STORAGE_KEYS.UNLOCKED_SKINS, JSON.stringify(updated));
+        return updated;
+      }
+      return current;
+    } catch {
+      return ['classic'];
     }
   },
 

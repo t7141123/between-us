@@ -26,10 +26,12 @@ interface StoreModalProps {
   theme: ThemeMode;
   colors: ThemeColors;
   unlockedPacks: string[];
+  unlockedSkins?: CardSkinId[];
   selectedSkin: CardSkinId;
   isSupporter: boolean;
   currentUser?: AuthUser | null;
   onSelectSkin: (skinId: CardSkinId) => void;
+  onUnlockSkin?: (skinId: CardSkinId) => void;
   onUnlockPack: (packId: string) => void;
   onSetSupporter: (isSupporter: boolean) => void;
   onLoadPackSample?: (packId: string) => void;
@@ -46,10 +48,12 @@ export const StoreModal: React.FC<StoreModalProps> = ({
   theme,
   colors,
   unlockedPacks,
+  unlockedSkins = ['classic'],
   selectedSkin,
   isSupporter,
   currentUser,
   onSelectSkin,
+  onUnlockSkin,
   onUnlockPack,
   onSetSupporter,
   onLoadPackSample,
@@ -59,6 +63,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
   const [activeTab, setActiveTab] = useState<TabKey>('packs');
   const [promoCode, setPromoCode] = useState('');
   const [redeemFeedback, setRedeemFeedback] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const isDark = theme === 'dark';
 
@@ -74,6 +79,12 @@ export const StoreModal: React.FC<StoreModalProps> = ({
       setPromoCode('');
     } else if (code === 'BABY' || code === 'PARENT' || code === 'NEWBORN') {
       onUnlockPack('parenting');
+      setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
+      setPromoCode('');
+    } else if (code === 'SKIN' || code === 'GOLD' || code === 'NOIR') {
+      onUnlockSkin?.('noir_gold');
+      onUnlockSkin?.('midnight');
+      onUnlockSkin?.('caramel');
       setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
       setPromoCode('');
     } else if (code === 'COFFEE' || code === 'SUPPORTER') {
@@ -105,6 +116,53 @@ export const StoreModal: React.FC<StoreModalProps> = ({
       onUnlockPack(packId);
       setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
       setTimeout(() => setRedeemFeedback(null), 3000);
+    }
+  };
+
+  const handlePurchaseSkin = async (skinId: CardSkinId) => {
+    setIsProcessing(true);
+    try {
+      if (Platform.OS === 'web') {
+        setRedeemFeedback('正在引導至綠界 ECPay 安全付款畫面...');
+        const itemKey =
+          skinId === 'noir_gold'
+            ? 'skin_noir_gold'
+            : skinId === 'midnight'
+            ? 'skin_midnight'
+            : 'skin_caramel';
+        const res = await PaymentService.startEcpayCheckout(itemKey, currentUser?.id);
+        if (!res.success) {
+          setRedeemFeedback(res.error || '啟動綠界支付失敗');
+        }
+      } else {
+        onUnlockSkin?.(skinId);
+        onSelectSkin(skinId);
+        setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
+        setTimeout(() => setRedeemFeedback(null), 3000);
+      }
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handlePurchaseBundleSkins = async () => {
+    setIsProcessing(true);
+    try {
+      if (Platform.OS === 'web') {
+        setRedeemFeedback('正在引導至綠界 ECPay 安全付款畫面...');
+        const res = await PaymentService.startEcpayCheckout('bundle_skins', currentUser?.id);
+        if (!res.success) {
+          setRedeemFeedback(res.error || '啟動綠界支付失敗');
+        }
+      } else {
+        onUnlockSkin?.('noir_gold');
+        onUnlockSkin?.('midnight');
+        onUnlockSkin?.('caramel');
+        setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
+        setTimeout(() => setRedeemFeedback(null), 3000);
+      }
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -328,73 +386,159 @@ export const StoreModal: React.FC<StoreModalProps> = ({
 
             {/* Tab: Card Skins */}
             {activeTab === 'skins' && (
-              <View style={styles.skinGrid}>
-                {CARD_SKINS.map((skin) => {
-                  const isSelected = selectedSkin === skin.id;
-                  return (
-                    <Pressable
-                      key={skin.id}
-                      onPress={() => onSelectSkin(skin.id)}
+              <View>
+                {/* Supporter VIP Privilege Banner */}
+                {isSupporter ? (
+                  <View
+                    style={[
+                      styles.supporterSkinBanner,
+                      {
+                        backgroundColor: isDark ? 'rgba(217,119,6,0.18)' : '#FEF3C7',
+                        borderColor: isDark ? '#D97706' : '#F59E0B',
+                      },
+                    ]}
+                  >
+                    <Text
                       style={[
-                        styles.skinCard,
-                        {
-                          backgroundColor: skin.bgColor,
-                          borderColor: isSelected
-                            ? skin.accentColor
-                            : isDark
-                            ? 'rgba(255,255,255,0.1)'
-                            : 'rgba(0,0,0,0.08)',
-                          borderWidth: isSelected ? 2 : 1,
-                        },
+                        styles.supporterSkinBannerText,
+                        { color: isDark ? '#FDE68A' : '#92400E' },
                       ]}
                     >
-                      <View style={styles.skinCardHeader}>
-                        <Text style={[styles.skinName, { color: skin.textColor }]}>
-                          {I18nService.t(locale, skin.nameKey)}
-                        </Text>
-                        {isSelected && (
-                          <View
-                            style={[
-                              styles.skinActiveBadge,
-                              { backgroundColor: skin.accentColor },
-                            ]}
-                          >
-                            <Text style={styles.skinActiveBadgeText}>✓</Text>
-                          </View>
-                        )}
-                      </View>
+                      {I18nService.t(locale, 'supporter_free_skins')}
+                    </Text>
+                  </View>
+                ) : (
+                  /* Bundle Discount Purchase for Non-Supporters */
+                  <Pressable
+                    onPress={handlePurchaseBundleSkins}
+                    disabled={isProcessing}
+                    style={({ pressed }) => [
+                      styles.bundleSkinBanner,
+                      {
+                        backgroundColor: isDark ? '#1C1917' : '#FFFFFF',
+                        borderColor: isDark ? '#F59E0B' : '#D97706',
+                        opacity: pressed ? 0.85 : 1,
+                      },
+                    ]}
+                  >
+                    <View style={{ flex: 1 }}>
                       <Text
                         style={[
-                          styles.skinDesc,
-                          { color: skin.id === 'classic' ? '#666' : 'rgba(255,255,255,0.7)' },
+                          styles.bundleSkinBannerTitle,
+                          { color: isDark ? '#FDE68A' : '#78350F' },
                         ]}
                       >
-                        {I18nService.t(locale, skin.descKey)}
+                        {I18nService.t(locale, 'skin_unlock_bundle')}
                       </Text>
-                      <View
+                      <Text
                         style={[
-                          styles.skinSelectBtn,
+                          styles.bundleSkinBannerSub,
+                          { color: isDark ? '#A8A29E' : '#78716C' },
+                        ]}
+                      >
+                        曜石黑金、午夜星空、暖陽焦糖一次珍藏
+                      </Text>
+                    </View>
+                    <View style={styles.bundleSkinPriceBadge}>
+                      <Text style={styles.bundleSkinPriceText}>NT$ 90</Text>
+                    </View>
+                  </Pressable>
+                )}
+
+                <View style={styles.skinGrid}>
+                  {CARD_SKINS.map((skin) => {
+                    const isSelected = selectedSkin === skin.id;
+                    const isUnlocked =
+                      skin.id === 'classic' ||
+                      isSupporter ||
+                      unlockedSkins.includes(skin.id);
+
+                    return (
+                      <Pressable
+                        key={skin.id}
+                        onPress={() => {
+                          if (isUnlocked) {
+                            onSelectSkin(skin.id);
+                          } else {
+                            handlePurchaseSkin(skin.id);
+                          }
+                        }}
+                        style={[
+                          styles.skinCard,
                           {
-                            backgroundColor: isSelected
+                            backgroundColor: skin.bgColor,
+                            borderColor: isSelected
                               ? skin.accentColor
-                              : 'rgba(0,0,0,0.15)',
+                              : isDark
+                              ? 'rgba(255,255,255,0.1)'
+                              : 'rgba(0,0,0,0.08)',
+                            borderWidth: isSelected ? 2 : 1,
                           },
                         ]}
                       >
+                        <View style={styles.skinCardHeader}>
+                          <Text style={[styles.skinName, { color: skin.textColor }]}>
+                            {I18nService.t(locale, skin.nameKey)}
+                          </Text>
+                          {isSelected ? (
+                            <View
+                              style={[
+                                styles.skinActiveBadge,
+                                { backgroundColor: skin.accentColor },
+                              ]}
+                            >
+                              <Text style={styles.skinActiveBadgeText}>✓</Text>
+                            </View>
+                          ) : !isUnlocked ? (
+                            <View style={styles.skinLockedBadge}>
+                              <Text style={styles.skinLockedBadgeText}>🔒</Text>
+                            </View>
+                          ) : null}
+                        </View>
                         <Text
                           style={[
-                            styles.skinSelectBtnText,
-                            { color: isSelected ? '#FFFFFF' : skin.textColor },
+                            styles.skinDesc,
+                            { color: skin.id === 'classic' ? '#666' : 'rgba(255,255,255,0.7)' },
                           ]}
                         >
-                          {isSelected
-                            ? I18nService.t(locale, 'skin_selected')
-                            : I18nService.t(locale, 'skin_use')}
+                          {I18nService.t(locale, skin.descKey)}
                         </Text>
-                      </View>
-                    </Pressable>
-                  );
-                })}
+                        <View
+                          style={[
+                            styles.skinSelectBtn,
+                            {
+                              backgroundColor: isSelected
+                                ? skin.accentColor
+                                : !isUnlocked
+                                ? 'rgba(0,0,0,0.45)'
+                                : 'rgba(0,0,0,0.15)',
+                            },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.skinSelectBtnText,
+                              {
+                                color: isSelected
+                                  ? '#FFFFFF'
+                                  : !isUnlocked
+                                  ? '#FDE68A'
+                                  : skin.textColor,
+                                fontWeight: !isUnlocked ? '700' : '600',
+                              },
+                            ]}
+                          >
+                            {isSelected
+                              ? I18nService.t(locale, 'skin_selected')
+                              : isUnlocked
+                              ? I18nService.t(locale, 'skin_use')
+                              : I18nService.t(locale, 'skin_unlock_price')}
+                          </Text>
+                        </View>
+                      </Pressable>
+                    );
+                  })}
+                </View>
               </View>
             )}
 
@@ -876,5 +1020,56 @@ const styles = StyleSheet.create({
   syncBannerBtnText: {
     fontSize: 12,
     fontWeight: '700',
+  },
+  supporterSkinBanner: {
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginBottom: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  supporterSkinBannerText: {
+    fontSize: 13,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  bundleSkinBanner: {
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    marginBottom: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  bundleSkinBannerTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  bundleSkinBannerSub: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+  bundleSkinPriceBadge: {
+    backgroundColor: '#D97706',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  bundleSkinPriceText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  skinLockedBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  skinLockedBadgeText: {
+    fontSize: 11,
   },
 });

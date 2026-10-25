@@ -58,6 +58,16 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
   const skinConfig = CARD_SKINS.find((s) => s.id === skinId) || CARD_SKINS[0];
   const hasCustomSkin = skinConfig.id !== 'classic';
 
+  // Compute dynamic front and back skin colors
+  const cardBgColor = hasCustomSkin ? skinConfig.bgColor : colors.card;
+  const cardBorderColor = hasCustomSkin ? skinConfig.borderColor : colors.line;
+  const cardAccentColor = hasCustomSkin ? skinConfig.accentColor : colors.clay;
+  const cardTextColor = hasCustomSkin ? skinConfig.textColor : colors.ink;
+  const cardSubTextColor = hasCustomSkin
+    ? (skinConfig.id === 'noir_gold' || skinConfig.id === 'midnight' ? 'rgba(255,255,255,0.65)' : 'rgba(69,26,3,0.65)')
+    : colors.muted;
+  const cardInnerBorderColor = hasCustomSkin ? skinConfig.accentColor : colors.gold;
+
   const animatedValue = useRef(new Animated.Value(0)).current;
   const isFlippedRef = useRef(false);
   const [shareToast, setShareToast] = useState(false);
@@ -182,8 +192,8 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
           styles.cardFace,
           styles.cardFront,
           {
-            backgroundColor: colors.card,
-            borderColor: colors.line,
+            backgroundColor: cardBgColor,
+            borderColor: cardBorderColor,
             minHeight: isMobile ? 300 : (Platform.OS === 'web' ? 380 : 350),
             borderRadius: isMobile ? 22 : 28,
             transform: [{ rotateY: frontInterpolate }],
@@ -201,13 +211,21 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
           accessibilityHint={frontHint}
         >
           {/* Inner decorative gold border */}
-          <View pointerEvents="none" style={[styles.innerBorder, { borderColor: colors.gold }]} />
+          <View pointerEvents="none" style={[styles.innerBorder, { borderColor: cardInnerBorderColor }]} />
 
           {/* Front Header */}
           <View style={styles.cardHeader}>
-            <View style={[styles.categoryBadge, { backgroundColor: colors.badgeBg, borderColor: colors.clay }]}>
+            <View
+              style={[
+                styles.categoryBadge,
+                {
+                  backgroundColor: hasCustomSkin ? 'rgba(0,0,0,0.18)' : colors.badgeBg,
+                  borderColor: cardAccentColor,
+                },
+              ]}
+            >
               <Text
-                style={[styles.categoryText, { color: colors.clay }]}
+                style={[styles.categoryText, { color: cardAccentColor }]}
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
@@ -224,7 +242,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
                   accessibilityLabel="分享題目"
                   hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                 >
-                  <Share2 size={isMobile ? 15 : 17} color={shareToast ? colors.clay : colors.muted} />
+                  <Share2 size={isMobile ? 15 : 17} color={shareToast ? cardAccentColor : cardSubTextColor} />
                 </TouchableOpacity>
               )}
 
@@ -235,7 +253,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
                 accessibilityLabel="開啟計時器"
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
-                <Timer size={isMobile ? 16 : 18} color={colors.muted} />
+                <Timer size={isMobile ? 16 : 18} color={cardSubTextColor} />
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -247,8 +265,8 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
               >
                 <Bookmark
                   size={isMobile ? 16 : 18}
-                  color={isFavorite ? colors.clay : colors.muted}
-                  fill={isFavorite ? colors.clay : 'none'}
+                  color={isFavorite ? cardAccentColor : cardSubTextColor}
+                  fill={isFavorite ? cardAccentColor : 'none'}
                 />
               </TouchableOpacity>
             </View>
@@ -274,7 +292,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
                   style={[
                     styles.questionText,
                     {
-                      color: colors.ink,
+                      color: cardTextColor,
                       fontSize: isMobile ? 17 : 20,
                       lineHeight: isMobile ? 26 : 30,
                       textAlign: 'center',
@@ -288,7 +306,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
                 {onOpenStore && (
                   <TouchableOpacity
                     onPress={onOpenStore}
-                    style={[styles.unlockCardBtn, { backgroundColor: colors.clay }]}
+                    style={[styles.unlockCardBtn, { backgroundColor: cardAccentColor }]}
                     activeOpacity={0.8}
                   >
                     <Text style={styles.unlockCardBtnText}>
@@ -299,14 +317,14 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
               </View>
             ) : (
               <>
-                <Text style={[styles.questionNumber, { color: colors.clay }]}>
+                <Text style={[styles.questionNumber, { color: cardAccentColor }]}>
                   NO. {padIndex}
                 </Text>
                 <Text
                   style={[
                     styles.questionText,
                     {
-                      color: colors.ink,
+                      color: cardTextColor,
                       fontSize: isMobile ? 19 : (Platform.OS === 'web' ? 24 : 21),
                       lineHeight: isMobile ? 29 : (Platform.OS === 'web' ? 38 : 34),
                     },
@@ -319,18 +337,18 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
           </View>
 
           {/* Front Footer */}
-          <View style={[styles.cardFooter, { borderTopColor: colors.line }]}>
+          <View style={[styles.cardFooter, { borderTopColor: cardBorderColor }]}>
             <View style={styles.footerPrompt}>
-              <RefreshCw size={12} color={colors.muted} />
+              <RefreshCw size={12} color={cardSubTextColor} />
               <Text
-                style={[styles.promptText, { color: colors.muted }]}
+                style={[styles.promptText, { color: cardSubTextColor }]}
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
                 {frontHint}
               </Text>
             </View>
-            <Text style={[styles.progressText, { color: colors.muted }]}>
+            <Text style={[styles.progressText, { color: cardSubTextColor }]}>
               {currentIndex + 1} / {totalInDeck}
             </Text>
           </View>
@@ -399,23 +417,23 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
               style={[
                 styles.portalIconContainer,
                 isMobile && styles.portalIconMobile,
-                { backgroundColor: colors.badgeBg },
+                { backgroundColor: hasCustomSkin ? 'rgba(0,0,0,0.18)' : colors.badgeBg },
               ]}
             >
               <Svg width={isMobile ? 26 : 32} height={isMobile ? 26 : 32} viewBox="0 0 48 48" fill="none">
                 <Path
                   d="M12 40V24a12 12 0 0 1 24 0v16"
-                  stroke={colors.clay}
+                  stroke={cardAccentColor}
                   strokeWidth={2}
                   strokeLinecap="round"
                 />
                 <Path
                   d="M16 40V24a8 8 0 0 1 16 0v16"
-                  stroke={colors.clay}
+                  stroke={cardAccentColor}
                   strokeWidth={1.5}
                 />
-                <Circle cx={24} cy={14} r={2.5} fill={colors.clay} />
-                <Line x1={8} y1={40} x2={40} y2={40} stroke={colors.clay} strokeWidth={2} />
+                <Circle cx={24} cy={14} r={2.5} fill={cardAccentColor} />
+                <Line x1={8} y1={40} x2={40} y2={40} stroke={cardAccentColor} strokeWidth={2} />
               </Svg>
             </View>
 
