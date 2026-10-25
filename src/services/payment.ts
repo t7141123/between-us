@@ -10,6 +10,8 @@ export type StoreItemKey =
   | 'pack_marriage'
   | 'pack_parenting'
   | 'skin_noir_gold'
+  | 'skin_rose_wine'
+  | 'skin_forest_sage'
   | 'skin_midnight'
   | 'skin_caramel'
   | 'bundle_skins'

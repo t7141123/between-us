@@ -92,8 +92,8 @@ export const StoreModal: React.FC<StoreModalProps> = ({
       setPromoCode('');
     } else if (code === 'SKIN' || code === 'GOLD' || code === 'NOIR') {
       onUnlockSkin?.('noir_gold');
-      onUnlockSkin?.('midnight');
-      onUnlockSkin?.('caramel');
+      onUnlockSkin?.('rose_wine');
+      onUnlockSkin?.('forest_sage');
       setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
       setPromoCode('');
     } else if (code === 'COFFEE' || code === 'SUPPORTER') {
@@ -128,9 +128,9 @@ export const StoreModal: React.FC<StoreModalProps> = ({
     const itemKey: StoreItemKey =
       skin.id === 'noir_gold'
         ? 'skin_noir_gold'
-        : skin.id === 'midnight'
-        ? 'skin_midnight'
-        : 'skin_caramel';
+        : skin.id === 'rose_wine' || skin.id === 'caramel'
+        ? 'skin_rose_wine'
+        : 'skin_forest_sage';
     setPendingCheckout({
       itemKey,
       title: `${I18nService.t(locale, skin.nameKey)} (${I18nService.t(locale, 'tab_skins')})`,
@@ -183,8 +183,8 @@ export const StoreModal: React.FC<StoreModalProps> = ({
         onSelectSkin(checkout.targetId as CardSkinId);
       } else if (checkout.type === 'bundle_skins') {
         onUnlockSkin?.('noir_gold');
-        onUnlockSkin?.('midnight');
-        onUnlockSkin?.('caramel');
+        onUnlockSkin?.('rose_wine');
+        onUnlockSkin?.('forest_sage');
       } else if (checkout.type === 'supporter') {
         onSetSupporter(true);
       }
@@ -449,7 +449,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                           { color: isDark ? '#A8A29E' : '#78716C' },
                         ]}
                       >
-                        曜石黑金、午夜星空、暖陽焦糖一次珍藏
+                        曜石黑金、薄暮玫瑰、靜謐深林一次珍藏
                       </Text>
                     </View>
                     <View style={styles.bundleSkinPriceBadge}>

@@ -39,6 +39,7 @@ import { TimerModal } from './components/TimerModal';
 import { StoreModal } from './components/StoreModal';
 import { AuthModal } from './components/AuthModal';
 import { RoomModal } from './components/RoomModal';
+import { MenuModal } from './components/MenuModal';
 import { AuthService, AuthUser } from './services/auth';
 import { RoomService, RoomState } from './services/room';
 
@@ -67,6 +68,7 @@ export const MainApp: React.FC = () => {
   const [isStoreOpen, setIsStoreOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isRoomOpen, setIsRoomOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentRoom, setCurrentRoom] = useState<RoomState | null>(null);
 
   const cardRef = useRef<Card3DHandle>(null);
@@ -518,8 +520,8 @@ export const MainApp: React.FC = () => {
             handleSelectSkin(skinTarget);
           } else if (res.type === 'bundle_skins') {
             handleUnlockSkin('noir_gold');
-            handleUnlockSkin('midnight');
-            handleUnlockSkin('caramel');
+            handleUnlockSkin('rose_wine');
+            handleUnlockSkin('forest_sage');
           }
           if (currentUser) {
             AuthService.claimOrder(currentUser.id, orderId);
@@ -591,9 +593,6 @@ export const MainApp: React.FC = () => {
           muted={muted}
           isSupporter={isSupporter}
           currentRoom={currentRoom}
-          onToggleTheme={toggleTheme}
-          onToggleMute={toggleMute}
-          onSelectLocale={handleSelectLocale}
           onOpenStore={() => {
             playClick();
             setIsStoreOpen(true);
@@ -601,6 +600,10 @@ export const MainApp: React.FC = () => {
           onOpenRoomSync={() => {
             playClick();
             setIsRoomOpen(true);
+          }}
+          onOpenMenu={() => {
+            playClick();
+            setIsMenuOpen(true);
           }}
         />
 
@@ -760,6 +763,23 @@ export const MainApp: React.FC = () => {
         onClose={() => setIsRoomOpen(false)}
         onRoomConnected={(room) => setCurrentRoom(room)}
         onLeaveRoom={() => setCurrentRoom(null)}
+      />
+
+      {/* Hamburger Drawer & Preferences Menu Modal */}
+      <MenuModal
+        visible={isMenuOpen}
+        locale={locale}
+        theme={isDark ? 'dark' : 'light'}
+        colors={colors}
+        muted={muted}
+        onClose={() => setIsMenuOpen(false)}
+        onToggleTheme={toggleTheme}
+        onToggleMute={toggleMute}
+        onSelectLocale={handleSelectLocale}
+        onOpenTimer={() => {
+          playClick();
+          setIsTimerOpen(true);
+        }}
       />
     </SafeAreaView>
   );

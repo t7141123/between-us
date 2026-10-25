@@ -1,46 +1,34 @@
 /**
- * HeaderBar Component containing title, subtitle, theme toggle, mute toggle and language picker.
+ * HeaderBar Component containing title, subtitle, and streamlined action triggers (Room, Store, Menu).
  */
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, useWindowDimensions } from 'react-native';
-import { Sun, Moon, Volume2, VolumeX, Globe, Sparkles, Users } from 'lucide-react-native';
+import { Sparkles, Users, Menu } from 'lucide-react-native';
 import { LocaleKey, ThemeColors } from '../types';
 import { I18nService } from '../services/i18n';
 import { RoomState } from '../services/room';
-import { SelectPicker, SelectOption } from './SelectPicker';
 
 interface HeaderBarProps {
   locale: LocaleKey;
   colors: ThemeColors;
   isDark: boolean;
-  muted: boolean;
+  muted?: boolean;
   isSupporter?: boolean;
   currentRoom?: RoomState | null;
-  onToggleTheme: () => void;
-  onToggleMute: () => void;
-  onSelectLocale: (locale: LocaleKey) => void;
   onOpenStore?: () => void;
   onOpenRoomSync?: () => void;
+  onOpenMenu: () => void;
 }
-
-const LOCALES_OPTIONS: SelectOption<LocaleKey>[] = [
-  { value: 'zh-TW', label: '繁中' },
-  { value: 'zh-CN', label: '简中' },
-  { value: 'en', label: 'EN' },
-];
 
 export const HeaderBar: React.FC<HeaderBarProps> = ({
   locale,
   colors,
   isDark,
-  muted,
   isSupporter = false,
   currentRoom,
-  onToggleTheme,
-  onToggleMute,
-  onSelectLocale,
   onOpenStore,
   onOpenRoomSync,
+  onOpenMenu,
 }) => {
   const { width, height } = useWindowDimensions();
   const isMobile = width < 600 || height < 750;
@@ -107,43 +95,14 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             </TouchableOpacity>
           )}
 
-          {/* Language Selection Dropdown Picker */}
-          <SelectPicker<LocaleKey>
-            icon={<Globe size={13} color={colors.muted} />}
-            options={LOCALES_OPTIONS}
-            selectedValue={locale}
-            onSelect={onSelectLocale}
-            colors={colors}
-            modalTitle={I18nService.t(locale, 'language', '語言')}
-            compact
-          />
-
-          {/* Audio toggle button */}
+          {/* Hamburger Menu button */}
           <TouchableOpacity
-            onPress={onToggleMute}
+            onPress={onOpenMenu}
             style={[styles.iconButton, { borderColor: colors.line, backgroundColor: colors.card }]}
             activeOpacity={0.7}
-            accessibilityLabel="切換音效"
+            accessibilityLabel="選單與設定"
           >
-            {muted ? (
-              <VolumeX size={15} color={colors.muted} />
-            ) : (
-              <Volume2 size={15} color={colors.clay} />
-            )}
-          </TouchableOpacity>
-
-          {/* Theme toggle button */}
-          <TouchableOpacity
-            onPress={onToggleTheme}
-            style={[styles.iconButton, { borderColor: colors.line, backgroundColor: colors.card }]}
-            activeOpacity={0.7}
-            accessibilityLabel="切換主題模式"
-          >
-            {isDark ? (
-              <Sun size={15} color={colors.clay} />
-            ) : (
-              <Moon size={15} color={colors.muted} />
-            )}
+            <Menu size={16} color={colors.ink} />
           </TouchableOpacity>
         </View>
       </View>
