@@ -389,7 +389,7 @@ module.exports = [
   },
   {
     tw: "當你看見我對自己的某個缺點感到自卑時，你在心裡是怎麼看我的？",
-    cn: "当你看owner我对自己某个缺点感到自卑时，你在心里是怎么看我的？",
+    cn: "当你看着我对自己某个缺点感到自卑时，你在心里是怎么看我的？",
     en: "When you notice me beating myself up over an insecurity, how do your eyes actually see me in that moment?"
   },
   {

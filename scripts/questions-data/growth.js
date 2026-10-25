@@ -19,7 +19,7 @@ module.exports = [
   },
   {
     tw: "回顧過去這一年，你看見我身上最大的進步或成熟是什麼？哪一點讓你刮目相看？",
-    cn: "回顾过去这一年，你看owner我身上最大的进步或成熟是什么？哪一点让你刮目相看？",
+    cn: "回顾过去这一年，你看着我身上最大的进步或成熟是什么？哪一点让你刮目相看？",
     en: "Looking at my journey over the past year, where have you seen me mature or grow in ways that earned your deep respect?"
   },
   {
@@ -194,7 +194,7 @@ module.exports = [
   },
   {
     tw: "當你看見我為某個目標全力以赴時，你在心底深處對我有著怎樣的信任與期待？",
-    cn: "当你看owner我为某个目标全力以赴时，你在心底深处对我有著怎样的信任与期待？",
+    cn: "当你看着我为某个目标全力以赴时，你在心底深处对我有著怎样的信任与期待？",
     en: "When you see me working late with fire in my eyes, what quiet prayer or belief do you whisper for my success?"
   },
   {
@@ -334,7 +334,7 @@ module.exports = [
   },
   {
     tw: "當你看見我為了成為一個更好的伴侶而默默做出改變時，你在心底深處感受到了什麼？",
-    cn: "当你看owner我为了成为一个更好的伴侣而默默做出改变时，你在心底深处感受到了什么？",
+    cn: "当你看着我为了成为一个更好的伴侣而默默做出改变时，你在心底深处感受到了什么？",
     en: "When you notice me wrestling with my own flaws just to love you better, what does that effort mean to you?"
   },
   {

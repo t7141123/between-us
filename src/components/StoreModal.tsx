@@ -736,7 +736,9 @@ export const StoreModal: React.FC<StoreModalProps> = ({
               </Text>
 
               <Text style={[styles.confirmDesc, { color: colors.muted }]}>
-                {I18nService.t(locale, 'checkout_confirm_desc')}
+                {Platform.OS === 'web'
+                  ? I18nService.t(locale, 'checkout_confirm_desc')
+                  : I18nService.t(locale, 'checkout_confirm_desc_native')}
               </Text>
 
               {/* Item Details Box */}

@@ -116,7 +116,7 @@ module.exports = [
   },
   {
     tw: "當你看見我為你洗頭髮、吹乾頭髮時，那種被呵護的感覺會讓你產生想親吻我的衝動嗎？",
-    cn: "当你看owner我为你洗头发、吹干头发时，那种被呵护的感觉会让你产生想亲吻我的冲动吗？",
+    cn: "当你看着我为你洗头发、吹干头发时，那种被呵护的感觉会让你产生想亲吻我的冲动吗？",
     en: "When I tenderly wash or blow-dry your hair, does that feeling of care stir a warm romantic impulse in you?"
   },
   {
@@ -201,7 +201,7 @@ module.exports = [
   },
   {
     tw: "當你看著我沉睡時安靜的側臉，你的心底最常浮現的一種情感是什麼？",
-    cn: "当你看owner我沉睡时安静的侧脸，你的心底最常浮现的一种情感是什么？",
+    cn: "当你看着我沉睡时安静的侧脸，你的心底最常浮现的一种情感是什么？",
     en: "Looking at my sleeping face in early dawn, what feeling most quietly wells up in your chest?"
   },
   {
@@ -236,7 +236,7 @@ module.exports = [
   },
   {
     tw: "當你看見我站在浴室門口帶著笑意看著你時，你那一秒心裡會閃過什麼念頭？",
-    cn: "当你看owner我站在浴室门口带着笑意看着你时，你那一秒心里会闪过什么念头？",
+    cn: "当你看着我站在浴室门口带着笑意看着你时，你那一秒心里会闪过什么念头？",
     en: "When you catch me leaning against the bathroom doorway smiling warmly at you, what thought crosses your mind?"
   },
   {

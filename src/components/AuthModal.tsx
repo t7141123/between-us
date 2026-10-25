@@ -40,6 +40,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const isDark = theme === 'dark';
 
@@ -100,6 +101,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setFeedback(null);
       onClose();
     }, 1000);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!currentUser) return;
+    setLoading(true);
+    const res = await AuthService.deleteAccount(currentUser.id);
+    setLoading(false);
+
+    if (res.success) {
+      onUserChanged(null);
+      setShowDeleteConfirm(false);
+      setFeedback(I18nService.t(locale, 'delete_account_success'));
+      setTimeout(() => {
+        setFeedback(null);
+        onClose();
+      }, 1500);
+    } else {
+      setFeedback(res.error || 'Delete failed');
+    }
   };
 
   return (
@@ -172,14 +192,75 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <Text style={[styles.loggedInEmail, { color: colors.ink }]}>
                 {currentUser.email}
               </Text>
-              <Pressable
-                onPress={handleLogout}
-                style={[styles.logoutBtn, { borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }]}
-              >
-                <Text style={[styles.logoutBtnText, { color: colors.muted }]}>
-                  {I18nService.t(locale, 'btn_logout')}
-                </Text>
-              </Pressable>
+
+              {showDeleteConfirm ? (
+                <View
+                  style={[
+                    styles.deleteConfirmBox,
+                    {
+                      backgroundColor: isDark ? 'rgba(220, 38, 38, 0.12)' : '#FEF2F2',
+                      borderColor: isDark ? 'rgba(220, 38, 38, 0.3)' : '#FCA5A5',
+                    },
+                  ]}
+                >
+                  <Text style={[styles.deleteConfirmTitle, { color: '#EF4444' }]}>
+                    ⚠️ {I18nService.t(locale, 'delete_account_confirm_title')}
+                  </Text>
+                  <Text style={[styles.deleteConfirmDesc, { color: isDark ? '#FCA5A5' : '#7F1D1D' }]}>
+                    {I18nService.t(locale, 'delete_account_confirm_desc')}
+                  </Text>
+                  <View style={styles.deleteConfirmActions}>
+                    <Pressable
+                      onPress={() => setShowDeleteConfirm(false)}
+                      disabled={loading}
+                      style={[
+                        styles.deleteCancelBtn,
+                        { borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' },
+                      ]}
+                    >
+                      <Text style={[styles.deleteCancelBtnText, { color: colors.muted }]}>
+                        {I18nService.t(locale, 'checkout_confirm_cancel_btn')}
+                      </Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={handleDeleteAccount}
+                      disabled={loading}
+                      style={styles.deleteConfirmBtn}
+                    >
+                      <Text style={styles.deleteConfirmBtnText}>
+                        {I18nService.t(locale, 'btn_confirm_delete')}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.loggedInActionsRow}>
+                  <Pressable
+                    onPress={handleLogout}
+                    disabled={loading}
+                    style={[styles.logoutBtn, { borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }]}
+                  >
+                    <Text style={[styles.logoutBtnText, { color: colors.muted }]}>
+                      {I18nService.t(locale, 'btn_logout')}
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => setShowDeleteConfirm(true)}
+                    disabled={loading}
+                    style={[
+                      styles.deleteBtn,
+                      {
+                        borderColor: isDark ? 'rgba(239,68,68,0.3)' : 'rgba(239,68,68,0.2)',
+                        backgroundColor: isDark ? 'rgba(239,68,68,0.08)' : '#FEF2F2',
+                      },
+                    ]}
+                  >
+                    <Text style={styles.deleteBtnText}>
+                      {I18nService.t(locale, 'btn_delete_account')}
+                    </Text>
+                  </Pressable>
+                </View>
+              )}
             </View>
           ) : (
             <View style={styles.actionsBox}>
@@ -345,16 +426,74 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
   },
-  logoutBtn: {
+  loggedInActionsRow: {
+    flexDirection: 'row',
+    gap: 10,
     marginTop: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 6,
+  },
+  logoutBtn: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
     borderRadius: 8,
     borderWidth: 1,
   },
   logoutBtnText: {
     fontSize: 12,
     fontWeight: '600',
+  },
+  deleteBtn: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  deleteBtnText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#EF4444',
+  },
+  deleteConfirmBox: {
+    width: '100%',
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    marginTop: 8,
+    gap: 8,
+  },
+  deleteConfirmTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  deleteConfirmDesc: {
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  deleteConfirmActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 8,
+    marginTop: 4,
+  },
+  deleteCancelBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  deleteCancelBtnText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  deleteConfirmBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    backgroundColor: '#DC2626',
+  },
+  deleteConfirmBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   actionsBox: {
     gap: 12,

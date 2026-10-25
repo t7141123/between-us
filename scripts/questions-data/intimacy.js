@@ -149,7 +149,7 @@ module.exports = [
   },
   {
     tw: "當你看見我穿上哪一件特定風格的衣服時，會讓你在心底忍不住多看我幾眼？",
-    cn: "当你看owner我穿上哪一件特定风格的衣服时，会让你在心底忍不住多看我几眼？",
+    cn: "当你看着我穿上哪一件特定风格的衣服时，会让你在心底忍不住多看我几眼？",
     en: "What specific outfit or aesthetic on me makes you do an involuntary double-take every time?"
   },
   {
@@ -229,7 +229,7 @@ module.exports = [
   },
   {
     tw: "當你看見我生病虛弱躺在床上時，由你悉心照顧我的過程，會不會加深你對我的愛？",
-    cn: "当你看owner我生病虚弱躺在床上时，由你悉心照顾我的过程，会不会加深你对我的爱？",
+    cn: "当你看着我生病虚弱躺在床上时，由你悉心照顾我的过程，会不会加深你对我的爱？",
     en: "When you nurse me through the flu, does tending to my vulnerability deepen your tender attachment?"
   },
   {
@@ -309,7 +309,7 @@ module.exports = [
   },
   {
     tw: "當你看見我站在遠處對你展露笑容時，你心中最先湧現的一句話通常會是什麼？",
-    cn: "当你看owner我站在远处对你展露笑容时，你心中最先涌现的一句话通常会是什么？",
+    cn: "当你看着我站在远处对你展露笑容时，你心中最先涌现的一句话通常会是什么？",
     en: "When you catch me smiling across the platform or coffee shop, what thought immediately lights up inside you?"
   },
   {
@@ -374,7 +374,7 @@ module.exports = [
   },
   {
     tw: "當你看見我為生活奮力打拼滿頭大汗時，你在那一瞬間對我的情感是崇拜還是心疼？",
-    cn: "当你看owner我为生活奋力打拼满头大汗时，你在那一瞬间对我的情感是崇拜还是心疼？",
+    cn: "当你看着我为生活奋力打拼满头大汗时，你在那一瞬间对我的情感是崇拜还是心疼？",
     en: "Seeing me sweat and pour myself out for our future, does your heart swell with respect, tenderness, or protective care?"
   },
   {
