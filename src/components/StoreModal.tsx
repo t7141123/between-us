@@ -13,10 +13,10 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { CARD_SKINS, EXPANSION_PACKS } from '../constants/packs';
+import { CARD_SKINS, CardSkinConfig, EXPANSION_PACKS } from '../constants/packs';
 import { AuthUser } from '../services/auth';
 import { I18nService } from '../services/i18n';
-import { PaymentService } from '../services/payment';
+import { PaymentService, StoreItemKey } from '../services/payment';
 import { CardSkinId, LocaleKey, ThemeColors, ThemeMode } from '../types';
 
 interface StoreModalProps {
@@ -41,6 +41,14 @@ interface StoreModalProps {
 
 type TabKey = 'packs' | 'skins' | 'support';
 
+interface PendingCheckout {
+  itemKey: StoreItemKey;
+  title: string;
+  amountText: string;
+  type: 'pack' | 'skin' | 'bundle_skins' | 'supporter';
+  targetId?: string;
+}
+
 export const StoreModal: React.FC<StoreModalProps> = ({
   visible,
   locale,
@@ -64,6 +72,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
   const [promoCode, setPromoCode] = useState('');
   const [redeemFeedback, setRedeemFeedback] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [pendingCheckout, setPendingCheckout] = useState<PendingCheckout | null>(null);
 
   const isDark = theme === 'dark';
 
@@ -99,82 +108,86 @@ export const StoreModal: React.FC<StoreModalProps> = ({
     }, 4000);
   };
 
-  const handlePurchasePack = async (packId: string) => {
+  const requestPackCheckout = (pack: typeof EXPANSION_PACKS[0]) => {
+    const itemKey: StoreItemKey =
+      pack.id === 'marriage'
+        ? 'pack_marriage'
+        : pack.id === 'parenting'
+        ? 'pack_parenting'
+        : 'pack_sensual';
+    setPendingCheckout({
+      itemKey,
+      title: I18nService.t(locale, pack.titleKey),
+      amountText: pack.priceText,
+      type: 'pack',
+      targetId: pack.id,
+    });
+  };
+
+  const requestSkinCheckout = (skin: CardSkinConfig) => {
+    const itemKey: StoreItemKey =
+      skin.id === 'noir_gold'
+        ? 'skin_noir_gold'
+        : skin.id === 'midnight'
+        ? 'skin_midnight'
+        : 'skin_caramel';
+    setPendingCheckout({
+      itemKey,
+      title: `${I18nService.t(locale, skin.nameKey)} (${I18nService.t(locale, 'tab_skins')})`,
+      amountText: 'NT$ 45',
+      type: 'skin',
+      targetId: skin.id,
+    });
+  };
+
+  const requestBundleSkinsCheckout = () => {
+    setPendingCheckout({
+      itemKey: 'bundle_skins',
+      title: I18nService.t(locale, 'skin_unlock_bundle'),
+      amountText: 'NT$ 90',
+      type: 'bundle_skins',
+    });
+  };
+
+  const requestTipCheckout = (itemKey: 'tip_coffee' | 'tip_afternoon') => {
+    const isCoffee = itemKey === 'tip_coffee';
+    setPendingCheckout({
+      itemKey,
+      title: I18nService.t(locale, itemKey),
+      amountText: isCoffee ? 'NT$ 60' : 'NT$ 120',
+      type: 'supporter',
+    });
+  };
+
+  const handleConfirmCheckout = async () => {
+    if (!pendingCheckout) return;
+    const checkout = pendingCheckout;
+    setPendingCheckout(null);
+
     if (Platform.OS === 'web') {
-      setRedeemFeedback('正在引導至綠界 ECPay 安全付款畫面...');
-      const itemKey =
-        packId === 'marriage'
-          ? 'pack_marriage'
-          : packId === 'parenting'
-          ? 'pack_parenting'
-          : 'pack_sensual';
-      const res = await PaymentService.startEcpayCheckout(itemKey, currentUser?.id);
-      if (!res.success) {
-        setRedeemFeedback(res.error || '啟動綠界支付失敗');
+      setIsProcessing(true);
+      setRedeemFeedback(I18nService.t(locale, 'checkout_loading'));
+      try {
+        const res = await PaymentService.startEcpayCheckout(checkout.itemKey, currentUser?.id);
+        if (!res.success) {
+          setRedeemFeedback(res.error || '啟動綠界支付失敗');
+        }
+      } finally {
+        setIsProcessing(false);
       }
     } else {
-      onUnlockPack(packId);
-      setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
-      setTimeout(() => setRedeemFeedback(null), 3000);
-    }
-  };
-
-  const handlePurchaseSkin = async (skinId: CardSkinId) => {
-    setIsProcessing(true);
-    try {
-      if (Platform.OS === 'web') {
-        setRedeemFeedback('正在引導至綠界 ECPay 安全付款畫面...');
-        const itemKey =
-          skinId === 'noir_gold'
-            ? 'skin_noir_gold'
-            : skinId === 'midnight'
-            ? 'skin_midnight'
-            : 'skin_caramel';
-        const res = await PaymentService.startEcpayCheckout(itemKey, currentUser?.id);
-        if (!res.success) {
-          setRedeemFeedback(res.error || '啟動綠界支付失敗');
-        }
-      } else {
-        onUnlockSkin?.(skinId);
-        onSelectSkin(skinId);
-        setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
-        setTimeout(() => setRedeemFeedback(null), 3000);
-      }
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handlePurchaseBundleSkins = async () => {
-    setIsProcessing(true);
-    try {
-      if (Platform.OS === 'web') {
-        setRedeemFeedback('正在引導至綠界 ECPay 安全付款畫面...');
-        const res = await PaymentService.startEcpayCheckout('bundle_skins', currentUser?.id);
-        if (!res.success) {
-          setRedeemFeedback(res.error || '啟動綠界支付失敗');
-        }
-      } else {
+      if (checkout.type === 'pack' && checkout.targetId) {
+        onUnlockPack(checkout.targetId);
+      } else if (checkout.type === 'skin' && checkout.targetId) {
+        onUnlockSkin?.(checkout.targetId as CardSkinId);
+        onSelectSkin(checkout.targetId as CardSkinId);
+      } else if (checkout.type === 'bundle_skins') {
         onUnlockSkin?.('noir_gold');
         onUnlockSkin?.('midnight');
         onUnlockSkin?.('caramel');
-        setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
-        setTimeout(() => setRedeemFeedback(null), 3000);
+      } else if (checkout.type === 'supporter') {
+        onSetSupporter(true);
       }
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleTip = async (itemKey: 'tip_coffee' | 'tip_afternoon') => {
-    if (Platform.OS === 'web') {
-      setRedeemFeedback('正在引導至綠界 ECPay 安全付款畫面...');
-      const res = await PaymentService.startEcpayCheckout(itemKey, currentUser?.id);
-      if (!res.success) {
-        setRedeemFeedback(res.error || '啟動綠界支付失敗');
-      }
-    } else {
-      onSetSupporter(true);
       setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
       setTimeout(() => setRedeemFeedback(null), 3000);
     }
@@ -362,7 +375,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                         <Pressable
                           onPress={() => {
                             if (!isUnlocked) {
-                              handlePurchasePack(pack.id);
+                              requestPackCheckout(pack);
                             } else {
                               onLoadPackSample?.(pack.id);
                               onClose();
@@ -410,7 +423,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                 ) : (
                   /* Bundle Discount Purchase for Non-Supporters */
                   <Pressable
-                    onPress={handlePurchaseBundleSkins}
+                    onPress={requestBundleSkinsCheckout}
                     disabled={isProcessing}
                     style={({ pressed }) => [
                       styles.bundleSkinBanner,
@@ -460,7 +473,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                           if (isUnlocked) {
                             onSelectSkin(skin.id);
                           } else {
-                            handlePurchaseSkin(skin.id);
+                            requestSkinCheckout(skin);
                           }
                         }}
                         style={[
@@ -490,15 +503,31 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                               <Text style={styles.skinActiveBadgeText}>✓</Text>
                             </View>
                           ) : !isUnlocked ? (
-                            <View style={styles.skinLockedBadge}>
-                              <Text style={styles.skinLockedBadgeText}>🔒</Text>
+                            <View
+                              style={[
+                                styles.skinLockedBadge,
+                                {
+                                  backgroundColor: skin.isDarkSkin
+                                    ? 'rgba(0,0,0,0.5)'
+                                    : 'rgba(180,83,9,0.18)',
+                                },
+                              ]}
+                            >
+                              <Text
+                                style={[
+                                  styles.skinLockedBadgeText,
+                                  { color: skin.isDarkSkin ? '#FFFFFF' : '#78350F' },
+                                ]}
+                              >
+                                🔒
+                              </Text>
                             </View>
                           ) : null}
                         </View>
                         <Text
                           style={[
                             styles.skinDesc,
-                            { color: skin.id === 'classic' ? '#666' : 'rgba(255,255,255,0.7)' },
+                            { color: skin.subTextColor },
                           ]}
                         >
                           {I18nService.t(locale, skin.descKey)}
@@ -510,7 +539,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                               backgroundColor: isSelected
                                 ? skin.accentColor
                                 : !isUnlocked
-                                ? 'rgba(0,0,0,0.45)'
+                                ? (skin.isDarkSkin ? 'rgba(255,255,255,0.16)' : skin.accentColor)
                                 : 'rgba(0,0,0,0.15)',
                             },
                           ]}
@@ -522,7 +551,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                                 color: isSelected
                                   ? '#FFFFFF'
                                   : !isUnlocked
-                                  ? '#FDE68A'
+                                  ? (skin.isDarkSkin ? '#FDE68A' : '#FFFFFF')
                                   : skin.textColor,
                                 fontWeight: !isUnlocked ? '700' : '600',
                               },
@@ -564,7 +593,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
 
                 <View style={styles.tipRow}>
                   <Pressable
-                    onPress={() => handleTip('tip_coffee')}
+                    onPress={() => requestTipCheckout('tip_coffee')}
                     style={[
                       styles.tipButton,
                       { backgroundColor: isDark ? '#292524' : '#FFFFFF', borderColor: colors.clay },
@@ -577,7 +606,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                   </Pressable>
 
                   <Pressable
-                    onPress={() => handleTip('tip_afternoon')}
+                    onPress={() => requestTipCheckout('tip_afternoon')}
                     style={[
                       styles.tipButton,
                       { backgroundColor: isDark ? '#292524' : '#FFFFFF', borderColor: colors.clay },
@@ -681,6 +710,96 @@ export const StoreModal: React.FC<StoreModalProps> = ({
             </View>
           </ScrollView>
         </View>
+
+        {/* Checkout Confirmation Dialog */}
+        {pendingCheckout && (
+          <View style={styles.confirmOverlay}>
+            <Pressable
+              style={styles.confirmBackdrop}
+              onPress={() => !isProcessing && setPendingCheckout(null)}
+            />
+            <View
+              style={[
+                styles.confirmCard,
+                {
+                  backgroundColor: isDark ? '#292524' : '#FFFFFF',
+                  borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)',
+                },
+              ]}
+            >
+              <View style={styles.confirmIconCircle}>
+                <Text style={styles.confirmIconText}>💳</Text>
+              </View>
+
+              <Text style={[styles.confirmTitle, { color: colors.ink }]}>
+                {I18nService.t(locale, 'checkout_confirm_title')}
+              </Text>
+
+              <Text style={[styles.confirmDesc, { color: colors.muted }]}>
+                {I18nService.t(locale, 'checkout_confirm_desc')}
+              </Text>
+
+              {/* Item Details Box */}
+              <View
+                style={[
+                  styles.confirmItemBox,
+                  {
+                    backgroundColor: isDark ? '#1C1917' : '#FAF6F0',
+                    borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                  },
+                ]}
+              >
+                <View style={styles.confirmItemRow}>
+                  <Text style={[styles.confirmItemLabel, { color: colors.muted }]}>
+                    {I18nService.t(locale, 'checkout_confirm_item')}
+                  </Text>
+                  <Text
+                    style={[styles.confirmItemValue, { color: colors.ink }]}
+                    numberOfLines={1}
+                  >
+                    {pendingCheckout.title}
+                  </Text>
+                </View>
+                <View style={styles.confirmItemRow}>
+                  <Text style={[styles.confirmItemLabel, { color: colors.muted }]}>
+                    {I18nService.t(locale, 'checkout_confirm_amount')}
+                  </Text>
+                  <Text style={[styles.confirmItemPrice, { color: colors.clay }]}>
+                    {pendingCheckout.amountText}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Actions */}
+              <View style={styles.confirmActionsRow}>
+                <Pressable
+                  onPress={() => setPendingCheckout(null)}
+                  disabled={isProcessing}
+                  style={[
+                    styles.confirmCancelBtn,
+                    {
+                      borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)',
+                    },
+                  ]}
+                >
+                  <Text style={[styles.confirmCancelBtnText, { color: colors.ink }]}>
+                    {I18nService.t(locale, 'checkout_confirm_cancel_btn')}
+                  </Text>
+                </Pressable>
+
+                <Pressable
+                  onPress={handleConfirmCheckout}
+                  disabled={isProcessing}
+                  style={[styles.confirmPayBtn, { backgroundColor: colors.clay }]}
+                >
+                  <Text style={styles.confirmPayBtnText}>
+                    {I18nService.t(locale, 'checkout_confirm_pay_btn')}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        )}
       </View>
     </Modal>
   );
@@ -1071,5 +1190,108 @@ const styles = StyleSheet.create({
   },
   skinLockedBadgeText: {
     fontSize: 11,
+  },
+  confirmOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  confirmBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+  },
+  confirmCard: {
+    width: '90%',
+    maxWidth: 380,
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 24,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.28,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  confirmIconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: 'rgba(196, 112, 79, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  confirmIconText: {
+    fontSize: 26,
+  },
+  confirmTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  confirmDesc: {
+    fontSize: 13,
+    lineHeight: 19,
+    textAlign: 'center',
+    marginBottom: 16,
+    paddingHorizontal: 4,
+  },
+  confirmItemBox: {
+    width: '100%',
+    borderRadius: 12,
+    borderWidth: 1,
+    padding: 12,
+    marginBottom: 18,
+    gap: 8,
+  },
+  confirmItemRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  confirmItemLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  confirmItemValue: {
+    fontSize: 13,
+    fontWeight: '700',
+    maxWidth: '65%',
+  },
+  confirmItemPrice: {
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  confirmActionsRow: {
+    flexDirection: 'row',
+    width: '100%',
+    gap: 10,
+  },
+  confirmCancelBtn: {
+    flex: 1,
+    height: 44,
+    borderRadius: 12,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  confirmCancelBtnText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  confirmPayBtn: {
+    flex: 1.4,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  confirmPayBtnText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
   },
 });

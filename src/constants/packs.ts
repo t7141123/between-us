@@ -42,6 +42,8 @@ export interface CardSkinConfig {
   textColor: string;
   borderColor: string;
   isPremium: boolean;
+  isDarkSkin: boolean;
+  subTextColor: string;
 }
 
 export const CARD_SKINS: CardSkinConfig[] = [
@@ -54,6 +56,8 @@ export const CARD_SKINS: CardSkinConfig[] = [
     textColor: '#2C2523',
     borderColor: 'rgba(44, 37, 35, 0.1)',
     isPremium: false,
+    isDarkSkin: false,
+    subTextColor: '#78716C',
   },
   {
     id: 'noir_gold',
@@ -64,6 +68,8 @@ export const CARD_SKINS: CardSkinConfig[] = [
     textColor: '#F4F4F5',
     borderColor: 'rgba(212, 175, 55, 0.4)',
     isPremium: true,
+    isDarkSkin: true,
+    subTextColor: 'rgba(244, 244, 245, 0.75)',
   },
   {
     id: 'midnight',
@@ -74,6 +80,8 @@ export const CARD_SKINS: CardSkinConfig[] = [
     textColor: '#E2E8F0',
     borderColor: 'rgba(129, 140, 248, 0.3)',
     isPremium: true,
+    isDarkSkin: true,
+    subTextColor: 'rgba(226, 232, 240, 0.75)',
   },
   {
     id: 'caramel',
@@ -84,6 +92,8 @@ export const CARD_SKINS: CardSkinConfig[] = [
     textColor: '#451A03',
     borderColor: 'rgba(180, 83, 9, 0.25)',
     isPremium: true,
+    isDarkSkin: false,
+    subTextColor: 'rgba(69, 26, 3, 0.75)',
   },
 ];
 

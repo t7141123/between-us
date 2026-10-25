@@ -64,7 +64,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
   const cardAccentColor = hasCustomSkin ? skinConfig.accentColor : colors.clay;
   const cardTextColor = hasCustomSkin ? skinConfig.textColor : colors.ink;
   const cardSubTextColor = hasCustomSkin
-    ? (skinConfig.id === 'noir_gold' || skinConfig.id === 'midnight' ? 'rgba(255,255,255,0.65)' : 'rgba(69,26,3,0.65)')
+    ? skinConfig.subTextColor
     : colors.muted;
   const cardInnerBorderColor = hasCustomSkin ? skinConfig.accentColor : colors.gold;
 
@@ -219,7 +219,9 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
               style={[
                 styles.categoryBadge,
                 {
-                  backgroundColor: hasCustomSkin ? 'rgba(0,0,0,0.18)' : colors.badgeBg,
+                  backgroundColor: hasCustomSkin
+                    ? (skinConfig.isDarkSkin ? 'rgba(255,255,255,0.08)' : 'rgba(180,83,9,0.12)')
+                    : colors.badgeBg,
                   borderColor: cardAccentColor,
                 },
               ]}
@@ -417,7 +419,11 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
               style={[
                 styles.portalIconContainer,
                 isMobile && styles.portalIconMobile,
-                { backgroundColor: hasCustomSkin ? 'rgba(0,0,0,0.18)' : colors.badgeBg },
+                {
+                  backgroundColor: hasCustomSkin
+                    ? (skinConfig.isDarkSkin ? 'rgba(255,255,255,0.08)' : 'rgba(180,83,9,0.12)')
+                    : colors.badgeBg,
+                },
               ]}
             >
               <Svg width={isMobile ? 26 : 32} height={isMobile ? 26 : 32} viewBox="0 0 48 48" fill="none">
