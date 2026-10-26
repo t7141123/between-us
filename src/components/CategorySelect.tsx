@@ -2,7 +2,7 @@
  * CategorySelect Component: dropdown select picker for dialog themes, replacing horizontal chip bar.
  */
 import React, { useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, useWindowDimensions } from 'react-native';
 import { Layers } from 'lucide-react-native';
 import { CategoryFilter, LocaleKey, ThemeColors } from '../types';
 import { CATEGORY_KEYS } from '../constants/categories';
@@ -24,6 +24,9 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
   unlockedPacks = [],
   onSelectCategory,
 }) => {
+  const { width, height } = useWindowDimensions();
+  const isMobile = width < 600 || height < 750;
+
   const options: SelectOption<CategoryFilter>[] = useMemo(() => {
     const isSensualUnlocked = unlockedPacks.includes('sensual');
     const isMarriageUnlocked = unlockedPacks.includes('marriage');
@@ -32,13 +35,13 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
     return [
       {
         value: 'all',
-        label: `${I18nService.t(locale, 'all', '全部')} (700)`,
-        badge: '700',
+        label: `${I18nService.t(locale, 'all', '全部')} (350)`,
+        badge: '350',
       },
       ...CATEGORY_KEYS.map((key) => ({
         value: key,
-        label: `${I18nService.getCategoryLabel(locale, key)} (100)`,
-        badge: '100',
+        label: `${I18nService.getCategoryLabel(locale, key)} (50)`,
+        badge: '50',
       })),
       {
         value: 'pack_sensual',
@@ -59,7 +62,7 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
   }, [locale, unlockedPacks]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isMobile && styles.containerMobile]}>
       <SelectPicker<CategoryFilter>
         icon={<Layers size={15} color={colors.clay} />}
         options={options}
@@ -78,5 +81,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
     paddingHorizontal: 20,
+  },
+  containerMobile: {
+    paddingVertical: 2,
+    paddingHorizontal: 12,
   },
 });

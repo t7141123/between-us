@@ -114,8 +114,8 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             styles.title,
             {
               color: colors.ink,
-              fontSize: isMobile ? 22 : (Platform.OS === 'web' ? 34 : 28),
-              lineHeight: isMobile ? 28 : (Platform.OS === 'web' ? 40 : 34),
+              fontSize: isMobile ? 18 : (Platform.OS === 'web' ? 34 : 28),
+              lineHeight: isMobile ? 23 : (Platform.OS === 'web' ? 40 : 34),
             },
           ]}
           numberOfLines={1}
@@ -128,9 +128,9 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             styles.subtitle,
             {
               color: colors.muted,
-              fontSize: isMobile ? 12 : 13,
-              lineHeight: isMobile ? 17 : 20,
-              marginTop: isMobile ? 3 : 6,
+              fontSize: isMobile ? 11 : 13,
+              lineHeight: isMobile ? 15 : 20,
+              marginTop: isMobile ? 2 : 6,
             },
           ]}
           numberOfLines={2}
@@ -151,8 +151,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   containerMobile: {
-    paddingTop: Platform.OS === 'web' ? 12 : 8,
-    paddingBottom: 4,
+    paddingTop: Platform.OS === 'web' ? 4 : 2,
+    paddingBottom: 0,
   },
   topRow: {
     width: '100%',
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   topRowMobile: {
-    marginBottom: 6,
+    marginBottom: 4,
   },
   brandRow: {
     flexDirection: 'row',

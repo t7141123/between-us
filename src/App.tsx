@@ -693,7 +693,7 @@ export const MainApp: React.FC = () => {
         </View>
 
         {/* Hint Footer */}
-        <View style={styles.hintContainer}>
+        <View style={[styles.hintContainer, isMobile && styles.hintContainerMobile]}>
           <Text
             style={[
               styles.hintText,
@@ -814,7 +814,7 @@ const styles = StyleSheet.create({
     paddingBottom: Platform.OS === 'ios' ? 12 : 18,
   },
   mainContainerMobile: {
-    paddingBottom: 8,
+    paddingBottom: 16,
   },
   cardWrapper: {
     flex: 1,
@@ -823,7 +823,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   cardWrapperMobile: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
+    marginVertical: 4,
   },
   actionsContainer: {
     flexDirection: 'row',
@@ -834,9 +835,10 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   actionsContainerMobile: {
-    gap: 8,
-    marginVertical: 6,
-    paddingHorizontal: 12,
+    gap: 10,
+    marginTop: 10,
+    marginBottom: 4,
+    paddingHorizontal: 14,
   },
   primaryActionBtn: {
     flex: 1,
@@ -852,8 +854,8 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   actionBtnMobile: {
-    height: 42,
-    maxWidth: 150,
+    height: 44,
+    maxWidth: 160,
   },
   primaryActionText: {
     color: '#FFFFFF',
@@ -879,6 +881,10 @@ const styles = StyleSheet.create({
   hintContainer: {
     alignItems: 'center',
     paddingVertical: 4,
+  },
+  hintContainerMobile: {
+    paddingTop: 2,
+    paddingBottom: 6,
   },
   hintText: {
     fontSize: 11,

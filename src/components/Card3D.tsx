@@ -195,7 +195,10 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
     <View
       style={[
         styles.cardContainer,
-        { minHeight: isMobile ? 300 : (Platform.OS === 'web' ? 380 : 350) },
+        {
+          minHeight: isMobile ? 310 : (Platform.OS === 'web' ? 380 : 350),
+          marginVertical: isMobile ? 4 : 8,
+        },
       ]}
       {...panResponder.panHandlers}
     >
@@ -207,7 +210,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
           {
             backgroundColor: cardBgColor,
             borderColor: cardBorderColor,
-            minHeight: isMobile ? 300 : (Platform.OS === 'web' ? 380 : 350),
+            minHeight: isMobile ? 310 : (Platform.OS === 'web' ? 380 : 350),
             borderRadius: isMobile ? 22 : 28,
             transform: [{ rotateY: frontInterpolate }],
             opacity: frontOpacity,
@@ -378,7 +381,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
           {
             backgroundColor: hasCustomSkin ? skinConfig.bgColor : colors.cardBack,
             borderColor: hasCustomSkin ? skinConfig.borderColor : colors.line,
-            minHeight: isMobile ? 300 : (Platform.OS === 'web' ? 380 : 350),
+            minHeight: isMobile ? 310 : (Platform.OS === 'web' ? 380 : 350),
             borderRadius: isMobile ? 22 : 28,
             transform: [{ rotateY: backInterpolate }],
             opacity: backOpacity,
