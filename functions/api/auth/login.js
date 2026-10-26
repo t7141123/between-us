@@ -2,35 +2,41 @@
  * Cloudflare Pages Function: POST /api/auth/login
  * Progressive lightweight authentication supporting Google, Apple, and Email.
  */
-import { ensureOrdersTable } from '../payment/_lib.js';
+import { ensureOrdersTable, getCorsHeaders } from '../payment/_lib.js';
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
-export async function onRequestOptions() {
+export async function onRequestOptions(context) {
   return new Response(null, {
     status: 204,
-    headers: CORS_HEADERS,
+    headers: getCorsHeaders(context.request, 'POST, OPTIONS'),
   });
 }
 
+const ALLOWED_PROVIDERS = new Set(['apple', 'google', 'email']);
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export async function onRequestPost(context) {
   const { request, env } = context;
+  const corsHeaders = getCorsHeaders(request, 'POST, OPTIONS');
 
   try {
     const body = await request.json().catch(() => null);
     if (!body || !body.email || typeof body.email !== 'string') {
       return new Response(
         JSON.stringify({ error: 'Valid email is required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
     const email = body.email.trim().toLowerCase();
-    const provider = body.provider || 'email'; // 'apple' | 'google' | 'email'
+    if (email.length > 254 || !EMAIL_REGEX.test(email)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid email format or length exceeds maximum' }),
+        { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+      );
+    }
+
+    const rawProvider = typeof body.provider === 'string' ? body.provider.trim().toLowerCase() : 'email';
+    const provider = ALLOWED_PROVIDERS.has(rawProvider) ? rawProvider : 'email';
 
     if (!env.DB) {
       // Offline fallback
@@ -42,7 +48,7 @@ export async function onRequestPost(context) {
             provider,
           },
         }),
-        { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
@@ -64,12 +70,12 @@ export async function onRequestPost(context) {
 
     return new Response(
       JSON.stringify({ user }),
-      { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   } catch (err) {
     return new Response(
       JSON.stringify({ error: err instanceof Error ? err.message : 'Auth failed' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   }
 }

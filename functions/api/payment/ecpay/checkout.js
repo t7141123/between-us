@@ -7,30 +7,26 @@ import {
   calculateCheckMacValue,
   formatEcpayDate,
   ensureOrdersTable,
+  getCorsHeaders,
 } from '../_lib.js';
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
-export async function onRequestOptions() {
+export async function onRequestOptions(context) {
   return new Response(null, {
     status: 204,
-    headers: CORS_HEADERS,
+    headers: getCorsHeaders(context.request, 'POST, OPTIONS'),
   });
 }
 
 export async function onRequestPost(context) {
   const { request, env } = context;
+  const corsHeaders = getCorsHeaders(request, 'POST, OPTIONS');
 
   try {
     const body = await request.json().catch(() => null);
     if (!body || !body.itemKey || !STORE_ITEMS[body.itemKey]) {
       return new Response(
         JSON.stringify({ error: 'Invalid or missing itemKey' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
@@ -94,12 +90,12 @@ export async function onRequestPost(context) {
         action: endpoint,
         params: ecpayParams,
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   } catch (err) {
     return new Response(
       JSON.stringify({ error: err instanceof Error ? err.message : 'Checkout failed' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   }
 }

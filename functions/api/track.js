@@ -4,30 +4,27 @@
  * Does not track individual card flips or user private dialogues.
  */
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
+import { getCorsHeaders } from './payment/_lib.js';
 
 const ALLOWED_EVENTS = new Set(['session_start', 'session_ping', 'pageview']);
 
-export async function onRequestOptions() {
+export async function onRequestOptions(context) {
   return new Response(null, {
     status: 204,
-    headers: CORS_HEADERS,
+    headers: getCorsHeaders(context.request, 'POST, OPTIONS'),
   });
 }
 
 export async function onRequestPost(context) {
   const { request, env } = context;
+  const corsHeaders = getCorsHeaders(request, 'POST, OPTIONS');
 
   try {
     const contentLength = Number(request.headers.get('content-length') || '0');
     if (contentLength > 2048) {
       return new Response(JSON.stringify({ error: 'Payload too large' }), {
         status: 413,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
 
@@ -35,7 +32,7 @@ export async function onRequestPost(context) {
     if (!payload || !payload.eventName || typeof payload.eventName !== 'string') {
       return new Response(JSON.stringify({ error: 'Invalid payload' }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
 
@@ -43,7 +40,7 @@ export async function onRequestPost(context) {
     if (!ALLOWED_EVENTS.has(eventName)) {
       return new Response(JSON.stringify({ error: 'Unknown event type' }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
 
@@ -82,12 +79,12 @@ export async function onRequestPost(context) {
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message || 'Internal error' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   }
 }

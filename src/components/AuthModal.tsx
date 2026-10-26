@@ -106,7 +106,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const handleDeleteAccount = async () => {
     if (!currentUser) return;
     setLoading(true);
-    const res = await AuthService.deleteAccount(currentUser.id);
+    const res = await AuthService.deleteAccount(currentUser.id, currentUser.email);
     setLoading(false);
 
     if (res.success) {

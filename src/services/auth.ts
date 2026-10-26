@@ -50,12 +50,12 @@ export const AuthService = {
   },
 
   /** Delete user account and all personal data (Apple Guideline 5.1.1(v)) */
-  async deleteAccount(userId: string): Promise<{ success: boolean; error?: string }> {
+  async deleteAccount(userId: string, email?: string): Promise<{ success: boolean; error?: string }> {
     try {
       const res = await fetch('/api/auth/delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify({ userId, email }),
       });
 
       if (!res.ok) {

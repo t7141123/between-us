@@ -2,39 +2,36 @@
  * Cloudflare Pages Function: /api/sync/entitlements
  * Allows client to fetch and claim unlocked expansion packs and supporter perks across platforms.
  */
-import { STORE_ITEMS, ensureOrdersTable, grantEntitlement } from '../payment/_lib.js';
+import { STORE_ITEMS, ensureOrdersTable, grantEntitlement, getCorsHeaders } from '../payment/_lib.js';
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
-export async function onRequestOptions() {
+export async function onRequestOptions(context) {
   return new Response(null, {
     status: 204,
-    headers: CORS_HEADERS,
+    headers: getCorsHeaders(context.request, 'GET, POST, OPTIONS'),
   });
 }
 
 /** GET /api/sync/entitlements?userId=... */
 export async function onRequestGet(context) {
   const { request, env } = context;
+  const corsHeaders = getCorsHeaders(request, 'GET, POST, OPTIONS');
   const url = new URL(request.url);
-  const userId = url.searchParams.get('userId');
+  const rawUserId = url.searchParams.get('userId');
 
-  if (!userId) {
+  if (!rawUserId || typeof rawUserId !== 'string') {
     return new Response(
       JSON.stringify({ error: 'Missing userId' }),
-      { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   }
+
+  const userId = rawUserId.trim().slice(0, 64);
 
   try {
     if (!env.DB) {
       return new Response(
         JSON.stringify({ entitlements: [], unlockedPacks: [], isSupporter: false }),
-        { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
@@ -67,12 +64,12 @@ export async function onRequestGet(context) {
         unlockedPacks,
         isSupporter,
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   } catch (err) {
     return new Response(
       JSON.stringify({ error: err instanceof Error ? err.message : 'Sync failed' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   }
 }
@@ -80,22 +77,24 @@ export async function onRequestGet(context) {
 /** POST /api/sync/entitlements — Claim a past anonymous order with an authenticated userId */
 export async function onRequestPost(context) {
   const { request, env } = context;
+  const corsHeaders = getCorsHeaders(request, 'GET, POST, OPTIONS');
 
   try {
     const body = await request.json().catch(() => null);
     if (!body || !body.userId || !body.orderId) {
       return new Response(
         JSON.stringify({ error: 'Missing userId or orderId' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
-    const { userId, orderId } = body;
+    const userId = String(body.userId).trim().slice(0, 64);
+    const orderId = String(body.orderId).trim().slice(0, 32);
 
     if (!env.DB) {
       return new Response(
         JSON.stringify({ success: false, error: 'Database unavailable' }),
-        { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
@@ -107,14 +106,22 @@ export async function onRequestPost(context) {
     if (!order) {
       return new Response(
         JSON.stringify({ success: false, error: 'Order not found' }),
-        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 404, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
     if (order.status !== 'paid') {
       return new Response(
         JSON.stringify({ success: false, error: 'Order is not paid' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+      );
+    }
+
+    // Security (IDOR Prevention): If order is already claimed by another user, reject
+    if (order.user_id && order.user_id !== userId) {
+      return new Response(
+        JSON.stringify({ success: false, error: '此訂單已被其他帳號綁定 (Order already claimed)' }),
+        { status: 403, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
@@ -126,12 +133,12 @@ export async function onRequestPost(context) {
 
     return new Response(
       JSON.stringify({ success: true, itemKey: order.item_key }),
-      { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   } catch (err) {
     return new Response(
       JSON.stringify({ error: err instanceof Error ? err.message : 'Claim failed' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   }
 }

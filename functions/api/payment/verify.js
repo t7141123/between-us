@@ -2,40 +2,37 @@
  * Cloudflare Pages Function: GET /api/payment/verify
  * Allows the client to securely confirm payment status and unlock features.
  */
-import { STORE_ITEMS, ensureOrdersTable } from './_lib.js';
+import { STORE_ITEMS, ensureOrdersTable, getCorsHeaders } from './_lib.js';
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
-export async function onRequestOptions() {
+export async function onRequestOptions(context) {
   return new Response(null, {
     status: 204,
-    headers: CORS_HEADERS,
+    headers: getCorsHeaders(context.request, 'GET, OPTIONS'),
   });
 }
 
 export async function onRequestGet(context) {
   const { request, env } = context;
+  const corsHeaders = getCorsHeaders(request, 'GET, OPTIONS');
 
   const url = new URL(request.url);
-  const orderId = url.searchParams.get('orderId');
+  const rawOrderId = url.searchParams.get('orderId');
 
-  if (!orderId) {
+  if (!rawOrderId || typeof rawOrderId !== 'string') {
     return new Response(
       JSON.stringify({ error: 'Missing orderId' }),
-      { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   }
+
+  const orderId = rawOrderId.trim().slice(0, 32);
 
   try {
     if (!env.DB) {
       // In development or when DB is not linked, fallback gracefully
       return new Response(
         JSON.stringify({ paid: false, error: 'Database not available' }),
-        { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
@@ -47,7 +44,7 @@ export async function onRequestGet(context) {
     if (!order) {
       return new Response(
         JSON.stringify({ paid: false, error: 'Order not found' }),
-        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 404, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
@@ -63,12 +60,12 @@ export async function onRequestGet(context) {
         target: itemMeta?.target || null,
         type: itemMeta?.type || null,
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   } catch (err) {
     return new Response(
       JSON.stringify({ error: err instanceof Error ? err.message : 'Verification failed' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   }
 }

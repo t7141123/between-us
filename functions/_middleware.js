@@ -48,6 +48,18 @@ export async function onRequest(context) {
     `<https://${CANONICAL_HOST}${url.pathname}>; rel="canonical"`
   );
 
+  // Attach defense-in-depth HTTP security headers for all endpoints and assets
+  newHeaders.set('X-Content-Type-Options', 'nosniff');
+  newHeaders.set('X-Frame-Options', 'DENY');
+  newHeaders.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  newHeaders.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), usb=()');
+  if (!isLocal) {
+    newHeaders.set(
+      'Strict-Transport-Security',
+      'max-age=31536000; includeSubDomains; preload'
+    );
+  }
+
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,

@@ -6,6 +6,7 @@ import {
   calculateCheckMacValue,
   parseFormBody,
   ensureOrdersTable,
+  constantTimeEqual,
 } from '../_lib.js';
 
 export async function onRequestPost(context) {
@@ -23,7 +24,8 @@ export async function onRequestPost(context) {
     const hashIv = env.ECPAY_HASH_IV || 'EkRm7iFT261wapeV';
 
     const calculatedMac = await calculateCheckMacValue(formData, hashKey, hashIv);
-    const isMacValid = calculatedMac === formData.CheckMacValue;
+    const incomingMac = String(formData.CheckMacValue || '').trim().toUpperCase();
+    const isMacValid = constantTimeEqual(calculatedMac, incomingMac);
     const isSuccess = isMacValid && formData.RtnCode === '1';
     const orderId = formData.MerchantTradeNo || '';
 

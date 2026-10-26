@@ -83,6 +83,48 @@ export const STORE_ITEMS = {
   },
 };
 
+/**
+ * Constant-time byte array comparison against timing side-channel attacks
+ */
+export function constantTimeEqual(aStr, bStr) {
+  if (typeof aStr !== 'string' || typeof bStr !== 'string') return false;
+  if (aStr.length !== bStr.length) return false;
+  const a = new TextEncoder().encode(aStr);
+  const b = new TextEncoder().encode(bStr);
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) {
+    diff |= a[i] ^ b[i];
+  }
+  return diff === 0;
+}
+
+/**
+ * Validates Origin and returns strict CORS headers to prevent CSRF / unauthorized cross-origin requests
+ */
+export function getCorsHeaders(request, allowedMethods = 'GET, POST, OPTIONS') {
+  const origin = request ? request.headers.get('Origin') : null;
+  const canonicalOrigin = 'https://between-us.ark-studio.app';
+
+  let allowOrigin = canonicalOrigin;
+  if (origin) {
+    const isLocal =
+      origin.startsWith('http://localhost:') ||
+      origin.startsWith('http://127.0.0.1:');
+    const isCanonical =
+      origin === canonicalOrigin || origin.endsWith('.love-between-us.pages.dev');
+    if (isLocal || isCanonical) {
+      allowOrigin = origin;
+    }
+  }
+
+  return {
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Methods': allowedMethods,
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Vary': 'Origin',
+  };
+}
+
 /** Calculate ECPay CheckMacValue using SHA-256 */
 export async function calculateCheckMacValue(params, hashKey, hashIv) {
   // 1. Sort parameters alphabetically by key (excluding CheckMacValue)

@@ -7,6 +7,7 @@ import {
   parseFormBody,
   ensureOrdersTable,
   grantEntitlement,
+  constantTimeEqual,
 } from '../_lib.js';
 
 export async function onRequestPost(context) {
@@ -18,7 +19,9 @@ export async function onRequestPost(context) {
     const hashIv = env.ECPAY_HASH_IV || 'EkRm7iFT261wapeV';
 
     const calculatedMac = await calculateCheckMacValue(formData, hashKey, hashIv);
-    if (calculatedMac !== formData.CheckMacValue) {
+    const incomingMac = String(formData.CheckMacValue || '').trim().toUpperCase();
+
+    if (!constantTimeEqual(calculatedMac, incomingMac)) {
       return new Response('0|CheckMacValue Error', { status: 400 });
     }
 
