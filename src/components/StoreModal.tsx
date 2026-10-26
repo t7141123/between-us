@@ -134,7 +134,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
     setPendingCheckout({
       itemKey,
       title: `${I18nService.t(locale, skin.nameKey)} (${I18nService.t(locale, 'tab_skins')})`,
-      amountText: 'NT$ 45',
+      amountText: 'NT$ 30',
       type: 'skin',
       targetId: skin.id,
     });
@@ -144,7 +144,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
     setPendingCheckout({
       itemKey: 'bundle_skins',
       title: I18nService.t(locale, 'skin_unlock_bundle'),
-      amountText: 'NT$ 90',
+      amountText: 'NT$ 60',
       type: 'bundle_skins',
     });
   };
@@ -453,7 +453,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                       </Text>
                     </View>
                     <View style={styles.bundleSkinPriceBadge}>
-                      <Text style={styles.bundleSkinPriceText}>NT$ 90</Text>
+                      <Text style={styles.bundleSkinPriceText}>NT$ 60</Text>
                     </View>
                   </Pressable>
                 )}

@@ -86,11 +86,11 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                 { borderColor: colors.clay, backgroundColor: isDark ? 'rgba(196,112,79,0.15)' : '#FBF3EC' },
               ]}
               activeOpacity={0.7}
-              accessibilityLabel="典藏沙龍"
+              accessibilityLabel="主題商店"
             >
               <Sparkles size={13} color={colors.clay} />
               <Text style={[styles.storeButtonText, { color: colors.clay }]}>
-                {I18nService.t(locale, 'store_btn', '典藏')}
+                {I18nService.t(locale, 'store_btn', '主題商店')}
               </Text>
             </TouchableOpacity>
           )}

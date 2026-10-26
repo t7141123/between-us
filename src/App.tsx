@@ -47,7 +47,7 @@ export const MainApp: React.FC = () => {
   const { width, height } = useWindowDimensions();
   const isMobile = width < 600 || height < 750;
 
-  const { isDark, colors, toggleTheme } = useTheme();
+  const { isDark, colors } = useTheme();
   const { muted, toggleMute, playFlip, playClick, playSuccess } = useSound();
   const { triggerImpact, triggerNotification } = useHaptics();
 
@@ -790,7 +790,6 @@ export const MainApp: React.FC = () => {
         colors={colors}
         muted={muted}
         onClose={() => setIsMenuOpen(false)}
-        onToggleTheme={toggleTheme}
         onToggleMute={toggleMute}
         onSelectLocale={handleSelectLocale}
         onOpenTimer={() => {

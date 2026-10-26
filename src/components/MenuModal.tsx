@@ -17,9 +17,7 @@ import {
 import {
   Clock,
   Globe,
-  Moon,
   ShieldCheck,
-  Sun,
   Volume2,
   VolumeX,
   X,
@@ -34,7 +32,6 @@ interface MenuModalProps {
   colors: ThemeColors;
   muted: boolean;
   onClose: () => void;
-  onToggleTheme: () => void;
   onToggleMute: () => void;
   onSelectLocale: (locale: LocaleKey) => void;
   onOpenTimer?: () => void;
@@ -53,7 +50,6 @@ export const MenuModal: React.FC<MenuModalProps> = ({
   colors,
   muted,
   onClose,
-  onToggleTheme,
   onToggleMute,
   onSelectLocale,
   onOpenTimer,
@@ -111,51 +107,6 @@ export const MenuModal: React.FC<MenuModalProps> = ({
               <Text style={[styles.sectionTitle, { color: colors.muted }]}>
                 偏好體驗
               </Text>
-
-              {/* Theme Toggle Card */}
-              <View
-                style={[
-                  styles.cardRow,
-                  {
-                    backgroundColor: isDark ? '#292524' : '#FFFFFF',
-                    borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-                  },
-                ]}
-              >
-                <View style={styles.rowLeft}>
-                  {isDark ? (
-                    <Moon size={20} color={colors.clay} />
-                  ) : (
-                    <Sun size={20} color={colors.clay} />
-                  )}
-                  <View style={styles.textStack}>
-                    <Text style={[styles.itemTitle, { color: colors.ink }]}>
-                      {I18nService.t(locale, 'menu_theme', '外觀主題')}
-                    </Text>
-                    <Text style={[styles.itemSub, { color: colors.muted }]}>
-                      {isDark
-                        ? I18nService.t(locale, 'menu_theme_dark', '深色模式')
-                        : I18nService.t(locale, 'menu_theme_light', '淺色模式')}
-                    </Text>
-                  </View>
-                </View>
-
-                <TouchableOpacity
-                  onPress={onToggleTheme}
-                  style={[
-                    styles.pillToggleBtn,
-                    {
-                      backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
-                      borderColor: colors.line,
-                    },
-                  ]}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[styles.pillToggleText, { color: colors.clay }]}>
-                    {isDark ? '🌙 深色' : '☀️ 淺色'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
 
               {/* Mute Toggle Card */}
               <View

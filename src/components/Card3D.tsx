@@ -319,7 +319,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
                     activeOpacity={0.8}
                   >
                     <Text style={styles.unlockCardBtnText}>
-                      {I18nService.t(locale, 'pack_unlock_now', '前往典藏沙龍解鎖')}
+                      {I18nService.t(locale, 'pack_unlock_now', '前往主題商店解鎖')}
                     </Text>
                   </TouchableOpacity>
                 )}
