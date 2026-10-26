@@ -52,6 +52,7 @@ export const I18nService = {
           categoryKey: catKey,
           categoryLabel: catData.label,
           text,
+          hint: catData.hints ? catData.hints[idx] : undefined,
           index: idx,
         });
       });

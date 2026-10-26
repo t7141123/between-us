@@ -180,8 +180,14 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
   });
 
   const padIndex = String(currentIndex + 1).padStart(3, '0');
-  const frontHint = I18nService.t(locale, 'card_front_hint', '點擊翻面看提示');
-  const backTitle = I18nService.t(locale, 'back_title', '在我們之間');
+  const frontHint = I18nService.t(locale, 'card_front_hint', '點擊翻面看引導');
+  const guideBadge = I18nService.t(locale, 'card_guide_badge', '傾聽引導');
+  const defaultGuideText = I18nService.t(
+    locale,
+    'back_guide_default',
+    '給予彼此完全的專注，不急著反駁或評價，先用心聽完對方的感受。真實比對錯更重要。'
+  );
+  const backGuideText = question?.hint || defaultGuideText;
   const backQuote = I18nService.t(locale, 'back_quote', '慢慢說，慢慢聽。沒有標準答案。');
   const backHint = I18nService.t(locale, 'card_back_hint', '點擊翻回題目');
 
@@ -385,7 +391,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
           onPress={flipCard}
           accessible={true}
           accessibilityRole="button"
-          accessibilityLabel={`${backTitle}, ${backQuote}`}
+          accessibilityLabel={`${guideBadge}, ${backGuideText}`}
           accessibilityHint={backHint}
         >
           {/* Inner decorative gold border */}
@@ -455,12 +461,12 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
                 styles.backTitle,
                 {
                   color: hasCustomSkin ? skinConfig.textColor : colors.ink,
-                  fontSize: isMobile ? 20 : 24,
+                  fontSize: isMobile ? 18 : 22,
                   marginBottom: isMobile ? 4 : 8,
                 },
               ]}
             >
-              {backTitle}
+              {guideBadge}
             </Text>
             <View
               style={[
@@ -472,12 +478,25 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
               style={[
                 styles.backQuote,
                 {
-                  color: hasCustomSkin ? skinConfig.textColor : colors.muted,
-                  opacity: hasCustomSkin ? 0.85 : 1,
-                  fontSize: isMobile ? 13 : 14,
-                  lineHeight: isMobile ? 20 : 22,
+                  color: hasCustomSkin ? skinConfig.textColor : colors.ink,
+                  opacity: hasCustomSkin ? 0.95 : 0.9,
+                  fontSize: isMobile ? 15 : 17,
+                  lineHeight: isMobile ? 24 : 27,
+                  textAlign: 'center',
+                  paddingHorizontal: isMobile ? 8 : 16,
+                  marginBottom: isMobile ? 8 : 12,
                 },
               ]}
+            >
+              {backGuideText}
+            </Text>
+            <Text
+              style={{
+                color: hasCustomSkin ? skinConfig.subTextColor : colors.muted,
+                fontSize: isMobile ? 12 : 13,
+                fontStyle: 'italic',
+                textAlign: 'center',
+              }}
             >
               {backQuote}
             </Text>

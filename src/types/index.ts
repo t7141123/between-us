@@ -23,6 +23,7 @@ export type CategoryFilter =
 export interface CategoryData {
   label: string;
   questions: string[];
+  hints?: string[];
 }
 
 export interface LocalePackage {
@@ -37,6 +38,7 @@ export interface QuestionEntry {
   categoryKey: CategoryKey;
   categoryLabel: string;
   text: string;
+  hint?: string;
   index: number;
 }
 
