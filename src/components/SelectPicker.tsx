@@ -215,8 +215,8 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   triggerTextRegular: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 15,
+    fontWeight: '600',
     flexShrink: 1,
   },
   chevron: {

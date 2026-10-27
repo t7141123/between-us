@@ -65,7 +65,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
               activeOpacity={0.7}
               accessibilityLabel="雙人連線同步"
             >
-              <Users size={13} color={currentRoom ? '#10B981' : colors.muted} />
+              <Users size={14} color={currentRoom ? '#10B981' : colors.muted} />
               <Text
                 style={[
                   styles.storeButtonText,
@@ -88,7 +88,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
               activeOpacity={0.7}
               accessibilityLabel="主題商店"
             >
-              <Sparkles size={13} color={colors.clay} />
+              <Sparkles size={14} color={colors.clay} />
               <Text style={[styles.storeButtonText, { color: colors.clay }]}>
                 {I18nService.t(locale, 'store_btn', '主題商店')}
               </Text>
@@ -102,7 +102,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             activeOpacity={0.7}
             accessibilityLabel="選單與設定"
           >
-            <Menu size={16} color={colors.ink} />
+            <Menu size={17} color={colors.ink} />
           </TouchableOpacity>
         </View>
       </View>
@@ -153,8 +153,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   containerMobile: {
-    paddingTop: Platform.OS === 'web' ? 8 : 4,
-    paddingBottom: 2,
+    paddingTop: Platform.OS === 'web' ? 14 : 10,
+    paddingBottom: 4,
     paddingHorizontal: 16,
   },
   topRow: {
@@ -179,9 +179,9 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   brandText: {
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 2,
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 2.2,
   },
   supporterTag: {
     backgroundColor: '#F59E0B',
@@ -199,14 +199,14 @@ const styles = StyleSheet.create({
   storeButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 8,
+    gap: 5,
+    paddingHorizontal: 10,
     height: 32,
     borderRadius: 16,
     borderWidth: 1,
   },
   storeButtonText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '700',
     letterSpacing: 0.5,
   },
@@ -217,9 +217,9 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   iconButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',

@@ -64,7 +64,7 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
   return (
     <View style={[styles.container, isMobile && styles.containerMobile]}>
       <SelectPicker<CategoryFilter>
-        icon={<Layers size={15} color={colors.clay} />}
+        icon={<Layers size={16} color={colors.clay} />}
         options={options}
         selectedValue={currentCategory}
         onSelect={onSelectCategory}
@@ -83,8 +83,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   containerMobile: {
-    paddingTop: 4,
-    paddingBottom: 8,
+    paddingTop: 6,
+    paddingBottom: 10,
     paddingHorizontal: 16,
   },
 });

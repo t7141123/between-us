@@ -656,7 +656,7 @@ export const MainApp: React.FC = () => {
             onPress={() => handleNextQuestion()}
             activeOpacity={0.8}
           >
-            <Shuffle size={16} color="#FFFFFF" style={{ marginRight: 6 }} />
+            <Shuffle size={17} color="#FFFFFF" style={{ marginRight: 7 }} />
             <Text style={styles.primaryActionText} numberOfLines={1}>
               {nextBtnText}
             </Text>
@@ -676,10 +676,10 @@ export const MainApp: React.FC = () => {
             accessibilityLabel="收藏的題目"
           >
             <Bookmark
-              size={16}
+              size={17}
               color={colors.clay}
               fill={favoriteCount > 0 ? colors.clay : 'none'}
-              style={{ marginRight: 6 }}
+              style={{ marginRight: 7 }}
             />
             <Text
               style={[styles.secondaryActionText, { color: colors.ink }]}
@@ -697,7 +697,7 @@ export const MainApp: React.FC = () => {
           <Text
             style={[
               styles.hintText,
-              { color: colors.muted, fontSize: isMobile ? 11 : 12 },
+              { color: colors.muted, fontSize: isMobile ? 12.5 : 13 },
             ]}
             numberOfLines={1}
           >
@@ -814,8 +814,8 @@ const styles = StyleSheet.create({
     paddingBottom: Platform.OS === 'ios' ? 12 : 18,
   },
   mainContainerMobile: {
-    paddingTop: Platform.OS === 'web' ? 4 : 2,
-    paddingBottom: Platform.OS === 'ios' ? 14 : 16,
+    paddingTop: Platform.OS === 'web' ? 14 : 10,
+    paddingBottom: Platform.OS === 'web' ? 32 : (Platform.OS === 'ios' ? 36 : 28),
     justifyContent: 'space-between',
   },
   cardWrapper: {
@@ -864,7 +864,7 @@ const styles = StyleSheet.create({
   },
   primaryActionText: {
     color: '#FFFFFF',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
     letterSpacing: 0.5,
   },
@@ -879,8 +879,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   secondaryActionText: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 15.5,
+    fontWeight: '600',
     letterSpacing: 0.5,
   },
   hintContainer: {
@@ -892,7 +892,7 @@ const styles = StyleSheet.create({
     paddingBottom: 6,
   },
   hintText: {
-    fontSize: 11,
-    letterSpacing: 0.8,
+    fontSize: 12.5,
+    letterSpacing: 0.9,
   },
 });
