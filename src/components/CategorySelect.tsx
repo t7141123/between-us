@@ -83,7 +83,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   containerMobile: {
-    paddingVertical: 2,
-    paddingHorizontal: 12,
+    paddingTop: 4,
+    paddingBottom: 8,
+    paddingHorizontal: 16,
   },
 });

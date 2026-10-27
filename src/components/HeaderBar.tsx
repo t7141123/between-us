@@ -107,37 +107,39 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
         </View>
       </View>
 
-      {/* Main Title & Subtitle */}
-      <View style={styles.titleContainer}>
-        <Text
-          style={[
-            styles.title,
-            {
-              color: colors.ink,
-              fontSize: isMobile ? 18 : (Platform.OS === 'web' ? 34 : 28),
-              lineHeight: isMobile ? 23 : (Platform.OS === 'web' ? 40 : 34),
-            },
-          ]}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {title}
-        </Text>
-        <Text
-          style={[
-            styles.subtitle,
-            {
-              color: colors.muted,
-              fontSize: isMobile ? 11 : 13,
-              lineHeight: isMobile ? 15 : 20,
-              marginTop: isMobile ? 2 : 6,
-            },
-          ]}
-          numberOfLines={2}
-        >
-          {subtitle}
-        </Text>
-      </View>
+      {/* Main Title & Subtitle: Only show on desktop/tablet to keep mobile clean and focused */}
+      {!isMobile && (
+        <View style={styles.titleContainer}>
+          <Text
+            style={[
+              styles.title,
+              {
+                color: colors.ink,
+                fontSize: Platform.OS === 'web' ? 34 : 28,
+                lineHeight: Platform.OS === 'web' ? 40 : 34,
+              },
+            ]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {title}
+          </Text>
+          <Text
+            style={[
+              styles.subtitle,
+              {
+                color: colors.muted,
+                fontSize: 13,
+                lineHeight: 20,
+                marginTop: 6,
+              },
+            ]}
+            numberOfLines={2}
+          >
+            {subtitle}
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -151,8 +153,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   containerMobile: {
-    paddingTop: Platform.OS === 'web' ? 4 : 2,
-    paddingBottom: 0,
+    paddingTop: Platform.OS === 'web' ? 8 : 4,
+    paddingBottom: 2,
+    paddingHorizontal: 16,
   },
   topRow: {
     width: '100%',
@@ -163,7 +166,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   topRowMobile: {
-    marginBottom: 4,
+    marginBottom: 0,
   },
   brandRow: {
     flexDirection: 'row',

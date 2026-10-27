@@ -814,7 +814,9 @@ const styles = StyleSheet.create({
     paddingBottom: Platform.OS === 'ios' ? 12 : 18,
   },
   mainContainerMobile: {
-    paddingBottom: 16,
+    paddingTop: Platform.OS === 'web' ? 4 : 2,
+    paddingBottom: Platform.OS === 'ios' ? 14 : 16,
+    justifyContent: 'space-between',
   },
   cardWrapper: {
     flex: 1,
@@ -823,8 +825,10 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   cardWrapperMobile: {
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     marginVertical: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   actionsContainer: {
     flexDirection: 'row',
@@ -835,10 +839,10 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   actionsContainerMobile: {
-    gap: 10,
-    marginTop: 10,
-    marginBottom: 4,
-    paddingHorizontal: 14,
+    gap: 12,
+    marginTop: 8,
+    marginBottom: 6,
+    paddingHorizontal: 16,
   },
   primaryActionBtn: {
     flex: 1,
@@ -854,8 +858,9 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   actionBtnMobile: {
-    height: 44,
-    maxWidth: 160,
+    height: 48,
+    maxWidth: 165,
+    borderRadius: 24,
   },
   primaryActionText: {
     color: '#FFFFFF',

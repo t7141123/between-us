@@ -191,13 +191,18 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
   const backQuote = I18nService.t(locale, 'back_quote', '慢慢說，慢慢聽。沒有標準答案。');
   const backHint = I18nService.t(locale, 'card_back_hint', '點擊翻回題目');
 
+  // Dynamic responsive card height to fill the screen gracefully on mobile without awkward gaps
+  const cardHeight = isMobile
+    ? (height < 680 ? 350 : Math.min(430, Math.max(380, Math.round(height * 0.52))))
+    : (Platform.OS === 'web' ? 420 : 390);
+
   return (
     <View
       style={[
         styles.cardContainer,
         {
-          minHeight: isMobile ? 310 : (Platform.OS === 'web' ? 380 : 350),
-          marginVertical: isMobile ? 4 : 8,
+          minHeight: cardHeight,
+          marginVertical: 0,
         },
       ]}
       {...panResponder.panHandlers}
@@ -210,8 +215,8 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
           {
             backgroundColor: cardBgColor,
             borderColor: cardBorderColor,
-            minHeight: isMobile ? 310 : (Platform.OS === 'web' ? 380 : 350),
-            borderRadius: isMobile ? 22 : 28,
+            minHeight: cardHeight,
+            borderRadius: isMobile ? 24 : 28,
             transform: [{ rotateY: frontInterpolate }],
             opacity: frontOpacity,
           },
@@ -343,8 +348,8 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
                     styles.questionText,
                     {
                       color: cardTextColor,
-                      fontSize: isMobile ? 19 : (Platform.OS === 'web' ? 24 : 21),
-                      lineHeight: isMobile ? 29 : (Platform.OS === 'web' ? 38 : 34),
+                      fontSize: isMobile ? 21 : (Platform.OS === 'web' ? 24 : 22),
+                      lineHeight: isMobile ? 32 : (Platform.OS === 'web' ? 38 : 34),
                     },
                   ]}
                 >
@@ -381,8 +386,8 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
           {
             backgroundColor: hasCustomSkin ? skinConfig.bgColor : colors.cardBack,
             borderColor: hasCustomSkin ? skinConfig.borderColor : colors.line,
-            minHeight: isMobile ? 310 : (Platform.OS === 'web' ? 380 : 350),
-            borderRadius: isMobile ? 22 : 28,
+            minHeight: cardHeight,
+            borderRadius: isMobile ? 24 : 28,
             transform: [{ rotateY: backInterpolate }],
             opacity: backOpacity,
           },
@@ -573,7 +578,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   innerTouchableMobile: {
-    padding: 18,
+    padding: 20,
   },
   innerBorder: {
     position: 'absolute',
@@ -582,7 +587,7 @@ const styles = StyleSheet.create({
     right: 8,
     bottom: 8,
     borderWidth: 1,
-    borderRadius: 18,
+    borderRadius: 20,
   },
   cardHeader: {
     flexDirection: 'row',
