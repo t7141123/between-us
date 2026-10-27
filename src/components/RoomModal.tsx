@@ -277,10 +277,16 @@ export const RoomModal: React.FC<RoomModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    backgroundColor: 'rgba(0, 0, 0, 0.74)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+    ...Platform.select({
+      web: {
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+      } as any,
+    }),
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
@@ -294,12 +300,14 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.25,
-        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.35,
+        shadowRadius: 24,
       },
-      android: { elevation: 8 },
-      web: { boxShadow: '0 8px 32px rgba(0,0,0,0.2)' },
+      android: { elevation: 12 },
+      web: {
+        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255, 255, 255, 0.1)',
+      },
     }),
   },
   header: {

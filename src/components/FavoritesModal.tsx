@@ -249,9 +249,15 @@ export const FavoritesModal: React.FC<FavoritesModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.72)',
     justifyContent: 'flex-end',
     flexDirection: 'row',
+    ...Platform.select({
+      web: {
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+      } as any,
+    }),
   },
   drawerContainer: {
     width: '100%',
@@ -260,6 +266,18 @@ const styles = StyleSheet.create({
     borderLeftWidth: 1,
     display: 'flex',
     flexDirection: 'column',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: -4, height: 0 },
+        shadowOpacity: 0.35,
+        shadowRadius: 20,
+      },
+      android: { elevation: 12 },
+      web: {
+        boxShadow: '-10px 0 40px rgba(0, 0, 0, 0.5)',
+      },
+    }),
   },
   header: {
     flexDirection: 'row',

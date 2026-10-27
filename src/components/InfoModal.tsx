@@ -113,10 +113,16 @@ export const InfoModal: React.FC<InfoModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+    backgroundColor: 'rgba(0, 0, 0, 0.74)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    ...Platform.select({
+      web: {
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+      } as any,
+    }),
   },
   container: {
     width: Platform.OS === 'web' ? 520 : '100%',
@@ -124,11 +130,18 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     borderWidth: 1,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 8,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.35,
+        shadowRadius: 24,
+      },
+      android: { elevation: 12 },
+      web: {
+        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255, 255, 255, 0.1)',
+      },
+    }),
   },
   header: {
     flexDirection: 'row',

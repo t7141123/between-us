@@ -226,10 +226,16 @@ const styles = StyleSheet.create({
   },
   modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    backgroundColor: 'rgba(0, 0, 0, 0.72)',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    ...Platform.select({
+      web: {
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+      } as any,
+    }),
   },
   modalContent: {
     width: '100%',
@@ -237,11 +243,19 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     borderWidth: 1,
     maxHeight: '80%',
-    shadowOffset: { width: 0, height: 16 },
-    shadowOpacity: 0.2,
-    shadowRadius: 28,
-    elevation: 8,
     overflow: 'hidden',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 16 },
+        shadowOpacity: 0.35,
+        shadowRadius: 28,
+      },
+      android: { elevation: 12 },
+      web: {
+        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255, 255, 255, 0.1)',
+      },
+    }),
   },
   modalHeader: {
     flexDirection: 'row',
