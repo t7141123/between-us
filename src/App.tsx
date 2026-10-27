@@ -216,7 +216,13 @@ export const MainApp: React.FC = () => {
     return deck[currentIndex] ?? null;
   }, [deck, currentIndex]);
 
+  const lastNavTimeRef = useRef(0);
+
   const handleNextQuestion = useCallback((skipSync = false) => {
+    const now = Date.now();
+    if (now - lastNavTimeRef.current < 250) return;
+    lastNavTimeRef.current = now;
+
     playClick();
     triggerImpact();
     if (deck.length === 0) return;
@@ -235,6 +241,10 @@ export const MainApp: React.FC = () => {
   }, [currentIndex, currentRoom, currentCategory, deck, playClick, triggerImpact]);
 
   const handlePrevQuestion = useCallback((skipSync = false) => {
+    const now = Date.now();
+    if (now - lastNavTimeRef.current < 250) return;
+    lastNavTimeRef.current = now;
+
     if (currentIndex <= 0 || deck.length === 0) return;
     playClick();
     triggerImpact();

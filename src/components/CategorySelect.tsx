@@ -35,27 +35,27 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
     return [
       {
         value: 'all',
-        label: `${I18nService.t(locale, 'all', '全部')} (350)`,
+        label: I18nService.t(locale, 'all', '全部'),
         badge: '350',
       },
       ...CATEGORY_KEYS.map((key) => ({
         value: key,
-        label: `${I18nService.getCategoryLabel(locale, key)} (50)`,
+        label: I18nService.getCategoryLabel(locale, key),
         badge: '50',
       })),
       {
         value: 'pack_sensual',
-        label: `${I18nService.t(locale, 'pack_sensual_title', '🔥 深夜私語')} (50)${isSensualUnlocked ? '' : ' 🔒'}`,
+        label: `${I18nService.t(locale, 'pack_sensual_title', '🔥 深夜私語')}${isSensualUnlocked ? '' : ' 🔒'}`,
         badge: '50',
       },
       {
         value: 'pack_marriage',
-        label: `${I18nService.t(locale, 'pack_marriage_title', '💍 婚姻誓約前夕')} (50)${isMarriageUnlocked ? '' : ' 🔒'}`,
+        label: `${I18nService.t(locale, 'pack_marriage_title', '💍 婚姻誓約前夕')}${isMarriageUnlocked ? '' : ' 🔒'}`,
         badge: '50',
       },
       {
         value: 'pack_parenting',
-        label: `${I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母')} (50)${isParentingUnlocked ? '' : ' 🔒'}`,
+        label: `${I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母')}${isParentingUnlocked ? '' : ' 🔒'}`,
         badge: '50',
       },
     ];

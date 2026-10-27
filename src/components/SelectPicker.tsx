@@ -136,18 +136,20 @@ export function SelectPicker<T extends string>({
                         ]}
                         activeOpacity={0.7}
                       >
-                        <View style={styles.optionLeft}>
-                          <Text
-                            style={[
-                              styles.optionLabel,
-                              {
-                                color: isSelected ? colors.clay : colors.ink,
-                                fontWeight: isSelected ? '600' : '400',
-                              },
-                            ]}
-                          >
-                            {item.label}
-                          </Text>
+                        <Text
+                          style={[
+                            styles.optionLabel,
+                            {
+                              color: isSelected ? colors.clay : colors.ink,
+                              fontWeight: isSelected ? '600' : '400',
+                            },
+                          ]}
+                          numberOfLines={1}
+                        >
+                          {item.label}
+                        </Text>
+
+                        <View style={styles.optionRight}>
                           {item.badge && (
                             <Text
                               style={[
@@ -161,9 +163,8 @@ export function SelectPicker<T extends string>({
                               {item.badge}
                             </Text>
                           )}
+                          {isSelected && <Check size={16} color={colors.clay} />}
                         </View>
-
-                        {isSelected && <Check size={16} color={colors.clay} />}
                       </TouchableOpacity>
                     );
                   }}
@@ -271,13 +272,15 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
   },
-  optionLeft: {
+  optionLabel: {
+    fontSize: 14,
+    flexShrink: 1,
+  },
+  optionRight: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-  },
-  optionLabel: {
-    fontSize: 14,
+    flexShrink: 0,
   },
   optionBadge: {
     fontSize: 11,

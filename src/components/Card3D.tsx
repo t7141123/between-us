@@ -144,9 +144,11 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
   const isSwipingRef = useRef(false);
+  const lastSwipeTimeRef = useRef(0);
 
   const flipCard = () => {
-    if (isSwipingRef.current) {
+    const now = Date.now();
+    if (isSwipingRef.current || now - lastSwipeTimeRef.current < 350) {
       return;
     }
     onFlipCard?.();
@@ -176,8 +178,15 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
   }));
 
   const handleSwipeAction = (diffX: number) => {
+    const now = Date.now();
+    // Throttle swipes to avoid double-triggering across platforms (450ms cooldown)
+    if (now - lastSwipeTimeRef.current < 450) {
+      return;
+    }
+
     // Left swipe (diffX < 0): Swipe to next question
-    if (diffX < -35) {
+    if (diffX < -45) {
+      lastSwipeTimeRef.current = now;
       isSwipingRef.current = true;
       if (currentIndexRef.current >= totalInDeckRef.current - 1) {
         // Last question reached! Open store to recommend other packs
@@ -191,7 +200,8 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
       }
     }
     // Right swipe (diffX > 0): Swipe to previous question
-    else if (diffX > 35) {
+    else if (diffX > 45) {
+      lastSwipeTimeRef.current = now;
       isSwipingRef.current = true;
       if (currentIndexRef.current > 0) {
         onPrevQuestionRef.current?.();
@@ -218,7 +228,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
       const diffY = currentY - touchStartY.current;
 
       // Mark as swiping if horizontal movement is dominant
-      if (Math.abs(diffX) > 12 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (Math.abs(diffX) > 15 && Math.abs(diffX) > Math.abs(diffY)) {
         isSwipingRef.current = true;
       }
     }
@@ -232,31 +242,31 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
       const diffX = endX - touchStartX.current;
       const diffY = endY - touchStartY.current;
 
-      if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY)) {
         handleSwipeAction(diffX);
       }
     }
 
     setTimeout(() => {
       isSwipingRef.current = false;
-    }, 150);
+    }, 200);
   };
 
   // Horizontal swipe gesture for native platforms
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponderCapture: (_, gestureState) => {
-        return Math.abs(gestureState.dx) > 15 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+        return Math.abs(gestureState.dx) > 20 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
       },
       onMoveShouldSetPanResponder: (_, gestureState) => {
-        return Math.abs(gestureState.dx) > 15 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+        return Math.abs(gestureState.dx) > 20 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
       },
       onPanResponderRelease: (_, gestureState) => {
-        if (Math.abs(gestureState.dx) > 35 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy)) {
+        if (Math.abs(gestureState.dx) > 45 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy)) {
           handleSwipeAction(gestureState.dx);
           setTimeout(() => {
             isSwipingRef.current = false;
-          }, 150);
+          }, 200);
         }
       },
     })
@@ -298,6 +308,16 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
     ? (height < 680 ? 350 : Math.min(430, Math.max(380, Math.round(height * 0.52))))
     : (Platform.OS === 'web' ? 420 : 390);
 
+  // Use either native touch handlers on Web or PanResponder on Native to prevent double-firing
+  const gestureHandlers =
+    Platform.OS === 'web'
+      ? {
+          onTouchStart: handleTouchStart,
+          onTouchMove: handleTouchMove,
+          onTouchEnd: handleTouchEnd,
+        }
+      : panResponder.panHandlers;
+
   return (
     <View
       style={[
@@ -307,10 +327,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
           marginVertical: 0,
         },
       ]}
-      {...panResponder.panHandlers}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
+      {...gestureHandlers}
     >
       {/* Front Face */}
       <Animated.View
