@@ -119,7 +119,21 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
     }
   }, [question, animatedValue]);
 
+  // Keep latest onNextQuestion in ref to avoid stale closures
+  const onNextQuestionRef = useRef(onNextQuestion);
+  useEffect(() => {
+    onNextQuestionRef.current = onNextQuestion;
+  }, [onNextQuestion]);
+
+  // Touch gesture tracker for web and mobile touch events
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const isSwipingRef = useRef(false);
+
   const flipCard = () => {
+    if (isSwipingRef.current) {
+      return;
+    }
     onFlipCard?.();
     if (isFlippedRef.current) {
       Animated.spring(animatedValue, {
@@ -146,15 +160,66 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
     flip: flipCard,
   }));
 
-  // Horizontal swipe gesture for next question
+  const handleTouchStart = (e: any) => {
+    const touch = e.nativeEvent?.touches ? e.nativeEvent.touches[0] : e.nativeEvent;
+    if (touch) {
+      touchStartX.current = touch.clientX ?? touch.pageX ?? 0;
+      touchStartY.current = touch.clientY ?? touch.pageY ?? 0;
+      isSwipingRef.current = false;
+    }
+  };
+
+  const handleTouchMove = (e: any) => {
+    const touch = e.nativeEvent?.touches ? e.nativeEvent.touches[0] : e.nativeEvent;
+    if (touch) {
+      const currentX = touch.clientX ?? touch.pageX ?? 0;
+      const currentY = touch.clientY ?? touch.pageY ?? 0;
+      const diffX = currentX - touchStartX.current;
+      const diffY = currentY - touchStartY.current;
+
+      // Mark as swiping if horizontal movement is dominant
+      if (Math.abs(diffX) > 15 && Math.abs(diffX) > Math.abs(diffY)) {
+        isSwipingRef.current = true;
+      }
+    }
+  };
+
+  const handleTouchEnd = (e: any) => {
+    const touch = e.nativeEvent?.changedTouches ? e.nativeEvent.changedTouches[0] : e.nativeEvent;
+    if (touch) {
+      const endX = touch.clientX ?? touch.pageX ?? 0;
+      const endY = touch.clientY ?? touch.pageY ?? 0;
+      const diffX = endX - touchStartX.current;
+      const diffY = endY - touchStartY.current;
+
+      // Trigger next question when horizontal swipe is sufficient (left or right swipe)
+      if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+        isSwipingRef.current = true;
+        onNextQuestionRef.current();
+      }
+    }
+
+    setTimeout(() => {
+      isSwipingRef.current = false;
+    }, 150);
+  };
+
+  // Horizontal swipe gesture for native platforms
   const panResponder = useRef(
     PanResponder.create({
+      onMoveShouldSetPanResponderCapture: (_, gestureState) => {
+        return Math.abs(gestureState.dx) > 15 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+      },
       onMoveShouldSetPanResponder: (_, gestureState) => {
-        return Math.abs(gestureState.dx) > 25 && Math.abs(gestureState.dy) < 20;
+        return Math.abs(gestureState.dx) > 15 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
       },
       onPanResponderRelease: (_, gestureState) => {
-        if (Math.abs(gestureState.dx) > 50) {
-          onNextQuestion();
+        if (Math.abs(gestureState.dx) > 40 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy)) {
+          isSwipingRef.current = true;
+          onNextQuestionRef.current();
+          setTimeout(() => {
+            isSwipingRef.current = false;
+          }, 150);
         }
       },
     })
@@ -206,6 +271,9 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
         },
       ]}
       {...panResponder.panHandlers}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Front Face */}
       <Animated.View
