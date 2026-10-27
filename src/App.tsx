@@ -234,6 +234,29 @@ export const MainApp: React.FC = () => {
     }
   }, [currentIndex, currentRoom, currentCategory, deck, playClick, triggerImpact]);
 
+  const handlePrevQuestion = useCallback((skipSync = false) => {
+    if (currentIndex <= 0 || deck.length === 0) return;
+    playClick();
+    triggerImpact();
+    const prevIdx = currentIndex - 1;
+    setCurrentIndex(prevIdx);
+
+    if (!skipSync && currentRoom && deck[prevIdx]) {
+      RoomService.syncAction(currentRoom.code, {
+        questionText: deck[prevIdx].text,
+        category: currentCategory,
+        isFlipped: false,
+      }).then((res) => {
+        if (res.room) setCurrentRoom(res.room);
+      });
+    }
+  }, [currentIndex, currentRoom, currentCategory, deck, playClick, triggerImpact]);
+
+  const handleDeckEnd = useCallback(() => {
+    playClick();
+    setIsStoreOpen(true);
+  }, [playClick]);
+
   const handleToggleFavorite = useCallback(() => {
     if (!currentQuestion) return;
     playClick();
@@ -557,6 +580,8 @@ export const MainApp: React.FC = () => {
         cardRef.current?.flip();
       } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
         handleNextQuestion();
+      } else if (e.key === 'ArrowLeft') {
+        handlePrevQuestion();
       } else if (e.key.toLowerCase() === 'f') {
         handleToggleFavorite();
       } else if (e.key.toLowerCase() === 't') {
@@ -569,13 +594,13 @@ export const MainApp: React.FC = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNextQuestion, handleToggleFavorite]);
+  }, [handleNextQuestion, handlePrevQuestion, handleToggleFavorite]);
 
   const nextBtnText = I18nService.t(locale, 'next_question', '換一題');
   const keyboardHint =
     isMobile || Platform.OS !== 'web'
       ? I18nService.t(locale, 'mobile_hint', '輕觸翻牌 ｜ 滑動換題 ｜ 點擊收藏')
-      : I18nService.t(locale, 'keyboard_hint', '空白鍵：翻牌 ｜ →：換一題 ｜ F：收藏 ｜ T：計時器');
+      : I18nService.t(locale, 'keyboard_hint', '空白鍵：翻牌 ｜ ←/→：換題 ｜ F：收藏 ｜ T：計時器');
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.paper }]}>
@@ -637,6 +662,8 @@ export const MainApp: React.FC = () => {
               setIsTimerOpen(true);
             }}
             onNextQuestion={handleNextQuestion}
+            onPrevQuestion={handlePrevQuestion}
+            onDeckEnd={handleDeckEnd}
             onFlipCard={handleFlipCard}
             onOpenStore={() => {
               playClick();

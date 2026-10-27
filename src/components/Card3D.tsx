@@ -34,6 +34,8 @@ interface Card3DProps {
   onToggleFavorite: () => void;
   onOpenTimer: () => void;
   onNextQuestion: () => void;
+  onPrevQuestion?: () => void;
+  onDeckEnd?: () => void;
   onFlipCard?: () => void;
   onOpenStore?: () => void;
 }
@@ -49,6 +51,8 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
   onToggleFavorite,
   onOpenTimer,
   onNextQuestion,
+  onPrevQuestion,
+  onDeckEnd,
   onFlipCard,
   onOpenStore,
 }, ref) => {
@@ -119,11 +123,22 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
     }
   }, [question, animatedValue]);
 
-  // Keep latest onNextQuestion in ref to avoid stale closures
+  // Keep latest callbacks and indices in ref to avoid stale closures
   const onNextQuestionRef = useRef(onNextQuestion);
+  const onPrevQuestionRef = useRef(onPrevQuestion);
+  const onDeckEndRef = useRef(onDeckEnd);
+  const onOpenStoreRef = useRef(onOpenStore);
+  const currentIndexRef = useRef(currentIndex);
+  const totalInDeckRef = useRef(totalInDeck);
+
   useEffect(() => {
     onNextQuestionRef.current = onNextQuestion;
-  }, [onNextQuestion]);
+    onPrevQuestionRef.current = onPrevQuestion;
+    onDeckEndRef.current = onDeckEnd;
+    onOpenStoreRef.current = onOpenStore;
+    currentIndexRef.current = currentIndex;
+    totalInDeckRef.current = totalInDeck;
+  }, [onNextQuestion, onPrevQuestion, onDeckEnd, onOpenStore, currentIndex, totalInDeck]);
 
   // Touch gesture tracker for web and mobile touch events
   const touchStartX = useRef(0);
@@ -160,6 +175,31 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
     flip: flipCard,
   }));
 
+  const handleSwipeAction = (diffX: number) => {
+    // Left swipe (diffX < 0): Swipe to next question
+    if (diffX < -35) {
+      isSwipingRef.current = true;
+      if (currentIndexRef.current >= totalInDeckRef.current - 1) {
+        // Last question reached! Open store to recommend other packs
+        if (onDeckEndRef.current) {
+          onDeckEndRef.current();
+        } else if (onOpenStoreRef.current) {
+          onOpenStoreRef.current();
+        }
+      } else {
+        onNextQuestionRef.current();
+      }
+    }
+    // Right swipe (diffX > 0): Swipe to previous question
+    else if (diffX > 35) {
+      isSwipingRef.current = true;
+      if (currentIndexRef.current > 0) {
+        onPrevQuestionRef.current?.();
+      }
+      // If already at the first question, do nothing!
+    }
+  };
+
   const handleTouchStart = (e: any) => {
     const touch = e.nativeEvent?.touches ? e.nativeEvent.touches[0] : e.nativeEvent;
     if (touch) {
@@ -178,7 +218,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
       const diffY = currentY - touchStartY.current;
 
       // Mark as swiping if horizontal movement is dominant
-      if (Math.abs(diffX) > 15 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (Math.abs(diffX) > 12 && Math.abs(diffX) > Math.abs(diffY)) {
         isSwipingRef.current = true;
       }
     }
@@ -192,10 +232,8 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
       const diffX = endX - touchStartX.current;
       const diffY = endY - touchStartY.current;
 
-      // Trigger next question when horizontal swipe is sufficient (left or right swipe)
-      if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
-        isSwipingRef.current = true;
-        onNextQuestionRef.current();
+      if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
+        handleSwipeAction(diffX);
       }
     }
 
@@ -214,9 +252,8 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
         return Math.abs(gestureState.dx) > 15 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
       },
       onPanResponderRelease: (_, gestureState) => {
-        if (Math.abs(gestureState.dx) > 40 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy)) {
-          isSwipingRef.current = true;
-          onNextQuestionRef.current();
+        if (Math.abs(gestureState.dx) > 35 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy)) {
+          handleSwipeAction(gestureState.dx);
           setTimeout(() => {
             isSwipingRef.current = false;
           }, 150);

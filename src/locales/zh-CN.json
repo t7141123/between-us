@@ -38,7 +38,7 @@
     "back_title": "在我们之间",
     "back_quote": "慢慢说，慢慢听。没有标准答案。",
     "close": "关闭",
-    "keyboard_hint": "空格键：翻牌 ｜ →：换一题 ｜ F：收藏 ｜ T：计时器",
+    "keyboard_hint": "空格键：翻牌 ｜ ←/→：换题 ｜ F：收藏 ｜ T：计时器",
     "mobile_hint": "轻触翻牌 ｜ 滑动换题 ｜ 点击收藏",
     "shuffle": "重新排序",
     "deck_empty": "这个分类目前没有问题。",
