@@ -122,7 +122,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.infoRow, { marginTop: 10 }]}
-                onPress={() => open(`${SITE_URL}/support.html`)}
+                onPress={() => open(`${SITE_URL}/support`)}
                 accessibilityRole="link"
               >
                 <Globe size={16} color={colors.clay} style={{ marginRight: 8 }} />
@@ -132,7 +132,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.infoRow, { marginTop: 10 }]}
-                onPress={() => open(`${SITE_URL}/privacy.html`)}
+                onPress={() => open(`${SITE_URL}/privacy`)}
                 accessibilityRole="link"
               >
                 <ShieldCheck size={16} color={colors.clay} style={{ marginRight: 8 }} />

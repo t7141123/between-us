@@ -85,9 +85,9 @@ open ios/BetweenUs.xcworkspace
 
 ### 1. 必填網址（部署後生效）
 - **隱私權政策網址 (Privacy Policy URL)**：
-  👉 `https://between-us.ark-studio.app/privacy.html`
+  👉 `https://between-us.ark-studio.app/privacy`
 - **技術支援網址 (Support URL)**：
-  👉 `https://between-us.ark-studio.app/support.html`
+  👉 `https://between-us.ark-studio.app/support`
 - **行銷網址 (Marketing URL，選填)**：
   👉 `https://between-us.ark-studio.app`
 
