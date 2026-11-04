@@ -33,14 +33,14 @@ export const TimerModal: React.FC<TimerModalProps> = ({
   const [timeLeft, setTimeLeft] = useState(300);
   const [isRunning, setIsRunning] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (isRunning) {
       timerRef.current = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
-            clearInterval(timerRef.current as NodeJS.Timeout);
+            clearInterval(timerRef.current as ReturnType<typeof setTimeout>);
             setIsRunning(false);
             setIsCompleted(true);
             onPlaySuccessSound?.();

@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     }),
   },
   backdropTouch: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   drawerContainer: {
     width: '100%',

@@ -363,7 +363,7 @@ const styles = StyleSheet.create({
     padding: Platform.OS === 'web' ? 24 : 16,
   },
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(0, 0, 0, 0.74)',
     ...Platform.select({
       web: {

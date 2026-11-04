@@ -80,6 +80,8 @@ export const StoreModal: React.FC<StoreModalProps> = ({
   React.useEffect(() => {
     if (currentUser && queuedCheckout) {
       const target = queuedCheckout;
+      // Intentional: resume the queued purchase once the user has signed in.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setQueuedCheckout(null);
 
       // Check if already unlocked in cloud
@@ -860,7 +862,7 @@ const styles = StyleSheet.create({
     }),
   },
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   container: {
     width: '100%',
@@ -1240,13 +1242,13 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   confirmOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,
   },
   confirmBackdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(0, 0, 0, 0.78)',
     ...Platform.select({
       web: {

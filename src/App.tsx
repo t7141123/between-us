@@ -43,16 +43,10 @@ import { MenuModal } from './components/MenuModal';
 import { AuthService, AuthUser } from './services/auth';
 import { RoomService, RoomState } from './services/room';
 
-export const MainApp: React.FC = () => {
-  const { width, height } = useWindowDimensions();
-  const isMobile = width < 600 || height < 750;
+type ShareTarget = { category?: CategoryFilter; pack?: string; q: number } | null;
 
-  const { isDark, colors, toggleTheme } = useTheme();
-  const { muted, toggleMute, playFlip, playClick, playSuccess } = useSound();
-  const { triggerImpact, triggerNotification } = useHaptics();
-
-  const initialShareTargetRef = useRef<{ category?: CategoryFilter; pack?: string; q: number } | null>(
-    (() => {
+/** Reads deep-link/share parameters from the web URL once at startup. */
+function readInitialShareTarget(): ShareTarget {
       if (Platform.OS === 'web' && typeof window !== 'undefined') {
         const params = new URLSearchParams(window.location.search);
         const c = params.get('c') || params.get('cat');
@@ -69,17 +63,27 @@ export const MainApp: React.FC = () => {
         }
       }
       return null;
-    })()
-  );
+    }
+
+export const MainApp: React.FC = () => {
+  const { width, height } = useWindowDimensions();
+  const isMobile = width < 600 || height < 750;
+
+  const { isDark, colors, toggleTheme } = useTheme();
+  const { muted, toggleMute, playFlip, playClick, playSuccess } = useSound();
+  const { triggerImpact, triggerNotification } = useHaptics();
+
+  const [initialShareTarget] = useState<ShareTarget>(readInitialShareTarget);
+  const initialShareTargetRef = useRef<ShareTarget>(initialShareTarget);
   const pendingPaidTargetRef = useRef<{ pack: string; q: number } | null>(null);
 
   const [locale, setLocale] = useState<LocaleKey>('zh-TW');
   const [currentCategory, setCurrentCategory] = useState<CategoryFilter>(() => {
-    if (initialShareTargetRef.current?.pack) {
-      return `pack_${initialShareTargetRef.current.pack}` as CategoryFilter;
+    if (initialShareTarget?.pack) {
+      return `pack_${initialShareTarget.pack}` as CategoryFilter;
     }
-    if (initialShareTargetRef.current?.category) {
-      return initialShareTargetRef.current.category;
+    if (initialShareTarget?.category) {
+      return initialShareTarget.category;
     }
     return 'all';
   });
@@ -775,7 +779,7 @@ export const MainApp: React.FC = () => {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.paper }]}>
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.paper} />
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
       <ScrollView
         contentContainerStyle={[styles.mainContainer, isMobile && styles.mainContainerMobile]}

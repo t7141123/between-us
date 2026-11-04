@@ -481,7 +481,7 @@ const styles = StyleSheet.create({
     }),
   },
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   container: {
     width: '100%',
