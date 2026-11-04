@@ -1,6 +1,6 @@
 # 在我們之間 · Between Us
 
-以最新版 **Expo SDK 52** 與 **React Native (`0.76.6`)** 建構的跨平台雙人對話沙龍應用，支援單一 TypeScript 程式碼庫同時發佈至 **iOS (App Store)**、**Android (Google Play)** 及 **Web (Cloudflare Pages)**。
+以最新版 **Expo SDK 58** 與 **React Native (`0.88`)** 建構的跨平台雙人對話沙龍應用，支援單一 TypeScript 程式碼庫同時發佈至 **iOS (App Store)**、**Android (Google Play)** 及 **Web (Cloudflare Pages)**。
 
 精選 **1050 道權威深度對話問題**（3 種語言 × 7 個核心主題 × 各 50 題，全數附帶心理學深度傾聽引導）、**3 款專題擴充包**（深夜私語、婚姻誓約前夕、新生兒與新手父母），並具備 **純 Cloudflare 原生架構** 的跨平台帳號與全通路購買權益互通。
 

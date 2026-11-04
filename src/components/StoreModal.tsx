@@ -217,7 +217,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
       try {
         const res = await PaymentService.startEcpayCheckout(checkout.itemKey, currentUser?.id);
         if (!res.success) {
-          setRedeemFeedback(res.error || '啟動綠界支付失敗');
+          setRedeemFeedback(I18nService.t(locale, res.error || 'err_checkout'));
         }
       } finally {
         setIsProcessing(false);
@@ -238,7 +238,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
             }
             setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
           } else {
-            setRedeemFeedback(recorded.error || I18nService.t(locale, 'restore_failed'));
+            setRedeemFeedback(I18nService.t(locale, recorded.error || 'restore_failed'));
           }
         } else if (result.status === 'unavailable') {
           setRedeemFeedback(I18nService.t(locale, 'native_iap_notice'));

@@ -29,6 +29,7 @@ interface SelectPickerProps<T extends string> {
   onSelect: (value: T) => void;
   colors: ThemeColors;
   modalTitle?: string;
+  closeLabel?: string;
   compact?: boolean;
 }
 
@@ -39,6 +40,7 @@ export function SelectPicker<T extends string>({
   onSelect,
   colors,
   modalTitle,
+  closeLabel,
   compact = false,
 }: SelectPickerProps<T>) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -109,6 +111,8 @@ export function SelectPicker<T extends string>({
                     {modalTitle || selectedOption?.label}
                   </Text>
                   <TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityLabel={closeLabel}
                     onPress={() => setModalVisible(false)}
                     style={styles.modalCloseBtn}
                     activeOpacity={0.7}

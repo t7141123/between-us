@@ -4,6 +4,7 @@
  */
 import { AuthUser, CardSkinId } from '../types';
 import { StorageService } from './storage';
+import { ErrorCode, errorFromResponse } from './errors';
 import { API_BASE_URL } from '../constants/api';
 
 export type { AuthUser };
@@ -26,7 +27,7 @@ export const AuthService = {
     email: string,
     password: string,
     mode: 'login' | 'register' = 'login'
-  ): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
+  ): Promise<{ success: boolean; user?: AuthUser; error?: ErrorCode }> {
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
@@ -34,22 +35,16 @@ export const AuthService = {
         body: JSON.stringify({ email, password, mode }),
       });
 
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        return { success: false, error: (errJson as { error?: string }).error || '驗證失敗' };
-      }
+      if (!res.ok) return { success: false, error: await errorFromResponse(res) };
 
       const data = (await res.json()) as { user: AuthUser };
       if (data.user) {
         await StorageService.setAuthUser(data.user);
         return { success: true, user: data.user };
       }
-      return { success: false, error: 'User data missing' };
-    } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : '連線失敗，請檢查網路',
-      };
+      return { success: false, error: 'err_generic' };
+    } catch {
+      return { success: false, error: 'err_network' };
     }
   },
 
@@ -57,7 +52,7 @@ export const AuthService = {
   async authenticateWithOAuth(
     provider: 'apple' | 'google',
     payload: { idToken: string }
-  ): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
+  ): Promise<{ success: boolean; user?: AuthUser; error?: ErrorCode }> {
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/oauth`, {
         method: 'POST',
@@ -65,25 +60,16 @@ export const AuthService = {
         body: JSON.stringify({ provider, ...payload }),
       });
 
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        return {
-          success: false,
-          error: (errJson as { error?: string }).error || `${provider === 'apple' ? 'Apple' : 'Google'} 登入失敗`,
-        };
-      }
+      if (!res.ok) return { success: false, error: await errorFromResponse(res) };
 
       const data = (await res.json()) as { user: AuthUser };
       if (data.user) {
         await StorageService.setAuthUser(data.user);
         return { success: true, user: data.user };
       }
-      return { success: false, error: 'User data missing' };
-    } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : '連線逾時，請改用 Email 登入',
-      };
+      return { success: false, error: 'err_generic' };
+    } catch {
+      return { success: false, error: 'err_network' };
     }
   },
 
@@ -93,26 +79,20 @@ export const AuthService = {
   },
 
   /** Delete user account and all personal data (Apple Guideline 5.1.1(v)) */
-  async deleteAccount(): Promise<{ success: boolean; error?: string }> {
+  async deleteAccount(): Promise<{ success: boolean; error?: ErrorCode }> {
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/delete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(await authHeaders()) },
       });
 
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        return {
-          success: false,
-          error: (errJson as { error?: string }).error || 'Delete failed',
-        };
-      }
+      if (!res.ok) return { success: false, error: await errorFromResponse(res, 'err_delete_failed') };
 
       await StorageService.clearAuthUser();
       return { success: true };
     } catch {
       // Do NOT report success: the server-side data has not been deleted.
-      return { success: false, error: '網路連線失敗，帳號尚未刪除，請稍後再試 (Network error, account not deleted)' };
+      return { success: false, error: 'err_delete_network' };
     }
   },
 

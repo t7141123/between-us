@@ -28,7 +28,7 @@ export async function onRequestPost(context) {
     const body = await request.json().catch(() => null);
     if (!body || !body.email || typeof body.email !== 'string') {
       return new Response(
-        JSON.stringify({ error: '請輸入有效的電子信箱 (Valid email is required)' }),
+        JSON.stringify({ error: 'Valid email is required', code: 'invalid_email' }),
         { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
@@ -36,7 +36,7 @@ export async function onRequestPost(context) {
     const email = body.email.trim().toLowerCase();
     if (email.length > 254 || !EMAIL_REGEX.test(email)) {
       return new Response(
-        JSON.stringify({ error: '電子信箱格式不正確 (Invalid email format)' }),
+        JSON.stringify({ error: 'Invalid email format', code: 'invalid_email' }),
         { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
@@ -46,14 +46,14 @@ export async function onRequestPost(context) {
 
     if (!password || password.length < 6) {
       return new Response(
-        JSON.stringify({ error: '密碼至少需為 6 個字元 (Password must be at least 6 characters)' }),
+        JSON.stringify({ error: 'Password must be at least 6 characters', code: 'weak_password' }),
         { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
     if (!env.DB) {
       return new Response(
-        JSON.stringify({ error: 'Service unavailable' }),
+        JSON.stringify({ error: 'Service unavailable', code: 'unavailable' }),
         { status: 503, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
@@ -68,7 +68,7 @@ export async function onRequestPost(context) {
     if (mode === 'register') {
       if (user) {
         return new Response(
-          JSON.stringify({ error: '此電子信箱已註冊，請直接登入 (Email already registered, please log in)' }),
+          JSON.stringify({ error: 'Email already registered', code: 'email_exists' }),
           { status: 409, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
         );
       }
@@ -86,7 +86,7 @@ export async function onRequestPost(context) {
       // Login mode
       if (!user) {
         return new Response(
-          JSON.stringify({ error: '找不到此帳號，請先切換至「註冊」建立帳號 (Account not found, please register)' }),
+          JSON.stringify({ error: 'Account not found', code: 'account_not_found' }),
           { status: 404, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
         );
       }
@@ -94,14 +94,14 @@ export async function onRequestPost(context) {
       if (!user.password_hash) {
         // Social-login account: must not be claimable by setting a password here.
         return new Response(
-          JSON.stringify({ error: '此帳號請使用 Apple / Google 登入 (Please sign in with Apple or Google)' }),
+          JSON.stringify({ error: 'Use Apple or Google sign-in for this account', code: 'social_account' }),
           { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
         );
       } else {
         const isMatch = await verifyPassword(password, user.password_hash);
         if (!isMatch) {
           return new Response(
-            JSON.stringify({ error: '密碼錯誤，請重新輸入 (Incorrect password)' }),
+            JSON.stringify({ error: 'Incorrect password', code: 'wrong_password' }),
             { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
           );
         }
@@ -123,7 +123,7 @@ export async function onRequestPost(context) {
     );
   } catch (err) {
     return new Response(
-      JSON.stringify({ error: '認證失敗，請稍後重試' }),
+      JSON.stringify({ error: 'Authentication failed' }),
       { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );
   }

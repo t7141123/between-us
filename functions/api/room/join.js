@@ -19,7 +19,7 @@ export async function onRequestPost({ request, env }) {
     const code = String(body.code || '').trim();
 
     if (!/^\d{4}$/.test(code)) {
-      return new Response(JSON.stringify({ error: '請輸入有效的 4 位數房間代號 (Invalid 4-digit room code)' }), {
+      return new Response(JSON.stringify({ error: 'Invalid 4-digit room code' }), {
         status: 400,
         headers: {
           'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ export async function onRequestPost({ request, env }) {
 
     const room = await getRoomState(env.DB, code);
     if (!room) {
-      return new Response(JSON.stringify({ error: '找不到此房間或連線已過期，請確認代碼' }), {
+      return new Response(JSON.stringify({ error: 'Room not found or expired' }), {
         status: 404,
         headers: {
           'Content-Type': 'application/json',

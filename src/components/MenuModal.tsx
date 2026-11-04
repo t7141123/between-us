@@ -3,6 +3,7 @@
  * Clean, elegant hamburger drawer menu that organizes settings (theme, mute, language, timer, about)
  * without cluttering the main screen header.
  */
+import Constants from 'expo-constants';
 import React from 'react';
 import {
   Modal,
@@ -95,7 +96,7 @@ export const MenuModal: React.FC<MenuModalProps> = ({
                 styles.closeBtn,
                 { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' },
               ]}
-              accessibilityLabel="關閉選單"
+              accessibilityLabel={I18nService.t(locale, 'a11y_close')}
             >
               <X size={18} color={colors.ink} />
             </TouchableOpacity>
@@ -337,14 +338,10 @@ export const MenuModal: React.FC<MenuModalProps> = ({
                 ]}
               >
                 <Text style={[styles.aboutText, { color: colors.muted }]}>
-                  {I18nService.t(
-                    locale,
-                    'commitment_text',
-                    '「在我們之間」致力於為您與伴侶打造純淨的對話空間。我們不收集任何個人身分資料、無第三方廣告追蹤器。您的題目收藏與設定全部只儲存在您本人的裝置中。'
-                  )}
+                  {I18nService.t(locale, 'commitment_text')}
                 </Text>
                 <Text style={[styles.versionText, { color: colors.muted }]}>
-                  v1.2.0 · Designed with Heart for Intimate Connections
+                  v{Constants.expoConfig?.version} · Designed with Heart for Intimate Connections
                 </Text>
               </View>
             </View>

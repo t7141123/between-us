@@ -63,7 +63,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                   : { borderColor: colors.line, backgroundColor: colors.card },
               ]}
               activeOpacity={0.7}
-              accessibilityLabel="雙人連線同步"
+              accessibilityLabel={I18nService.t(locale, 'a11y_room_sync')}
             >
               <Users size={14} color={currentRoom ? '#10B981' : colors.muted} />
               <Text
@@ -86,7 +86,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                 { borderColor: colors.clay, backgroundColor: isDark ? 'rgba(196,112,79,0.15)' : '#FBF3EC' },
               ]}
               activeOpacity={0.7}
-              accessibilityLabel="主題商店"
+              accessibilityLabel={I18nService.t(locale, 'store_btn')}
             >
               <Sparkles size={14} color={colors.clay} />
               <Text style={[styles.storeButtonText, { color: colors.clay }]}>
@@ -100,7 +100,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             onPress={onOpenMenu}
             style={[styles.iconButton, { borderColor: colors.line, backgroundColor: colors.card }]}
             activeOpacity={0.7}
-            accessibilityLabel="選單與設定"
+            accessibilityLabel={I18nService.t(locale, 'a11y_menu')}
           >
             <Menu size={17} color={colors.ink} />
           </TouchableOpacity>

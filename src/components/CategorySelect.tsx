@@ -70,6 +70,7 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
         onSelect={onSelectCategory}
         colors={colors}
         modalTitle={I18nService.t(locale, 'drawer_title', '主題分類')}
+        closeLabel={I18nService.t(locale, 'a11y_close')}
       />
     </View>
   );

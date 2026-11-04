@@ -3,6 +3,7 @@
  * Web uses ECPay; native uses Apple StoreKit via IapService (server-verified entitlements).
  */
 import { Platform } from 'react-native';
+import { ErrorCode, errorFromResponse } from './errors';
 import { StorageService } from './storage';
 import { API_BASE_URL } from '../constants/api';
 
@@ -35,9 +36,9 @@ export const PaymentService = {
   async startEcpayCheckout(
     itemKey: StoreItemKey,
     explicitUserId?: string | null
-  ): Promise<{ success: boolean; error?: string }> {
+  ): Promise<{ success: boolean; error?: ErrorCode }> {
     if (Platform.OS !== 'web' || typeof document === 'undefined') {
-      return { success: false, error: 'ECPay Web checkout is currently supported on Web' };
+      return { success: false, error: 'err_checkout' };
     }
 
     try {
@@ -49,10 +50,7 @@ export const PaymentService = {
         body: JSON.stringify({ itemKey, userId }),
       });
 
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        return { success: false, error: (errJson as { error?: string }).error || 'Checkout initiation failed' };
-      }
+      if (!res.ok) return { success: false, error: await errorFromResponse(res, 'err_checkout') };
 
       const data = (await res.json()) as {
         orderId: string;
@@ -61,7 +59,7 @@ export const PaymentService = {
       };
 
       if (!data.action || !data.params) {
-        return { success: false, error: 'Malformed checkout response' };
+        return { success: false, error: 'err_checkout' };
       }
 
       // Create and submit hidden form to jump to ECPay Cashier
@@ -81,11 +79,8 @@ export const PaymentService = {
       document.body.appendChild(form);
       form.submit();
       return { success: true };
-    } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : 'Unknown payment error',
-      };
+    } catch {
+      return { success: false, error: 'err_network' };
     }
   },
 
@@ -106,7 +101,7 @@ export const PaymentService = {
    * Asks the server to verify a StoreKit transaction with Apple and grant the entitlement.
    * The server derives the purchased product from Apple's response, not from the client.
    */
-  async recordNativeIAP(transactionId: string): Promise<{ success: boolean; error?: string }> {
+  async recordNativeIAP(transactionId: string): Promise<{ success: boolean; error?: ErrorCode }> {
     try {
       const user = await StorageService.getAuthUser();
       const res = await fetch(`${API_BASE_URL}/api/payment/iap/verify`, {
@@ -118,16 +113,10 @@ export const PaymentService = {
         body: JSON.stringify({ transactionId }),
       });
 
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        return { success: false, error: (errJson as { error?: string }).error || '同步內購失敗' };
-      }
+      if (!res.ok) return { success: false, error: await errorFromResponse(res, 'err_iap_sync') };
       return { success: true };
-    } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : '連線失敗',
-      };
+    } catch {
+      return { success: false, error: 'err_network' };
     }
   },
 };

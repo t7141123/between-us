@@ -59,7 +59,7 @@ export const RoomModal: React.FC<RoomModalProps> = ({
     if (res.success && res.room) {
       onRoomConnected(res.room);
     } else {
-      setFeedback(res.error || '建立房間失敗，請稍後再試');
+      setFeedback(I18nService.t(locale, res.error || 'err_room_create'));
     }
   };
 
@@ -77,7 +77,7 @@ export const RoomModal: React.FC<RoomModalProps> = ({
       onRoomConnected(res.room);
       setInputCode('');
     } else {
-      setFeedback(res.error || '加入房間失敗，請確認代碼');
+      setFeedback(I18nService.t(locale, res.error || 'err_room_join'));
     }
   };
 

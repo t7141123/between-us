@@ -137,7 +137,7 @@ export const FavoritesModal: React.FC<FavoritesModalProps> = ({
               onPress={onClose}
               style={styles.closeBtn}
               activeOpacity={0.7}
-              accessibilityLabel="關閉收藏清單"
+              accessibilityLabel={I18nService.t(locale, 'a11y_close')}
             >
               <X size={20} color={colors.muted} />
             </TouchableOpacity>
@@ -223,6 +223,8 @@ export const FavoritesModal: React.FC<FavoritesModalProps> = ({
 
                     {onToggleFavorite && (
                       <TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityLabel={I18nService.t(locale, 'a11y_favorite')}
                         onPress={(e) => {
                           e.stopPropagation();
                           onToggleFavorite(item.text);

@@ -3,7 +3,12 @@
  */
 import React from 'react';
 import { MainApp } from './src/App';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
 
 export default function App() {
-  return <MainApp />;
+  return (
+    <ErrorBoundary>
+      <MainApp />
+    </ErrorBoundary>
+  );
 }

@@ -72,7 +72,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({
               <ShieldCheck size={20} color={colors.clay} style={{ marginRight: 8 }} />
               <Text style={[styles.title, { color: colors.ink }]}>{modalTitle}</Text>
             </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn} activeOpacity={0.7}>
+            <TouchableOpacity accessibilityRole="button" accessibilityLabel={I18nService.t(locale, 'a11y_close')} onPress={onClose} style={styles.closeBtn} activeOpacity={0.7}>
               <X size={20} color={colors.muted} />
             </TouchableOpacity>
           </View>

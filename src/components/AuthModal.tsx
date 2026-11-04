@@ -84,7 +84,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         onClose();
       }, 1200);
     } else {
-      setFeedback(res.error || '認證失敗，請稍後重試');
+      setFeedback(I18nService.t(locale, res.error || 'err_generic'));
     }
   };
 
@@ -118,7 +118,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         onClose();
       }, 1200);
     } else {
-      setFeedback(res.error || I18nService.t(locale, 'oauth_fallback_hint'));
+      setFeedback(I18nService.t(locale, res.error === 'err_network' || !res.error ? 'oauth_fallback_hint' : res.error));
     }
   };
 
@@ -147,7 +147,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         onClose();
       }, 1500);
     } else {
-      setFeedback(res.error || 'Delete failed');
+      setFeedback(I18nService.t(locale, res.error || 'err_delete_failed'));
     }
   };
 
@@ -435,7 +435,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   autoCapitalize="none"
                   style={[styles.textInput, { color: colors.ink }]}
                 />
-                <Pressable onPress={() => setShowPassword(!showPassword)} hitSlop={8}>
+                <Pressable accessibilityRole="button" accessibilityLabel={I18nService.t(locale, 'a11y_toggle_password')} onPress={() => setShowPassword(!showPassword)} hitSlop={8}>
                   {showPassword ? (
                     <EyeOff size={16} color={colors.muted} />
                   ) : (

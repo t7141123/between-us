@@ -97,7 +97,7 @@ export const TimerModal: React.FC<TimerModalProps> = ({
     >
       <View style={styles.backdrop}>
         <View style={[styles.dialog, { backgroundColor: colors.card, borderColor: colors.line }]}>
-          <TouchableOpacity onPress={onClose} style={styles.closeBtn} activeOpacity={0.7}>
+          <TouchableOpacity accessibilityRole="button" accessibilityLabel={I18nService.t(locale, 'a11y_close')} onPress={onClose} style={styles.closeBtn} activeOpacity={0.7}>
             <X size={18} color={colors.muted} />
           </TouchableOpacity>
 

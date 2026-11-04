@@ -167,7 +167,7 @@ export const DrawerModal: React.FC<DrawerModalProps> = ({
                 {filteredQuestions.length} / {currentDeck.length}
               </Text>
             </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn} activeOpacity={0.7}>
+            <TouchableOpacity accessibilityRole="button" accessibilityLabel={I18nService.t(locale, 'a11y_close')} onPress={onClose} style={styles.closeBtn} activeOpacity={0.7}>
               <X size={20} color={colors.muted} />
             </TouchableOpacity>
           </View>
@@ -270,7 +270,7 @@ export const DrawerModal: React.FC<DrawerModalProps> = ({
                   onPress={() => setSearchQuery('')}
                   style={styles.clearSearchBtn}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                  accessibilityLabel="清空搜尋"
+                  accessibilityLabel={I18nService.t(locale, 'a11y_clear_search')}
                 >
                   <X size={14} color={colors.muted} />
                 </TouchableOpacity>

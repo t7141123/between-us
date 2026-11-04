@@ -430,7 +430,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
                   onPress={handleShare}
                   style={styles.actionBtn}
                   activeOpacity={0.7}
-                  accessibilityLabel="分享題目"
+                  accessibilityLabel={I18nService.t(locale, 'a11y_share')}
                   hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                 >
                   <Share2 size={isMobile ? 15 : 17} color={shareToast ? cardAccentColor : cardSubTextColor} />
@@ -441,7 +441,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
                 onPress={onOpenTimer}
                 style={styles.actionBtn}
                 activeOpacity={0.7}
-                accessibilityLabel="開啟計時器"
+                accessibilityLabel={I18nService.t(locale, 'a11y_timer')}
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
                 <Timer size={isMobile ? 16 : 18} color={cardSubTextColor} />
@@ -451,7 +451,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
                 onPress={onToggleFavorite}
                 style={styles.actionBtn}
                 activeOpacity={0.7}
-                accessibilityLabel="收藏此題"
+                accessibilityLabel={I18nService.t(locale, 'a11y_favorite')}
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
                 <Bookmark
@@ -601,7 +601,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
             <TouchableOpacity
               onPress={flipCard}
               style={styles.actionBtn}
-              accessibilityLabel="翻回正面"
+              accessibilityLabel={I18nService.t(locale, 'a11y_flip_back')}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
               <RotateCcw

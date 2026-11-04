@@ -3,6 +3,7 @@
  * Zero-configuration 4-digit room code for long-distance couples or dual-phone play.
  */
 import { API_BASE_URL } from '../constants/api';
+import { ErrorCode, errorFromResponse } from './errors';
 
 export interface RoomState {
   code: string;
@@ -18,7 +19,7 @@ export const RoomService = {
   async createRoom(
     category: string,
     questionText: string
-  ): Promise<{ success: boolean; room?: RoomState; error?: string }> {
+  ): Promise<{ success: boolean; room?: RoomState; error?: ErrorCode }> {
     try {
       const res = await fetch(`${API_BASE_URL}/api/room/create`, {
         method: 'POST',
@@ -26,23 +27,19 @@ export const RoomService = {
         body: JSON.stringify({ category, questionText }),
       });
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        return { success: false, error: (err as { error?: string }).error || '建立連線失敗' };
+        return { success: false, error: await errorFromResponse(res, 'err_room_create') };
       }
       const data = (await res.json()) as { success: boolean; room: RoomState };
       return { success: true, room: data.room };
-    } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : '連線逾時，請重試',
-      };
+    } catch {
+      return { success: false, error: 'err_network' };
     }
   },
 
   /** Join an existing room with 4-digit code */
   async joinRoom(
     code: string
-  ): Promise<{ success: boolean; room?: RoomState; error?: string }> {
+  ): Promise<{ success: boolean; room?: RoomState; error?: ErrorCode }> {
     try {
       const res = await fetch(`${API_BASE_URL}/api/room/join`, {
         method: 'POST',
@@ -50,16 +47,15 @@ export const RoomService = {
         body: JSON.stringify({ code }),
       });
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        return { success: false, error: (err as { error?: string }).error || '加入房間失敗' };
+        return {
+          success: false,
+          error: res.status === 404 ? 'err_room_not_found' : await errorFromResponse(res, 'err_room_join'),
+        };
       }
       const data = (await res.json()) as { success: boolean; room: RoomState };
       return { success: true, room: data.room };
-    } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : '無法連線到房間',
-      };
+    } catch {
+      return { success: false, error: 'err_network' };
     }
   },
 
