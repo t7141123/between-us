@@ -18,11 +18,7 @@ import {
 import { Bookmark, Search, X } from 'lucide-react-native';
 import { LocaleKey, QuestionEntry, ThemeColors } from '../types';
 import { I18nService } from '../services/i18n';
-import {
-  MARRIAGE_PACK_DATA,
-  PARENTING_PACK_DATA,
-  SENSUAL_PACK_DATA,
-} from '../constants/packs';
+import { getAllQuestions } from '../services/deck';
 
 interface FavoritesModalProps {
   visible: boolean;
@@ -31,7 +27,7 @@ interface FavoritesModalProps {
   favorites: Record<string, boolean>;
   onClose: () => void;
   onSelectQuestion: (question: QuestionEntry) => void;
-  onToggleFavorite?: (text: string) => void;
+  onToggleFavorite?: (qid: string) => void;
 }
 
 export const FavoritesModal: React.FC<FavoritesModalProps> = ({
@@ -45,40 +41,12 @@ export const FavoritesModal: React.FC<FavoritesModalProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Collect all potential questions across core categories and expansion packs
-  const allPossibleQuestions = useMemo<QuestionEntry[]>(() => {
-    const core = I18nService.getQuestions(locale, 'all');
-
-    const sensual = SENSUAL_PACK_DATA.map((item, idx) => ({
-      id: `sensual-${idx + 1}`,
-      categoryKey: 'intimacy' as const,
-      categoryLabel: I18nService.t(locale, 'pack_sensual_title', '🔥 深夜私語'),
-      text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
-      index: idx + 1,
-    }));
-
-    const marriage = MARRIAGE_PACK_DATA.map((item, idx) => ({
-      id: `marriage-${idx + 1}`,
-      categoryKey: 'vision' as const,
-      categoryLabel: I18nService.t(locale, 'pack_marriage_title', '💍 婚姻誓約前夕'),
-      text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
-      index: idx + 1,
-    }));
-
-    const parenting = PARENTING_PACK_DATA.map((item, idx) => ({
-      id: `parenting-${idx + 1}`,
-      categoryKey: 'growth' as const,
-      categoryLabel: I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母'),
-      text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
-      index: idx + 1,
-    }));
-
-    return [...core, ...sensual, ...marriage, ...parenting];
-  }, [locale]);
+  // Every question the app ships (core categories + expansion packs)
+  const allPossibleQuestions = useMemo<QuestionEntry[]>(() => getAllQuestions(locale), [locale]);
 
   // Filter only saved/favorited cards
   const savedQuestions = useMemo(() => {
-    return allPossibleQuestions.filter((q) => Boolean(favorites[q.text]));
+    return allPossibleQuestions.filter((q) => Boolean(favorites[q.qid]));
   }, [allPossibleQuestions, favorites]);
 
   // Filter by search query
@@ -227,7 +195,7 @@ export const FavoritesModal: React.FC<FavoritesModalProps> = ({
                     accessibilityLabel={I18nService.t(locale, 'a11y_favorite')}
                         onPress={(e) => {
                           e.stopPropagation();
-                          onToggleFavorite(item.text);
+                          onToggleFavorite(item.qid);
                         }}
                         style={styles.favActionBtn}
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}

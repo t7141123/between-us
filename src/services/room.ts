@@ -9,6 +9,8 @@ export interface RoomState {
   code: string;
   category: string;
   questionText: string;
+  /** Language-independent question id (absent on rooms created by older clients). */
+  qid?: string;
   isFlipped: boolean;
   version: number;
   updatedAt: number;
@@ -18,13 +20,14 @@ export const RoomService = {
   /** Create a new room with current deck state */
   async createRoom(
     category: string,
-    questionText: string
+    questionText: string,
+    qid = ''
   ): Promise<{ success: boolean; room?: RoomState; error?: ErrorCode }> {
     try {
       const res = await fetch(`${API_BASE_URL}/api/room/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category, questionText }),
+        body: JSON.stringify({ category, questionText, qid }),
       });
       if (!res.ok) {
         return { success: false, error: await errorFromResponse(res, 'err_room_create') };
@@ -62,7 +65,7 @@ export const RoomService = {
   /** Broadcast local card action to partner */
   async syncAction(
     code: string,
-    updates: { category?: string; questionText?: string; isFlipped?: boolean }
+    updates: { category?: string; qid?: string; questionText?: string; isFlipped?: boolean }
   ): Promise<{ success: boolean; room?: RoomState }> {
     try {
       const res = await fetch(`${API_BASE_URL}/api/room/sync`, {

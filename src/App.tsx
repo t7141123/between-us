@@ -18,6 +18,7 @@ import { Shuffle, Bookmark } from 'lucide-react-native';
 import confetti from 'canvas-confetti';
 
 import { LocaleKey, CategoryFilter, QuestionEntry, CardSkinId } from './types';
+import { DeckEndModal } from './components/DeckEndModal';
 import { useTheme } from './hooks/useTheme';
 import { useSound } from './hooks/useSound';
 import { useHaptics } from './hooks/useHaptics';
@@ -27,10 +28,14 @@ import { TelemetryService } from './services/telemetry';
 import { PaymentService } from './services/payment';
 import { IapService } from './services/iap';
 import {
-  MARRIAGE_PACK_DATA,
-  PARENTING_PACK_DATA,
-  SENSUAL_PACK_DATA,
-} from './constants/packs';
+  buildDeck,
+  categoryOfQid,
+  findQidIndex,
+  isLockCard,
+  migrateFavorites,
+  PACK_IDS,
+} from './services/deck';
+import type { PendingPaid, ShareTarget } from './services/deck';
 
 import { HeaderBar } from './components/HeaderBar';
 import { CategorySelect } from './components/CategorySelect';
@@ -44,10 +49,8 @@ import { MenuModal } from './components/MenuModal';
 import { AuthService, AuthUser } from './services/auth';
 import { RoomService, RoomState } from './services/room';
 
-type ShareTarget = { category?: CategoryFilter; pack?: string; q: number } | null;
-
 /** Reads deep-link/share parameters from the web URL once at startup. */
-function readInitialShareTarget(): ShareTarget {
+function readInitialShareTarget(): ShareTarget | null {
       if (Platform.OS === 'web' && typeof window !== 'undefined') {
         const params = new URLSearchParams(window.location.search);
         const c = params.get('c') || params.get('cat');
@@ -66,6 +69,12 @@ function readInitialShareTarget(): ShareTarget {
       return null;
     }
 
+const LEGACY_ROOM_CATEGORIES: Record<string, string> = {
+  sensual: 'pack_sensual',
+  marriage: 'pack_marriage',
+  parenting: 'pack_parenting',
+};
+
 export const MainApp: React.FC = () => {
   const { width, height } = useWindowDimensions();
   const isMobile = width < 600 || height < 750;
@@ -74,9 +83,11 @@ export const MainApp: React.FC = () => {
   const { muted, toggleMute, playFlip, playClick, playSuccess } = useSound();
   const { triggerImpact, triggerNotification } = useHaptics();
 
-  const [initialShareTarget] = useState<ShareTarget>(readInitialShareTarget);
-  const initialShareTargetRef = useRef<ShareTarget>(initialShareTarget);
-  const pendingPaidTargetRef = useRef<{ pack: string; q: number } | null>(null);
+  const [initialShareTarget] = useState<ShareTarget | null>(readInitialShareTarget);
+  const initialShareTargetRef = useRef<ShareTarget | null>(initialShareTarget);
+  const pendingPaidTargetRef = useRef<PendingPaid | null>(null);
+  // A question to open once the deck for its category has been rebuilt (favorites / partner sync).
+  const pendingJumpQidRef = useRef<string | null>(null);
 
   const [locale, setLocale] = useState<LocaleKey>('zh-TW');
   const [currentCategory, setCurrentCategory] = useState<CategoryFilter>(() => {
@@ -91,6 +102,9 @@ export const MainApp: React.FC = () => {
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
   const [deck, setDeck] = useState<QuestionEntry[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  // Bumped to reshuffle the current category ("play another round").
+  const [reshuffleKey, setReshuffleKey] = useState(0);
+  const [isDeckEndOpen, setIsDeckEndOpen] = useState(false);
 
   const [isStorageLoaded, setIsStorageLoaded] = useState(false);
   const [unlockedPacks, setUnlockedPacks] = useState<string[]>([]);
@@ -145,7 +159,9 @@ export const MainApp: React.FC = () => {
     ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter, savedUser, savedSkins]) => {
       if (!mounted) return;
       setLocale(savedLocale);
-      setFavorites(savedFavs);
+      const migrated = migrateFavorites(savedFavs);
+      if (migrated.changed) StorageService.setFavorites(migrated.favorites);
+      setFavorites(migrated.favorites);
       setUnlockedPacks(savedPacks);
       setSelectedSkin(savedSkin);
       setIsSupporter(savedSupporter);
@@ -175,215 +191,45 @@ export const MainApp: React.FC = () => {
     };
   }, []);
 
-  // Fisher-Yates array shuffle
-  const shuffleDeck = useCallback((items: QuestionEntry[]) => {
-    const arr = [...items];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }, []);
-
-  // Rebuild deck when locale or category changes
+  // Rebuild the deck when locale, category, unlocked packs or the reshuffle key change.
   useEffect(() => {
     if (!isStorageLoaded) return;
 
-    if (currentCategory === 'pack_sensual') {
-      const isUnlocked = unlockedPacks.includes('sensual');
-      const packQuestions = SENSUAL_PACK_DATA.map((item, idx) => ({
-        id: `sensual-${idx + 1}`,
-        categoryKey: 'intimacy' as const,
-        categoryLabel: I18nService.t(locale, 'pack_sensual_title', '🔥 深夜私語'),
-        text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
-        index: idx + 1,
-      }));
-
-      const shareTarget = (initialShareTargetRef.current?.pack === 'sensual')
-        ? initialShareTargetRef.current
-        : (pendingPaidTargetRef.current?.pack === 'sensual' ? pendingPaidTargetRef.current : null);
-
-      if (isUnlocked) {
-        if (shareTarget && shareTarget.q >= 1 && shareTarget.q <= packQuestions.length) {
-          const targetIdx = shareTarget.q - 1;
-          const targetCard = packQuestions[targetIdx];
-          const remaining = packQuestions.filter((_, idx) => idx !== targetIdx);
-          setDeck([targetCard, ...shuffleDeck(remaining)]);
-          setCurrentIndex(0);
-          pendingPaidTargetRef.current = null;
-        } else {
-          setDeck(shuffleDeck(packQuestions));
-          setCurrentIndex(0);
-        }
-      } else {
-        const trials = packQuestions.slice(0, 3);
-        const isPaidTarget = Boolean(shareTarget && shareTarget.q > 3);
-        const lockCard: QuestionEntry = {
-          id: 'sensual-lock',
-          categoryKey: 'intimacy' as const,
-          categoryLabel: I18nService.t(locale, 'pack_sensual_title', '🔥 深夜私語'),
-          text: isPaidTarget
-            ? I18nService.t(locale, 'pack_shared_locked_hint', '伴侶與你分享了此擴充包的專屬話題，解鎖即可立即查看並探索全部 50 題。')
-            : I18nService.t(locale, 'trial_ended_hint'),
-          index: 4,
-        };
-
-        if (shareTarget && shareTarget.q >= 1 && shareTarget.q <= 3) {
-          const targetIdx = shareTarget.q - 1;
-          const targetCard = trials[targetIdx];
-          const remainingTrials = trials.filter((_, idx) => idx !== targetIdx);
-          setDeck([targetCard, ...remainingTrials, lockCard]);
-          setCurrentIndex(0);
-        } else if (isPaidTarget) {
-          pendingPaidTargetRef.current = { pack: 'sensual', q: shareTarget!.q };
-          setDeck([...trials, lockCard]);
-          setCurrentIndex(trials.length);
-        } else {
-          setDeck([...trials, lockCard]);
-          setCurrentIndex(0);
-        }
-      }
-
-      initialShareTargetRef.current = null;
-      return;
-    }
-
-    if (currentCategory === 'pack_marriage') {
-      const isUnlocked = unlockedPacks.includes('marriage');
-      const packQuestions = MARRIAGE_PACK_DATA.map((item, idx) => ({
-        id: `marriage-${idx + 1}`,
-        categoryKey: 'vision' as const,
-        categoryLabel: I18nService.t(locale, 'pack_marriage_title', '💍 婚姻誓約前夕'),
-        text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
-        index: idx + 1,
-      }));
-
-      const shareTarget = (initialShareTargetRef.current?.pack === 'marriage')
-        ? initialShareTargetRef.current
-        : (pendingPaidTargetRef.current?.pack === 'marriage' ? pendingPaidTargetRef.current : null);
-
-      if (isUnlocked) {
-        if (shareTarget && shareTarget.q >= 1 && shareTarget.q <= packQuestions.length) {
-          const targetIdx = shareTarget.q - 1;
-          const targetCard = packQuestions[targetIdx];
-          const remaining = packQuestions.filter((_, idx) => idx !== targetIdx);
-          setDeck([targetCard, ...shuffleDeck(remaining)]);
-          setCurrentIndex(0);
-          pendingPaidTargetRef.current = null;
-        } else {
-          setDeck(shuffleDeck(packQuestions));
-          setCurrentIndex(0);
-        }
-      } else {
-        const trials = packQuestions.slice(0, 3);
-        const isPaidTarget = Boolean(shareTarget && shareTarget.q > 3);
-        const lockCard: QuestionEntry = {
-          id: 'marriage-lock',
-          categoryKey: 'vision' as const,
-          categoryLabel: I18nService.t(locale, 'pack_marriage_title', '💍 婚姻誓約前夕'),
-          text: isPaidTarget
-            ? I18nService.t(locale, 'pack_shared_locked_hint', '伴侶與你分享了此擴充包的專屬話題，解鎖即可立即查看並探索全部 50 題。')
-            : I18nService.t(locale, 'trial_ended_hint'),
-          index: 4,
-        };
-
-        if (shareTarget && shareTarget.q >= 1 && shareTarget.q <= 3) {
-          const targetIdx = shareTarget.q - 1;
-          const targetCard = trials[targetIdx];
-          const remainingTrials = trials.filter((_, idx) => idx !== targetIdx);
-          setDeck([targetCard, ...remainingTrials, lockCard]);
-          setCurrentIndex(0);
-        } else if (isPaidTarget) {
-          pendingPaidTargetRef.current = { pack: 'marriage', q: shareTarget!.q };
-          setDeck([...trials, lockCard]);
-          setCurrentIndex(trials.length);
-        } else {
-          setDeck([...trials, lockCard]);
-          setCurrentIndex(0);
-        }
-      }
-
-      initialShareTargetRef.current = null;
-      return;
-    }
-
-    if (currentCategory === 'pack_parenting') {
-      const isUnlocked = unlockedPacks.includes('parenting');
-      const packQuestions = PARENTING_PACK_DATA.map((item, idx) => ({
-        id: `parenting-${idx + 1}`,
-        categoryKey: 'growth' as const,
-        categoryLabel: I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母'),
-        text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
-        index: idx + 1,
-      }));
-
-      const shareTarget = (initialShareTargetRef.current?.pack === 'parenting')
-        ? initialShareTargetRef.current
-        : (pendingPaidTargetRef.current?.pack === 'parenting' ? pendingPaidTargetRef.current : null);
-
-      if (isUnlocked) {
-        if (shareTarget && shareTarget.q >= 1 && shareTarget.q <= packQuestions.length) {
-          const targetIdx = shareTarget.q - 1;
-          const targetCard = packQuestions[targetIdx];
-          const remaining = packQuestions.filter((_, idx) => idx !== targetIdx);
-          setDeck([targetCard, ...shuffleDeck(remaining)]);
-          setCurrentIndex(0);
-          pendingPaidTargetRef.current = null;
-        } else {
-          setDeck(shuffleDeck(packQuestions));
-          setCurrentIndex(0);
-        }
-      } else {
-        const trials = packQuestions.slice(0, 3);
-        const isPaidTarget = Boolean(shareTarget && shareTarget.q > 3);
-        const lockCard: QuestionEntry = {
-          id: 'parenting-lock',
-          categoryKey: 'growth' as const,
-          categoryLabel: I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母'),
-          text: isPaidTarget
-            ? I18nService.t(locale, 'pack_shared_locked_hint', '伴侶與你分享了此擴充包的專屬話題，解鎖即可立即查看並探索全部 50 題。')
-            : I18nService.t(locale, 'trial_ended_hint'),
-          index: 4,
-        };
-
-        if (shareTarget && shareTarget.q >= 1 && shareTarget.q <= 3) {
-          const targetIdx = shareTarget.q - 1;
-          const targetCard = trials[targetIdx];
-          const remainingTrials = trials.filter((_, idx) => idx !== targetIdx);
-          setDeck([targetCard, ...remainingTrials, lockCard]);
-          setCurrentIndex(0);
-        } else if (isPaidTarget) {
-          pendingPaidTargetRef.current = { pack: 'parenting', q: shareTarget!.q };
-          setDeck([...trials, lockCard]);
-          setCurrentIndex(trials.length);
-        } else {
-          setDeck([...trials, lockCard]);
-          setCurrentIndex(0);
-        }
-      }
-
-      initialShareTargetRef.current = null;
-      return;
-    }
-
-    const rawQuestions = I18nService.getQuestions(locale, currentCategory);
-    const shareTarget = (initialShareTargetRef.current?.category === currentCategory)
-      ? initialShareTargetRef.current
-      : null;
-
-    if (shareTarget && shareTarget.q >= 1 && shareTarget.q <= rawQuestions.length) {
-      const targetIdx = shareTarget.q - 1;
-      const targetCard = rawQuestions[targetIdx];
-      const remaining = rawQuestions.filter((_, idx) => idx !== targetIdx);
-      setDeck([targetCard, ...shuffleDeck(remaining)]);
-      setCurrentIndex(0);
-    } else {
-      setDeck(shuffleDeck(rawQuestions));
-      setCurrentIndex(0);
-    }
-
+    const result = buildDeck({
+      category: currentCategory,
+      locale,
+      unlockedPacks,
+      initialTarget: initialShareTargetRef.current,
+      pendingPaid: pendingPaidTargetRef.current,
+    });
     initialShareTargetRef.current = null;
-  }, [isStorageLoaded, locale, currentCategory, shuffleDeck, unlockedPacks]);
+    pendingPaidTargetRef.current = result.pendingPaid;
+
+    const jumpQid = pendingJumpQidRef.current;
+    pendingJumpQidRef.current = null;
+    const jumpIdx = jumpQid ? findQidIndex(result.deck, jumpQid) : -1;
+
+    setDeck(result.deck);
+    setCurrentIndex(jumpIdx >= 0 ? jumpIdx : result.startIndex);
+    setIsDeckEndOpen(false);
+  }, [isStorageLoaded, locale, currentCategory, unlockedPacks, reshuffleKey]);
+
+  /** Opens a question by its language-independent id, switching category when needed. */
+  const jumpToQid = useCallback(
+    (qid: string): boolean => {
+      const idx = findQidIndex(deck, qid);
+      if (idx >= 0) {
+        setCurrentIndex(idx);
+        return true;
+      }
+      const cat = categoryOfQid(qid);
+      if (!cat || cat === currentCategory) return false; // e.g. a locked pack question
+      pendingJumpQidRef.current = qid;
+      setCurrentCategory(cat);
+      return true;
+    },
+    [deck, currentCategory]
+  );
 
   const currentQuestion = useMemo(() => {
     if (deck.length === 0) return null;
@@ -400,11 +246,17 @@ export const MainApp: React.FC = () => {
     playClick();
     triggerImpact();
     if (deck.length === 0) return;
-    const nextIdx = (currentIndex + 1) % deck.length;
+    if (currentIndex >= deck.length - 1) {
+      // Reached the end: show a completion screen instead of silently wrapping around.
+      setIsDeckEndOpen(true);
+      return;
+    }
+    const nextIdx = currentIndex + 1;
     setCurrentIndex(nextIdx);
 
     if (!skipSync && currentRoom && deck[nextIdx]) {
       RoomService.syncAction(currentRoom.code, {
+        qid: deck[nextIdx].qid,
         questionText: deck[nextIdx].text,
         category: currentCategory,
         isFlipped: false,
@@ -427,6 +279,7 @@ export const MainApp: React.FC = () => {
 
     if (!skipSync && currentRoom && deck[prevIdx]) {
       RoomService.syncAction(currentRoom.code, {
+        qid: deck[prevIdx].qid,
         questionText: deck[prevIdx].text,
         category: currentCategory,
         isFlipped: false,
@@ -438,20 +291,20 @@ export const MainApp: React.FC = () => {
 
   const handleDeckEnd = useCallback(() => {
     playClick();
-    setIsStoreOpen(true);
+    setIsDeckEndOpen(true);
   }, [playClick]);
 
   const handleToggleFavorite = useCallback(() => {
-    if (!currentQuestion) return;
+    if (!currentQuestion || isLockCard(currentQuestion)) return;
     playClick();
     triggerNotification();
 
     setFavorites((prev) => {
       const next = { ...prev };
-      if (next[currentQuestion.text]) {
-        delete next[currentQuestion.text];
+      if (next[currentQuestion.qid]) {
+        delete next[currentQuestion.qid];
       } else {
-        next[currentQuestion.text] = true;
+        next[currentQuestion.qid] = true;
         if (Platform.OS === 'web' && typeof confetti === 'function') {
           confetti({
             particleCount: 30,
@@ -502,85 +355,17 @@ export const MainApp: React.FC = () => {
 
   const handleLoadPackSample = useCallback((packId: string) => {
     playClick();
-    if (packId === 'sensual') {
-      const isUnlocked = unlockedPacks.includes('sensual');
-      const packQuestions = SENSUAL_PACK_DATA.map((item, idx) => ({
-        id: `sensual-${idx + 1}`,
-        categoryKey: 'intimacy' as const,
-        categoryLabel: I18nService.t(locale, 'pack_sensual_title', '🔥 深夜私語'),
-        text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
-        index: idx + 1,
-      }));
-
-      if (isUnlocked) {
-        setDeck(shuffleDeck(packQuestions));
-      } else {
-        const trials = packQuestions.slice(0, 3);
-        const lockCard: QuestionEntry = {
-          id: 'sensual-lock',
-          categoryKey: 'intimacy' as const,
-          categoryLabel: I18nService.t(locale, 'pack_sensual_title', '🔥 深夜私語'),
-          text: I18nService.t(locale, 'trial_ended_hint'),
-          index: 4,
-        };
-        setDeck([...trials, lockCard]);
-      }
-      setCurrentIndex(0);
-    } else if (packId === 'marriage') {
-      const isUnlocked = unlockedPacks.includes('marriage');
-      const packQuestions = MARRIAGE_PACK_DATA.map((item, idx) => ({
-        id: `marriage-${idx + 1}`,
-        categoryKey: 'vision' as const,
-        categoryLabel: I18nService.t(locale, 'pack_marriage_title', '💍 婚姻誓約前夕'),
-        text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
-        index: idx + 1,
-      }));
-
-      if (isUnlocked) {
-        setDeck(shuffleDeck(packQuestions));
-      } else {
-        const trials = packQuestions.slice(0, 3);
-        const lockCard: QuestionEntry = {
-          id: 'marriage-lock',
-          categoryKey: 'vision' as const,
-          categoryLabel: I18nService.t(locale, 'pack_marriage_title', '💍 婚姻誓約前夕'),
-          text: I18nService.t(locale, 'trial_ended_hint'),
-          index: 4,
-        };
-        setDeck([...trials, lockCard]);
-      }
-      setCurrentIndex(0);
-    } else if (packId === 'parenting') {
-      const isUnlocked = unlockedPacks.includes('parenting');
-      const packQuestions = PARENTING_PACK_DATA.map((item, idx) => ({
-        id: `parenting-${idx + 1}`,
-        categoryKey: 'growth' as const,
-        categoryLabel: I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母'),
-        text: locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en,
-        index: idx + 1,
-      }));
-
-      if (isUnlocked) {
-        setDeck(shuffleDeck(packQuestions));
-      } else {
-        const trials = packQuestions.slice(0, 3);
-        const lockCard: QuestionEntry = {
-          id: 'parenting-lock',
-          categoryKey: 'growth' as const,
-          categoryLabel: I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母'),
-          text: I18nService.t(locale, 'trial_ended_hint'),
-          index: 4,
-        };
-        setDeck([...trials, lockCard]);
-      }
-      setCurrentIndex(0);
-    }
-  }, [locale, playClick, shuffleDeck, unlockedPacks]);
+    if (!(PACK_IDS as string[]).includes(packId)) return;
+    const result = buildDeck({ category: `pack_${packId}` as CategoryFilter, locale, unlockedPacks });
+    setDeck(result.deck);
+    setCurrentIndex(result.startIndex);
+  }, [locale, playClick, unlockedPacks]);
 
   const handleFlipCard = useCallback((skipSync = false) => {
     playFlip();
     if (!skipSync && currentRoom && currentQuestion) {
       RoomService.syncAction(currentRoom.code, {
+        qid: currentQuestion.qid,
         questionText: currentQuestion.text,
         category: currentCategory,
         isFlipped: true,
@@ -592,55 +377,8 @@ export const MainApp: React.FC = () => {
 
   const handleSelectFromDrawer = useCallback((item: QuestionEntry) => {
     setIsFavoritesOpen(false);
-
-    if (item.id.startsWith('sensual-')) {
-      const packQuestions = SENSUAL_PACK_DATA.map((p, idx) => ({
-        id: `sensual-${idx + 1}`,
-        categoryKey: 'intimacy' as const,
-        categoryLabel: I18nService.t(locale, 'pack_sensual_title', '🔥 深夜私語'),
-        text: locale === 'zh-TW' ? p.tw : locale === 'zh-CN' ? p.cn : p.en,
-        index: idx + 1,
-      }));
-      setDeck(packQuestions);
-      const foundIdx = packQuestions.findIndex((q) => q.text === item.text);
-      setCurrentIndex(foundIdx >= 0 ? foundIdx : 0);
-      return;
-    }
-
-    if (item.id.startsWith('marriage-')) {
-      const packQuestions = MARRIAGE_PACK_DATA.map((p, idx) => ({
-        id: `marriage-${idx + 1}`,
-        categoryKey: 'vision' as const,
-        categoryLabel: I18nService.t(locale, 'pack_marriage_title', '💍 婚姻誓約前夕'),
-        text: locale === 'zh-TW' ? p.tw : locale === 'zh-CN' ? p.cn : p.en,
-        index: idx + 1,
-      }));
-      setDeck(packQuestions);
-      const foundIdx = packQuestions.findIndex((q) => q.text === item.text);
-      setCurrentIndex(foundIdx >= 0 ? foundIdx : 0);
-      return;
-    }
-
-    if (item.id.startsWith('parenting-')) {
-      const packQuestions = PARENTING_PACK_DATA.map((p, idx) => ({
-        id: `parenting-${idx + 1}`,
-        categoryKey: 'growth' as const,
-        categoryLabel: I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母'),
-        text: locale === 'zh-TW' ? p.tw : locale === 'zh-CN' ? p.cn : p.en,
-        index: idx + 1,
-      }));
-      setDeck(packQuestions);
-      const foundIdx = packQuestions.findIndex((q) => q.text === item.text);
-      setCurrentIndex(foundIdx >= 0 ? foundIdx : 0);
-      return;
-    }
-
-    setCurrentCategory(item.categoryKey);
-    const questions = I18nService.getQuestions(locale, item.categoryKey);
-    setDeck(questions);
-    const foundIdx = questions.findIndex((q) => q.text === item.text);
-    setCurrentIndex(foundIdx >= 0 ? foundIdx : 0);
-  }, [locale]);
+    jumpToQid(item.qid);
+  }, [jumpToQid]);
 
   const handleLogout = useCallback(() => {
     AuthService.logout().then(() => {
@@ -696,13 +434,21 @@ export const MainApp: React.FC = () => {
       if (res.updated && res.room) {
         setCurrentRoom(res.room);
 
-        // Sync category if changed by partner
-        if (res.room.category && res.room.category !== currentCategory) {
-          setCurrentCategory(res.room.category as CategoryFilter);
-        }
+        // Older clients send short pack names; normalise them.
+        const partnerCategory = (LEGACY_ROOM_CATEGORIES[res.room.category] ?? res.room.category) as CategoryFilter;
 
-        // Sync question text if changed by partner
-        if (res.room.questionText && res.room.questionText !== currentQuestion?.text) {
+        if (partnerCategory && partnerCategory !== currentCategory) {
+          // Switch category first; the deck rebuild then opens the partner's question.
+          if (res.room.qid) pendingJumpQidRef.current = res.room.qid;
+          setCurrentCategory(partnerCategory);
+        } else if (res.room.qid) {
+          // Match by language-independent id so partners may use different languages.
+          const foundIdx = findQidIndex(deck, res.room.qid);
+          if (foundIdx >= 0 && foundIdx !== currentIndex) {
+            setCurrentIndex(foundIdx);
+            playClick();
+          }
+        } else if (res.room.questionText && res.room.questionText !== currentQuestion?.text) {
           const foundIdx = deck.findIndex((q) => q.text === res.room?.questionText);
           if (foundIdx >= 0) {
             setCurrentIndex(foundIdx);
@@ -718,7 +464,7 @@ export const MainApp: React.FC = () => {
     }, 2800);
 
     return () => clearInterval(interval);
-  }, [currentCategory, currentQuestion?.text, currentRoom, deck, playClick]);
+  }, [currentCategory, currentIndex, currentQuestion?.text, currentRoom, deck, playClick]);
   useEffect(() => {
     if (Platform.OS !== 'web' || typeof window === 'undefined') return;
 
@@ -849,7 +595,7 @@ export const MainApp: React.FC = () => {
             locale={locale}
             colors={colors}
             skinId={selectedSkin}
-            isFavorite={Boolean(currentQuestion && favorites[currentQuestion.text])}
+            isFavorite={Boolean(currentQuestion && favorites[currentQuestion.qid])}
             onToggleFavorite={handleToggleFavorite}
             onOpenTimer={() => {
               playClick();
@@ -894,7 +640,7 @@ export const MainApp: React.FC = () => {
               setIsFavoritesOpen(true);
             }}
             activeOpacity={0.8}
-            accessibilityLabel="收藏的題目"
+            accessibilityLabel={I18nService.t(locale, 'favorites_btn', '收藏的題目')}
           >
             <Bookmark
               size={17}
@@ -935,15 +681,34 @@ export const MainApp: React.FC = () => {
         favorites={favorites}
         onClose={() => setIsFavoritesOpen(false)}
         onSelectQuestion={handleSelectFromDrawer}
-        onToggleFavorite={(text) => {
+        onToggleFavorite={(qid) => {
           playClick();
           setFavorites((prev) => {
             const next = { ...prev };
-            if (next[text]) delete next[text];
-            else next[text] = true;
+            if (next[qid]) delete next[qid];
+            else next[qid] = true;
             StorageService.setFavorites(next);
             return next;
           });
+        }}
+      />
+
+      {/* End-of-deck completion */}
+      <DeckEndModal
+        visible={isDeckEndOpen}
+        locale={locale}
+        colors={colors}
+        isDark={isDark}
+        isLockedPack={isLockCard(currentQuestion)}
+        hasLockedPacks={PACK_IDS.some((id) => !unlockedPacks.includes(id))}
+        onPlayAgain={() => {
+          playClick();
+          setReshuffleKey((k) => k + 1);
+        }}
+        onClose={() => setIsDeckEndOpen(false)}
+        onOpenStore={() => {
+          setIsDeckEndOpen(false);
+          setIsStoreOpen(true);
         }}
       />
 
@@ -1005,6 +770,7 @@ export const MainApp: React.FC = () => {
         currentRoom={currentRoom}
         currentCategory={currentCategory}
         currentQuestionText={currentQuestion?.text || ''}
+        currentQuestionQid={currentQuestion?.qid || ''}
         onClose={() => setIsRoomOpen(false)}
         onRoomConnected={(room) => setCurrentRoom(room)}
         onLeaveRoom={() => setCurrentRoom(null)}

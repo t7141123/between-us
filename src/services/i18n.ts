@@ -49,6 +49,7 @@ export const I18nService = {
       catData.questions.forEach((text, idx) => {
         results.push({
           id: `${locale}-${catKey}-${idx}`,
+          qid: `${catKey}:${idx}`,
           categoryKey: catKey,
           categoryLabel: catData.label,
           text,

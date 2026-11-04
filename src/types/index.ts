@@ -35,6 +35,8 @@ export interface LocalePackage {
 
 export interface QuestionEntry {
   id: string;
+  /** Language-independent id: "vision:12" (0-based index) or "pack:sensual:5" (1-based). */
+  qid: string;
   categoryKey: CategoryKey;
   categoryLabel: string;
   text: string;

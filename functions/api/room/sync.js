@@ -2,7 +2,7 @@
  * POST /api/room/sync
  * Syncs the latest card action (next question, flip, category change) across partners.
  */
-import { updateRoomState, getCorsHeaders } from '../payment/_lib.js';
+import { updateRoomState, getCorsHeaders, normalizeRoomCategory, normalizeQid } from '../payment/_lib.js';
 
 export async function onRequestOptions(context) {
   return new Response(null, {
@@ -10,17 +10,6 @@ export async function onRequestOptions(context) {
     headers: getCorsHeaders(context.request, 'POST, OPTIONS'),
   });
 }
-
-const ALLOWED_CATEGORIES = new Set([
-  'all',
-  'vision',
-  'growth',
-  'intimacy',
-  'soul',
-  'sensual',
-  'marriage',
-  'parenting',
-]);
 
 export async function onRequestPost({ request, env }) {
   const corsHeaders = getCorsHeaders(request, 'POST, OPTIONS');
@@ -40,12 +29,10 @@ export async function onRequestPost({ request, env }) {
     }
 
     const updates = {};
-    if (typeof body.category === 'string') {
-      const cat = body.category.trim().toLowerCase().slice(0, 32);
-      if (ALLOWED_CATEGORIES.has(cat)) {
-        updates.category = cat;
-      }
-    }
+    const cat = normalizeRoomCategory(body.category);
+    if (cat) updates.category = cat;
+
+    if (body.qid !== undefined) updates.qid = normalizeQid(body.qid);
 
     if (typeof body.questionText === 'string') {
       updates.questionText = body.questionText.replace(/[\u0000-\u001F\u007F]/g, ' ').slice(0, 500);

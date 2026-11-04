@@ -224,6 +224,7 @@ export async function ensureOrdersTable(db) {
         code TEXT PRIMARY KEY,
         category TEXT NOT NULL,
         question_text TEXT NOT NULL,
+        qid TEXT,
         is_flipped INTEGER DEFAULT 0,
         version INTEGER DEFAULT 1,
         updated_at INTEGER NOT NULL
@@ -237,6 +238,7 @@ export async function ensureOrdersTable(db) {
     await db.prepare('ALTER TABLE users ADD COLUMN google_sub TEXT').run().catch(() => {});
     await db.prepare('ALTER TABLE users ADD COLUMN apple_sub TEXT').run().catch(() => {});
     await db.prepare('ALTER TABLE users ADD COLUMN apple_refresh_token TEXT').run().catch(() => {});
+    await db.prepare('ALTER TABLE sync_rooms ADD COLUMN qid TEXT').run().catch(() => {});
   } catch {
     // Ignore if columns already exist
   }
@@ -430,6 +432,32 @@ export function generateRoomCode() {
   return String(1000 + (buf[0] % 9000));
 }
 
+/** Categories a room may be switched to (base categories, 'all', and expansion packs). */
+const ROOM_CATEGORIES = new Set([
+  'all', 'vision', 'soul', 'finance', 'intimacy', 'fun', 'growth', 'faith',
+  'pack_sensual', 'pack_marriage', 'pack_parenting',
+  // legacy short names sent by older clients
+  'sensual', 'marriage', 'parenting',
+]);
+
+/** Returns a safe category string, or null when not allowed. */
+export function normalizeRoomCategory(value) {
+  if (typeof value !== 'string') return null;
+  const cat = value.trim().toLowerCase().slice(0, 32);
+  return ROOM_CATEGORIES.has(cat) ? cat : null;
+}
+
+/**
+ * Language-independent question id, e.g. "vision:12" or "pack:sensual:5".
+ * Returns '' for anything else so clients can never store arbitrary text here.
+ */
+export function normalizeQid(value) {
+  if (typeof value !== 'string') return '';
+  return /^(?:pack:(?:sensual|marriage|parenting)|vision|soul|finance|intimacy|fun|growth|faith):\d{1,3}$/.test(value)
+    ? value
+    : '';
+}
+
 /** Rooms are temporary: anything not updated for this long is treated as expired and removed. */
 export const ROOM_TTL_MS = 6 * 60 * 60 * 1000;
 
@@ -450,6 +478,7 @@ export async function getRoomState(db, code) {
         code: row.code,
         category: row.category,
         questionText: row.question_text,
+        qid: row.qid || '',
         isFlipped: Boolean(row.is_flipped),
         version: row.version,
         updatedAt: row.updated_at,
@@ -465,12 +494,13 @@ export async function getRoomState(db, code) {
 }
 
 /** Create or overwrite room state */
-export async function createRoom(db, code, category, questionText) {
+export async function createRoom(db, code, category, questionText, qid = '') {
   const now = Date.now();
   const room = {
     code,
     category,
     questionText,
+    qid,
     isFlipped: false,
     version: 1,
     updatedAt: now,
@@ -480,16 +510,17 @@ export async function createRoom(db, code, category, questionText) {
     // Opportunistic cleanup of expired rooms.
     await db.prepare('DELETE FROM sync_rooms WHERE updated_at < ?').bind(now - ROOM_TTL_MS).run();
     await db.prepare(`
-      INSERT INTO sync_rooms (code, category, question_text, is_flipped, version, updated_at)
-      VALUES (?, ?, ?, 0, 1, ?)
+      INSERT INTO sync_rooms (code, category, question_text, qid, is_flipped, version, updated_at)
+      VALUES (?, ?, ?, ?, 0, 1, ?)
       ON CONFLICT(code) DO UPDATE SET
         category = excluded.category,
         question_text = excluded.question_text,
+        qid = excluded.qid,
         is_flipped = 0,
         version = version + 1,
         updated_at = excluded.updated_at
     `)
-      .bind(code, category, questionText, now)
+      .bind(code, category, questionText, qid, now)
       .run();
   }
   memoryRooms.set(code, room);
@@ -506,20 +537,23 @@ export async function updateRoomState(db, code, updates) {
     const nextVersion = current.version + 1;
     const category = updates.category !== undefined ? updates.category : current.category;
     const questionText = updates.questionText !== undefined ? updates.questionText : current.questionText;
+    // An older client that only sends text must not leave a stale qid behind.
+    const qid = updates.qid !== undefined ? updates.qid : updates.questionText !== undefined ? '' : current.qid || '';
     const isFlipped = updates.isFlipped !== undefined ? (updates.isFlipped ? 1 : 0) : (current.isFlipped ? 1 : 0);
 
     await db.prepare(`
       UPDATE sync_rooms
-      SET category = ?, question_text = ?, is_flipped = ?, version = ?, updated_at = ?
+      SET category = ?, question_text = ?, qid = ?, is_flipped = ?, version = ?, updated_at = ?
       WHERE code = ?
     `)
-      .bind(category, questionText, isFlipped, nextVersion, now, code)
+      .bind(category, questionText, qid, isFlipped, nextVersion, now, code)
       .run();
 
     return {
       code,
       category,
       questionText,
+      qid,
       isFlipped: Boolean(isFlipped),
       version: nextVersion,
       updatedAt: now,

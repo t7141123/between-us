@@ -27,6 +27,7 @@ interface RoomModalProps {
   currentRoom: RoomState | null;
   currentCategory: string;
   currentQuestionText: string;
+  currentQuestionQid?: string;
   onClose: () => void;
   onRoomConnected: (room: RoomState) => void;
   onLeaveRoom: () => void;
@@ -40,6 +41,7 @@ export const RoomModal: React.FC<RoomModalProps> = ({
   currentRoom,
   currentCategory,
   currentQuestionText,
+  currentQuestionQid = '',
   onClose,
   onRoomConnected,
   onLeaveRoom,
@@ -54,7 +56,7 @@ export const RoomModal: React.FC<RoomModalProps> = ({
   const handleCreateRoom = async () => {
     setLoading(true);
     setFeedback(null);
-    const res = await RoomService.createRoom(currentCategory, currentQuestionText);
+    const res = await RoomService.createRoom(currentCategory, currentQuestionText, currentQuestionQid);
     setLoading(false);
     if (res.success && res.room) {
       onRoomConnected(res.room);
@@ -139,6 +141,8 @@ export const RoomModal: React.FC<RoomModalProps> = ({
               </Text>
             </View>
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={I18nService.t(locale, 'a11y_close')}
               onPress={onClose}
               hitSlop={12}
               style={[

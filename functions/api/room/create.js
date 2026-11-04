@@ -2,7 +2,7 @@
  * POST /api/room/create
  * Creates a new couple sync room and returns the 4-digit room code.
  */
-import { createRoom, generateRoomCode, getCorsHeaders, getRoomState } from '../payment/_lib.js';
+import { createRoom, generateRoomCode, getCorsHeaders, getRoomState, normalizeRoomCategory, normalizeQid } from '../payment/_lib.js';
 
 export async function onRequestOptions(context) {
   return new Response(null, {
@@ -11,24 +11,13 @@ export async function onRequestOptions(context) {
   });
 }
 
-const ALLOWED_CATEGORIES = new Set([
-  'all',
-  'vision',
-  'growth',
-  'intimacy',
-  'soul',
-  'sensual',
-  'marriage',
-  'parenting',
-]);
-
 export async function onRequestPost({ request, env }) {
   const corsHeaders = getCorsHeaders(request, 'POST, OPTIONS');
 
   try {
     const body = await request.json().catch(() => ({}));
-    const rawCategory = typeof body.category === 'string' ? body.category.trim().toLowerCase() : 'all';
-    const category = ALLOWED_CATEGORIES.has(rawCategory) ? rawCategory : 'all';
+    const category = normalizeRoomCategory(body.category) || 'all';
+    const qid = normalizeQid(body.qid);
     const questionText = typeof body.questionText === 'string' ? body.questionText.replace(/[\u0000-\u001F\u007F]/g, ' ').slice(0, 500) : '';
 
     // Pick a code that is not currently in use so we never overwrite another couple's room.
@@ -42,7 +31,7 @@ export async function onRequestPost({ request, env }) {
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
-    const room = await createRoom(env.DB, code, category, questionText);
+    const room = await createRoom(env.DB, code, category, questionText, qid);
 
     return new Response(JSON.stringify({ success: true, room }), {
       headers: {
