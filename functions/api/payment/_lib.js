@@ -189,6 +189,7 @@ export async function ensureOrdersTable(db) {
         provider TEXT DEFAULT 'email',
         google_sub TEXT,
         apple_sub TEXT,
+        apple_refresh_token TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
@@ -235,6 +236,7 @@ export async function ensureOrdersTable(db) {
     await db.prepare('ALTER TABLE users ADD COLUMN password_hash TEXT').run().catch(() => {});
     await db.prepare('ALTER TABLE users ADD COLUMN google_sub TEXT').run().catch(() => {});
     await db.prepare('ALTER TABLE users ADD COLUMN apple_sub TEXT').run().catch(() => {});
+    await db.prepare('ALTER TABLE users ADD COLUMN apple_refresh_token TEXT').run().catch(() => {});
   } catch {
     // Ignore if columns already exist
   }

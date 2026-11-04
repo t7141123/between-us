@@ -14,8 +14,8 @@ import {
 } from 'react-native';
 import { Lock, Mail, Eye, EyeOff, ShieldCheck } from 'lucide-react-native';
 import { AuthService, AuthUser } from '../services/auth';
-import { SOCIAL_SIGN_IN_ENABLED } from '../constants/features';
-import { getAppleIdToken, getGoogleIdToken } from '../services/oauthNative';
+import { APPLE_SIGN_IN_ENABLED, GOOGLE_SIGN_IN_ENABLED } from '../constants/features';
+import { getAppleCredential, getGoogleCredential, SocialCredential } from '../services/oauthNative';
 import { I18nService } from '../services/i18n';
 import { CardSkinId, LocaleKey, ThemeColors, ThemeMode } from '../types';
 
@@ -91,19 +91,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const handleOAuth = async (provider: 'apple' | 'google') => {
     setLoading(true);
     setFeedback(null);
-    let idToken: string | null = null;
+    let credential: SocialCredential | null = null;
     try {
-      idToken = provider === 'apple' ? await getAppleIdToken() : await getGoogleIdToken();
+      credential = provider === 'apple' ? await getAppleCredential() : await getGoogleCredential();
     } catch {
       setLoading(false);
       setFeedback(I18nService.t(locale, 'oauth_fallback_hint'));
       return;
     }
-    if (!idToken) {
+    if (!credential) {
       setLoading(false); // user cancelled
       return;
     }
-    const res = await AuthService.authenticateWithOAuth(provider, { idToken });
+    const res = await AuthService.authenticateWithOAuth(provider, credential);
     setLoading(false);
 
     if (res.success && res.user) {
@@ -319,11 +319,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </View>
           ) : (
             <View style={styles.actionsBox}>
-              {SOCIAL_SIGN_IN_ENABLED && (
+              {APPLE_SIGN_IN_ENABLED && (
                 <>
                 {/* Apple / Google Quick Sign In */}
                 <View style={styles.oauthRow}>
                   <Pressable
+                    accessibilityRole="button"
                     onPress={() => handleOAuth('apple')}
                     disabled={loading}
                     style={[styles.oauthBtn, { backgroundColor: isDark ? '#FFFFFF' : '#000000' }]}
@@ -333,22 +334,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     </Text>
                   </Pressable>
 
-                  <Pressable
-                    onPress={() => handleOAuth('google')}
-                    disabled={loading}
-                    style={[
-                      styles.oauthBtn,
-                      {
-                        backgroundColor: isDark ? '#292524' : '#FFFFFF',
-                        borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)',
-                        borderWidth: 1,
-                      },
-                    ]}
-                  >
-                    <Text style={[styles.oauthBtnText, { color: colors.ink }]}>
-                      G {I18nService.t(locale, 'sign_in_google', 'Google 繼續')}
-                    </Text>
-                  </Pressable>
+                  {GOOGLE_SIGN_IN_ENABLED && (
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => handleOAuth('google')}
+                      disabled={loading}
+                      style={[
+                        styles.oauthBtn,
+                        {
+                          backgroundColor: isDark ? '#292524' : '#FFFFFF',
+                          borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)',
+                          borderWidth: 1,
+                        },
+                      ]}
+                    >
+                      <Text style={[styles.oauthBtnText, { color: colors.ink }]}>
+                        G {I18nService.t(locale, 'sign_in_google', 'Google 繼續')}
+                      </Text>
+                    </Pressable>
+                  )}
                 </View>
 
                 {/* Divider */}

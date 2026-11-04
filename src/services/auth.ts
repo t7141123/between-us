@@ -51,7 +51,7 @@ export const AuthService = {
   /** Log in via Apple / Google OAuth endpoint */
   async authenticateWithOAuth(
     provider: 'apple' | 'google',
-    payload: { idToken: string }
+    payload: { idToken: string; authorizationCode?: string }
   ): Promise<{ success: boolean; user?: AuthUser; error?: ErrorCode }> {
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/oauth`, {

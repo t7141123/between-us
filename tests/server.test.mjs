@@ -56,12 +56,14 @@ test('auth token round-trips and rejects tampering', async () => {
 });
 
 test('OAuth: unconfigured provider, malformed and forged tokens are rejected', async () => {
-  await assert.rejects(verifyIdToken('apple', 'a.b.c', {}), OAuthNotConfiguredError);
+  await assert.rejects(verifyIdToken('google', 'a.b.c', {}), OAuthNotConfiguredError); // Google needs GOOGLE_CLIENT_IDS
   await assert.rejects(verifyIdToken('apple', 'garbage', { APPLE_CLIENT_IDS: 'x' }), OAuthInvalidTokenError);
   const payload = btoa(JSON.stringify({ sub: '1', email: 'victim@x.com', iss: 'https://appleid.apple.com', aud: 'x', exp: 9e9 })).replace(/=/g, '');
   await assert.rejects(verifyIdToken('apple', `e30.${payload}.AAAA`, { APPLE_CLIENT_IDS: 'x' }), OAuthInvalidTokenError);
   const res = await oauthPost({ request: post({ provider: 'apple', idToken: `e30.${payload}.AAAA`, email: 'victim@x.com' }), env });
-  assert.equal(res.status, 501); // never issues a session from client-supplied identity
+  assert.equal(res.status, 401); // Apple audience defaults to the bundle id; unsigned token is rejected
+  const g = await oauthPost({ request: post({ provider: 'google', idToken: `e30.${payload}.AAAA` }), env });
+  assert.equal(g.status, 501); // Google not configured
 });
 
 test('login: social (passwordless) account cannot be taken over via register or login', async () => {

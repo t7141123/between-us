@@ -77,7 +77,8 @@
             ]
           }
         ]
-      }
+      },
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -103,7 +104,9 @@
           "backgroundColor": "#FAF7F2"
         }
       ],
-      "expo-iap"
+      "expo-iap",
+      "expo-web-browser",
+      "expo-apple-authentication"
     ],
     "scheme": "betweenus"
   }

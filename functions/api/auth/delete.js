@@ -3,6 +3,7 @@
  * Account deletion (Apple App Store Review Guideline 5.1.1(v)).
  * The account to delete is identified ONLY by the verified Bearer token, never by request body.
  */
+import { revokeRefreshToken } from './_apple_signin.js';
 import { ensureOrdersTable, getCorsHeaders, verifyAuthToken } from '../payment/_lib.js';
 
 function json(body, status, corsHeaders) {
@@ -33,8 +34,11 @@ export async function onRequestPost(context) {
     await ensureOrdersTable(env.DB);
 
     const userId = String(session.uid);
-    const user = await env.DB.prepare('SELECT id FROM users WHERE id = ?').bind(userId).first();
+    const user = await env.DB.prepare('SELECT id, apple_refresh_token FROM users WHERE id = ?').bind(userId).first();
     if (!user) return json({ error: 'User not found' }, 404, corsHeaders);
+
+    // Revoke the Sign in with Apple grant first (best effort; skipped when no Apple key is configured).
+    if (user.apple_refresh_token) await revokeRefreshToken(user.apple_refresh_token, env);
 
     await env.DB.batch([
       env.DB.prepare('DELETE FROM user_entitlements WHERE user_id = ?').bind(userId),

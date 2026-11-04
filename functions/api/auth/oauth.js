@@ -5,6 +5,7 @@
  * client-supplied email / sub values are never trusted.
  */
 import { ensureOrdersTable, getCorsHeaders, signAuthToken } from '../payment/_lib.js';
+import { exchangeAuthorizationCode } from './_apple_signin.js';
 import { verifyIdToken, OAuthNotConfiguredError, OAuthInvalidTokenError } from './_oauth_verify.js';
 
 function json(body, status, corsHeaders) {
@@ -84,6 +85,14 @@ export async function onRequestPost(context) {
         )
         .run();
       user = { id: newId, email, provider };
+    }
+
+    // Apple: keep a refresh token so the Apple grant can be revoked when the account is deleted.
+    if (provider === 'apple' && typeof body.authorizationCode === 'string') {
+      const refreshToken = await exchangeAuthorizationCode(body.authorizationCode, env);
+      if (refreshToken) {
+        await env.DB.prepare('UPDATE users SET apple_refresh_token = ? WHERE id = ?').bind(refreshToken, user.id).run();
+      }
     }
 
     const token = await signAuthToken(user.id, user.email, env);

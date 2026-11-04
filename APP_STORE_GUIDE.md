@@ -26,10 +26,11 @@ open ios/BetweenUs.xcworkspace
 
 ### 送審前檢查清單
 - [ ] Apple Developer Program 已啟用；App Store Connect 已建立 App
-- [ ] 建立 IAP 商品，Product ID 與 `functions/api/payment/_lib.js` 的 `STORE_ITEMS` key 完全一致（`pack_sensual`、`pack_marriage`、`pack_parenting`、`skin_*`、`bundle_skins`、`tip_coffee`、`tip_afternoon`）
+- [ ] 建立 IAP 商品，Product ID 與 `functions/api/payment/_lib.js` 的 `STORE_ITEMS` key 完全一致（`pack_sensual`、`pack_marriage`、`pack_parenting`、`skin_noir_gold`、`skin_rose_wine`、`skin_forest_sage`、`bundle_skins`、`tip_coffee`、`tip_afternoon`）；贊助項目（`tip_*`）設為 Consumable，其餘 Non-Consumable
 - [ ] App Store Connect → Integrations → In-App Purchase 產生 API Key，設定 Cloudflare 變數 `APPLE_IAP_ISSUER_ID`、`APPLE_IAP_KEY_ID`、`APPLE_IAP_PRIVATE_KEY`
-- [ ] 實作 `src/services/iap.ts`（`expo-iap`）並在 TestFlight 以 Sandbox 帳號測試購買／恢復購買
-- [ ] 若啟用 Apple / Google 登入：設定 `APPLE_CLIENT_IDS`、`GOOGLE_CLIENT_IDS`，實作 `src/services/oauthNative.ts`，再把 `src/constants/features.ts` 的 `SOCIAL_SIGN_IN_ENABLED` 改為 `true`（兩者必須同時提供）
+- [ ] Apple 登入（程式已完成）：在 Apple Developer 為 App ID 啟用 *Sign in with Apple*（EAS 會自動同步）。要在刪除帳號時撤銷 Apple 授權，另建一把 *Sign in with Apple* Key，設定 `APPLE_TEAM_ID`、`APPLE_SIGNIN_KEY_ID`、`APPLE_SIGNIN_PRIVATE_KEY`
+- [ ] Google 登入（選填，程式已完成）：在 Google Cloud 建立 OAuth Client（類型 iOS，Bundle ID `com.lovebetweenus.app`），把 Client ID 設為 `GOOGLE_CLIENT_IDS`（Cloudflare）與 `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`（EAS 環境變數）。未設定時只顯示 Apple 登入
+- [ ] 以 TestFlight + Sandbox 帳號實機測試：購買、恢復購買、Apple 登入、刪除帳號
 - [ ] 確認 Apple 目前要求的最低 Xcode / iOS SDK 版本，必要時升級 Expo SDK
 - [ ] 填寫隱私問卷、年齡分級、審核備註（見第三部分）
 

@@ -3,7 +3,7 @@
  * Zero external dependencies; uses Web Crypto only.
  *
  * Required environment variables (until set, the provider is reported as "not configured"):
- *   APPLE_CLIENT_IDS   comma-separated allowed audiences (iOS bundle id, and/or Services ID for web)
+ *   APPLE_CLIENT_IDS   optional; comma-separated allowed audiences. Defaults to the iOS bundle id.
  *   GOOGLE_CLIENT_IDS  comma-separated allowed OAuth client IDs (iOS / Android / Web)
  */
 
@@ -53,7 +53,9 @@ export async function verifyIdToken(provider, idToken, env) {
   const cfg = PROVIDERS[provider];
   if (!cfg) throw new OAuthInvalidTokenError('Unsupported provider');
 
-  const audiences = String(env?.[cfg.audEnv] || '')
+  // The audience of a native Apple identity token is the app's bundle id (public), so default to it.
+  const defaultAud = provider === 'apple' ? env?.APPLE_BUNDLE_ID || 'com.lovebetweenus.app' : '';
+  const audiences = String(env?.[cfg.audEnv] || defaultAud)
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
