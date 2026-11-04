@@ -20,6 +20,9 @@ import confetti from 'canvas-confetti';
 import { LocaleKey, CategoryFilter, QuestionEntry, CardSkinId } from './types';
 import { DeckEndModal } from './components/DeckEndModal';
 import { OnboardingModal } from './components/OnboardingModal';
+import { DailyModal } from './components/DailyModal';
+import { ReminderService } from './services/reminders';
+import { dailyQid, DEFAULT_REMINDER, ReminderSettings } from './services/dailyCore';
 import { ProgressBadge } from './components/ProgressBadge';
 import { useProgress } from './hooks/useProgress';
 import { countSeen, currentStreak, dayKey, prioritizeUnseen } from './services/progressCore';
@@ -127,6 +130,9 @@ export const MainApp: React.FC = () => {
   const [currentRoom, setCurrentRoom] = useState<RoomState | null>(null);
 
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+  const [isDailyOpen, setIsDailyOpen] = useState(false);
+  const [reminder, setReminder] = useState<ReminderSettings>(DEFAULT_REMINDER);
+  const [permissionDenied, setPermissionDenied] = useState(false);
   const progress = useProgress();
   const hydrateProgress = progress.hydrate;
 
@@ -167,8 +173,10 @@ export const MainApp: React.FC = () => {
       StorageService.getSeen(),
       StorageService.getStreak(),
       StorageService.getOnboarded(),
-    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter, savedUser, savedSkins, savedSeen, savedStreak, onboarded]) => {
+      StorageService.getReminder(),
+    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter, savedUser, savedSkins, savedSeen, savedStreak, onboarded, savedReminder]) => {
       if (!mounted) return;
+      setReminder(savedReminder);
       hydrateProgress(savedSeen, savedStreak);
       // First run: show the short guide (not for visitors arriving via a shared question or room link).
       if (!onboarded && !initialShareTargetRef.current) setIsOnboardingOpen(true);
@@ -273,6 +281,34 @@ export const MainApp: React.FC = () => {
     setIsOnboardingOpen(false);
     void StorageService.setOnboarded(true);
   }, []);
+
+  // Question of the day: from the free base questions so everyone can join in.
+  const dailyPool = useMemo(() => I18nService.getQuestions(locale, 'all'), [locale]);
+  const todayKey = dayKey(new Date());
+  const dailyEntry = useMemo(() => {
+    const qid = dailyQid(todayKey, dailyPool.map((q) => q.qid));
+    return dailyPool.find((q) => q.qid === qid) ?? null;
+  }, [dailyPool, todayKey]);
+
+  // Keep the local reminder schedule in step with settings and language (also refreshes upcoming days).
+  useEffect(() => {
+    if (!isStorageLoaded || !ReminderService.isSupported()) return;
+    const qids = dailyPool.map((q) => q.qid);
+    const textByQid = new Map(dailyPool.map((q) => [q.qid, q.text]));
+    void ReminderService.sync(reminder, locale, qids, (qid) => textByQid.get(qid));
+  }, [isStorageLoaded, reminder, locale, dailyPool]);
+
+  const handleChangeReminder = useCallback(async (next: ReminderSettings) => {
+    if (next.enabled && !reminder.enabled) {
+      const granted = await ReminderService.requestPermission();
+      setPermissionDenied(!granted);
+      if (!granted) return;
+    } else {
+      setPermissionDenied(false);
+    }
+    setReminder(next);
+    void StorageService.setReminder(next);
+  }, [reminder.enabled]);
 
   const lastNavTimeRef = useRef(0);
 
@@ -743,6 +779,24 @@ export const MainApp: React.FC = () => {
         }}
       />
 
+      <DailyModal
+        visible={isDailyOpen}
+        locale={locale}
+        colors={colors}
+        isDark={isDark}
+        questionText={dailyEntry?.text ?? ''}
+        categoryLabel={dailyEntry?.categoryLabel ?? ''}
+        reminder={reminder}
+        reminderSupported={ReminderService.isSupported()}
+        permissionDenied={permissionDenied}
+        onTalk={() => {
+          setIsDailyOpen(false);
+          if (dailyEntry) jumpToQid(dailyEntry.qid);
+        }}
+        onChangeReminder={handleChangeReminder}
+        onClose={() => setIsDailyOpen(false)}
+      />
+
       <OnboardingModal
         visible={isOnboardingOpen}
         locale={locale}
@@ -848,6 +902,10 @@ export const MainApp: React.FC = () => {
         onOpenTimer={() => {
           playClick();
           setIsTimerOpen(true);
+        }}
+        onOpenDaily={() => {
+          playClick();
+          setIsDailyOpen(true);
         }}
         onOpenOnboarding={() => {
           playClick();
