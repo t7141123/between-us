@@ -71,10 +71,19 @@ export const StoreModal: React.FC<StoreModalProps> = ({
   const [activeTab, setActiveTab] = useState<TabKey>('packs');
   const [redeemFeedback, setRedeemFeedback] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [storePrices, setStorePrices] = useState<Record<string, string>>({});
   const [pendingCheckout, setPendingCheckout] = useState<PendingCheckout | null>(null);
   const [queuedCheckout, setQueuedCheckout] = useState<PendingCheckout | null>(null);
 
   const isDark = theme === 'dark';
+
+  // On iOS show the price StoreKit reports (correct currency/tax for the user's storefront).
+  React.useEffect(() => {
+    if (visible && Platform.OS === 'ios') {
+      IapService.loadPrices().then(setStorePrices);
+    }
+  }, [visible]);
+  const priceFor = (itemKey: string, fallback: string) => storePrices[itemKey] ?? fallback;
 
   // Resume checkout automatically if user just logged in while having a queued purchase
   React.useEffect(() => {
@@ -124,7 +133,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
     const checkout: PendingCheckout = {
       itemKey,
       title: I18nService.t(locale, pack.titleKey),
-      amountText: pack.priceText,
+      amountText: priceFor(itemKey, pack.priceText),
       type: 'pack',
       targetId: pack.id,
     };
@@ -143,7 +152,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
     const checkout: PendingCheckout = {
       itemKey,
       title: `${I18nService.t(locale, skin.nameKey)} (${I18nService.t(locale, 'tab_skins')})`,
-      amountText: 'NT$ 30',
+      amountText: priceFor(itemKey, 'NT$ 30'),
       type: 'skin',
       targetId: skin.id,
     };
@@ -156,7 +165,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
     const checkout: PendingCheckout = {
       itemKey: 'bundle_skins',
       title: I18nService.t(locale, 'skin_unlock_bundle'),
-      amountText: 'NT$ 60',
+      amountText: priceFor('bundle_skins', 'NT$ 60'),
       type: 'bundle_skins',
     };
     if (guardAuthForCheckout(checkout)) {
@@ -169,7 +178,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
     const checkout: PendingCheckout = {
       itemKey,
       title: I18nService.t(locale, itemKey),
-      amountText: isCoffee ? 'NT$ 60' : 'NT$ 120',
+      amountText: priceFor(itemKey, isCoffee ? 'NT$ 60' : 'NT$ 120'),
       type: 'supporter',
     };
     if (guardAuthForCheckout(checkout)) {
@@ -181,12 +190,11 @@ export const StoreModal: React.FC<StoreModalProps> = ({
     setIsProcessing(true);
     setRedeemFeedback(I18nService.t(locale, 'restoring_purchases', '正在向商店恢復已購買項目…'));
     try {
-      if (Platform.OS !== 'web' && IapService.isAvailable()) {
+      if (Platform.OS !== 'web' && IapService.isAvailable() && currentUser) {
         const restored = await IapService.restore();
-        if (restored.status === 'success' && currentUser) {
-          for (const transactionId of restored.transactionIds) {
-            await PaymentService.recordNativeIAP(transactionId);
-          }
+        if (restored.status === 'error') {
+          setRedeemFeedback(I18nService.t(locale, restored.error));
+          return;
         }
       }
       if (currentUser) {
@@ -228,22 +236,17 @@ export const StoreModal: React.FC<StoreModalProps> = ({
       try {
         const result = await IapService.purchase(checkout.itemKey);
         if (result.status === 'success') {
-          const recorded = await PaymentService.recordNativeIAP(result.transactionId);
-          if (recorded.success && currentUser) {
-            const cloud = await AuthService.syncCloudEntitlements(currentUser.id);
-            if (cloud) {
-              cloud.unlockedPacks.forEach((p) => onUnlockPack(p));
-              cloud.unlockedSkins?.forEach((sk) => onUnlockSkin?.(sk));
-              if (cloud.isSupporter) onSetSupporter(true);
-            }
-            setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
-          } else {
-            setRedeemFeedback(I18nService.t(locale, recorded.error || 'restore_failed'));
+          const cloud = await AuthService.syncCloudEntitlements(currentUser?.id);
+          if (cloud) {
+            cloud.unlockedPacks.forEach((p) => onUnlockPack(p));
+            cloud.unlockedSkins?.forEach((sk) => onUnlockSkin?.(sk));
+            if (cloud.isSupporter) onSetSupporter(true);
           }
+          setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
         } else if (result.status === 'unavailable') {
           setRedeemFeedback(I18nService.t(locale, 'native_iap_notice'));
         } else if (result.status === 'error') {
-          setRedeemFeedback(result.error);
+          setRedeemFeedback(I18nService.t(locale, result.error));
         }
       } finally {
         setIsProcessing(false);
@@ -403,7 +406,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                           </Text>
                         </View>
                         <Text style={[styles.packPrice, { color: colors.clay }]}>
-                          {isUnlocked ? I18nService.t(locale, 'unlocked') : pack.priceText}
+                          {isUnlocked ? I18nService.t(locale, 'unlocked') : priceFor(`pack_${pack.id}`, pack.priceText)}
                         </Text>
                       </View>
 
@@ -514,7 +517,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                       </Text>
                     </View>
                     <View style={styles.bundleSkinPriceBadge}>
-                      <Text style={styles.bundleSkinPriceText}>NT$ 60</Text>
+                      <Text style={styles.bundleSkinPriceText}>{priceFor('bundle_skins', 'NT$ 60')}</Text>
                     </View>
                   </Pressable>
                 )}

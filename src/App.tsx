@@ -25,6 +25,7 @@ import { I18nService } from './services/i18n';
 import { StorageService } from './services/storage';
 import { TelemetryService } from './services/telemetry';
 import { PaymentService } from './services/payment';
+import { IapService } from './services/iap';
 import {
   MARRIAGE_PACK_DATA,
   PARENTING_PACK_DATA,
@@ -112,6 +113,24 @@ export const MainApp: React.FC = () => {
   const favoriteCount = useMemo(() => Object.keys(favorites).length, [favorites]);
 
   // Load initial settings & initialize session duration telemetry
+  // iOS: attach to StoreKit early and silently verify purchases that could not be verified earlier
+  // (made while signed out/offline). Re-runs when the signed-in user changes.
+  useEffect(() => {
+    if (!currentUser || !IapService.isAvailable()) return;
+    let cancelled = false;
+    IapService.recover().then(async (recovered) => {
+      if (cancelled || recovered === 0) return;
+      const cloud = await AuthService.syncCloudEntitlements();
+      if (cancelled || !cloud) return;
+      if (cloud.unlockedPacks.length > 0) setUnlockedPacks(cloud.unlockedPacks);
+      if (cloud.unlockedSkins && cloud.unlockedSkins.length > 0) setUnlockedSkins(cloud.unlockedSkins);
+      if (cloud.isSupporter) setIsSupporter(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUser]);
+
   useEffect(() => {
     let mounted = true;
     TelemetryService.initSession();
