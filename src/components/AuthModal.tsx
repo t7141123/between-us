@@ -1,6 +1,6 @@
 /**
  * AuthModal: Progressive optional login & cross-platform synchronization.
- * Supports Sign in with Apple, Google, and Email quick sync.
+ * Supports Email + Password (Register/Login) and Apple/Google sign-in.
  */
 import React, { useState } from 'react';
 import {
@@ -12,9 +12,12 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { Lock, Mail, Eye, EyeOff, ShieldCheck } from 'lucide-react-native';
 import { AuthService, AuthUser } from '../services/auth';
+import { SOCIAL_SIGN_IN_ENABLED } from '../constants/features';
+import { getAppleIdToken, getGoogleIdToken } from '../services/oauthNative';
 import { I18nService } from '../services/i18n';
-import { LocaleKey, ThemeColors, ThemeMode } from '../types';
+import { CardSkinId, LocaleKey, ThemeColors, ThemeMode } from '../types';
 
 interface AuthModalProps {
   visible: boolean;
@@ -22,9 +25,10 @@ interface AuthModalProps {
   theme: ThemeMode;
   colors: ThemeColors;
   currentUser: AuthUser | null;
+  purchaseGateNotice?: boolean;
   onClose: () => void;
   onUserChanged: (user: AuthUser | null) => void;
-  onSyncComplete: (unlockedPacks: string[], isSupporter: boolean) => void;
+  onSyncComplete: (unlockedPacks: string[], isSupporter: boolean, unlockedSkins?: CardSkinId[]) => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
@@ -33,70 +37,95 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   theme,
   colors,
   currentUser,
+  purchaseGateNotice = false,
   onClose,
   onUserChanged,
   onSyncComplete,
 }) => {
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const isDark = theme === 'dark';
 
-  const handleProviderLogin = async (provider: 'apple' | 'google') => {
+  const handleEmailAuth = async () => {
+    if (!email.trim() || !email.includes('@')) {
+      setFeedback(I18nService.t(locale, 'invalid_email_hint', '請輸入有效的電子信箱'));
+      return;
+    }
+    if (!password || password.length < 6) {
+      setFeedback(I18nService.t(locale, 'auth_password_short', '密碼至少需為 6 個字元'));
+      return;
+    }
+
     setLoading(true);
-    // In production web, this triggers OAuth redirect or popup; currently mock/bind
-    const simulatedEmail =
-      provider === 'apple' ? 'apple.user@icloud.com' : 'google.user@gmail.com';
-    const res = await AuthService.login(simulatedEmail, provider);
+    setFeedback(null);
+    const res = await AuthService.authenticateWithEmail(email.trim(), password, authMode);
     setLoading(false);
 
     if (res.success && res.user) {
       onUserChanged(res.user);
       const syncRes = await AuthService.syncCloudEntitlements(res.user.id);
       if (syncRes) {
-        onSyncComplete(syncRes.unlockedPacks, syncRes.isSupporter);
+        onSyncComplete(syncRes.unlockedPacks, syncRes.isSupporter, syncRes.unlockedSkins);
       }
-      setFeedback(I18nService.t(locale, 'sync_success'));
+      setFeedback(
+        authMode === 'register'
+          ? I18nService.t(locale, 'auth_register_success', '註冊成功！已為您啟用跨平台雲端保存。')
+          : I18nService.t(locale, 'sync_success', '帳號同步成功！已為您同步雲端權益。')
+      );
       setTimeout(() => {
         setFeedback(null);
+        setPassword('');
         onClose();
-      }, 1500);
+      }, 1200);
     } else {
-      setFeedback(res.error || 'Login failed');
+      setFeedback(res.error || '認證失敗，請稍後重試');
     }
   };
 
-  const handleEmailLogin = async () => {
-    if (!email.trim() || !email.includes('@')) {
-      setFeedback('請輸入有效的電子信箱');
+  const handleOAuth = async (provider: 'apple' | 'google') => {
+    setLoading(true);
+    setFeedback(null);
+    let idToken: string | null = null;
+    try {
+      idToken = provider === 'apple' ? await getAppleIdToken() : await getGoogleIdToken();
+    } catch {
+      setLoading(false);
+      setFeedback(I18nService.t(locale, 'oauth_fallback_hint'));
       return;
     }
-    setLoading(true);
-    const res = await AuthService.login(email.trim(), 'email');
+    if (!idToken) {
+      setLoading(false); // user cancelled
+      return;
+    }
+    const res = await AuthService.authenticateWithOAuth(provider, { idToken });
     setLoading(false);
 
     if (res.success && res.user) {
       onUserChanged(res.user);
       const syncRes = await AuthService.syncCloudEntitlements(res.user.id);
       if (syncRes) {
-        onSyncComplete(syncRes.unlockedPacks, syncRes.isSupporter);
+        onSyncComplete(syncRes.unlockedPacks, syncRes.isSupporter, syncRes.unlockedSkins);
       }
       setFeedback(I18nService.t(locale, 'sync_success'));
       setTimeout(() => {
         setFeedback(null);
         onClose();
-      }, 1500);
+      }, 1200);
     } else {
-      setFeedback(res.error || 'Login failed');
+      setFeedback(res.error || I18nService.t(locale, 'oauth_fallback_hint'));
     }
   };
 
   const handleLogout = async () => {
     await AuthService.logout();
     onUserChanged(null);
-    setFeedback('已解除綁定');
+    setFeedback(I18nService.t(locale, 'auth_unlinked', '已解除綁定'));
     setTimeout(() => {
       setFeedback(null);
       onClose();
@@ -106,7 +135,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const handleDeleteAccount = async () => {
     if (!currentUser) return;
     setLoading(true);
-    const res = await AuthService.deleteAccount(currentUser.id, currentUser.email);
+    const res = await AuthService.deleteAccount();
     setLoading(false);
 
     if (res.success) {
@@ -142,9 +171,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         >
           {/* Header */}
           <View style={styles.header}>
-            <Text style={[styles.title, { color: colors.ink }]}>
-              {I18nService.t(locale, 'auth_modal_title')}
-            </Text>
+            <View>
+              <Text style={[styles.title, { color: colors.ink }]}>
+                {currentUser
+                  ? I18nService.t(locale, 'auth_logged_in_title', '帳號與跨平台同步')
+                  : authMode === 'login'
+                  ? I18nService.t(locale, 'auth_login_title', '登入帳號')
+                  : I18nService.t(locale, 'auth_register_title', '註冊新帳號')}
+              </Text>
+              <Text style={[styles.subtitle, { color: colors.muted }]}>
+                BETWEEN US CLOUD SYNC
+              </Text>
+            </View>
             <Pressable
               onPress={onClose}
               hitSlop={12}
@@ -157,10 +195,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </Pressable>
           </View>
 
-          <Text style={[styles.desc, { color: colors.muted }]}>
-            {I18nService.t(locale, 'auth_modal_desc')}
-          </Text>
+          {/* Purchase gate notice if opened before checkout */}
+          {!currentUser && purchaseGateNotice && (
+            <View style={[styles.gateNoticeBox, { backgroundColor: colors.badgeBg, borderColor: colors.clay }]}>
+              <ShieldCheck size={16} color={colors.clay} style={{ marginRight: 8, marginTop: 1 }} />
+              <Text style={[styles.gateNoticeText, { color: colors.ink }]}>
+                {I18nService.t(
+                  locale,
+                  'auth_gate_desc',
+                  '為確保您購買的內容可在手機 App 與網頁版跨平台永久保存，請先登入或註冊帳號。'
+                )}
+              </Text>
+            </View>
+          )}
 
+          {!currentUser && !purchaseGateNotice && (
+            <Text style={[styles.desc, { color: colors.muted }]}>
+              {I18nService.t(locale, 'auth_modal_desc')}
+            </Text>
+          )}
+
+          {/* Feedback banner */}
           {feedback && (
             <View
               style={[
@@ -264,55 +319,95 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </View>
           ) : (
             <View style={styles.actionsBox}>
-              {/* Sign in with Apple */}
-              <Pressable
-                onPress={() => handleProviderLogin('apple')}
-                disabled={loading}
-                style={[styles.appleBtn, { backgroundColor: isDark ? '#FFFFFF' : '#000000' }]}
-              >
-                <Text style={[styles.appleBtnText, { color: isDark ? '#000000' : '#FFFFFF' }]}>
-                   {I18nService.t(locale, 'sign_in_apple')}
-                </Text>
-              </Pressable>
+              {SOCIAL_SIGN_IN_ENABLED && (
+                <>
+                {/* Apple / Google Quick Sign In */}
+                <View style={styles.oauthRow}>
+                  <Pressable
+                    onPress={() => handleOAuth('apple')}
+                    disabled={loading}
+                    style={[styles.oauthBtn, { backgroundColor: isDark ? '#FFFFFF' : '#000000' }]}
+                  >
+                    <Text style={[styles.oauthBtnText, { color: isDark ? '#000000' : '#FFFFFF' }]}>
+                       {I18nService.t(locale, 'sign_in_apple', 'Apple 繼續')}
+                    </Text>
+                  </Pressable>
 
-              {/* Sign in with Google */}
-              <Pressable
-                onPress={() => handleProviderLogin('google')}
-                disabled={loading}
-                style={[
-                  styles.googleBtn,
-                  {
-                    backgroundColor: isDark ? '#292524' : '#FFFFFF',
-                    borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)',
-                  },
-                ]}
-              >
-                <Text style={[styles.googleBtnText, { color: colors.ink }]}>
-                  G  {I18nService.t(locale, 'sign_in_google')}
-                </Text>
-              </Pressable>
+                  <Pressable
+                    onPress={() => handleOAuth('google')}
+                    disabled={loading}
+                    style={[
+                      styles.oauthBtn,
+                      {
+                        backgroundColor: isDark ? '#292524' : '#FFFFFF',
+                        borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)',
+                        borderWidth: 1,
+                      },
+                    ]}
+                  >
+                    <Text style={[styles.oauthBtnText, { color: colors.ink }]}>
+                      G {I18nService.t(locale, 'sign_in_google', 'Google 繼續')}
+                    </Text>
+                  </Pressable>
+                </View>
 
-              {/* Divider */}
-              <View style={styles.dividerRow}>
-                <View
-                  style={[
-                    styles.dividerLine,
-                    { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)' },
-                  ]}
-                />
-                <Text style={[styles.dividerText, { color: colors.muted }]}>
-                  {I18nService.t(locale, 'or_email')}
-                </Text>
-                <View
-                  style={[
-                    styles.dividerLine,
-                    { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)' },
-                  ]}
-                />
+                {/* Divider */}
+                <View style={styles.dividerRow}>
+                  <View
+                    style={[
+                      styles.dividerLine,
+                      { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)' },
+                    ]}
+                  />
+                  <Text style={[styles.dividerText, { color: colors.muted }]}>
+                    {I18nService.t(locale, 'or_email_password', '或使用 Email + 密碼')}
+                  </Text>
+                  <View
+                    style={[
+                      styles.dividerLine,
+                      { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)' },
+                    ]}
+                  />
+                </View>
+
+                </>
+              )}
+
+              {/* Mode Switch (Login vs Register) */}
+              <View style={[styles.modeTabs, { backgroundColor: isDark ? '#141211' : 'rgba(0,0,0,0.04)' }]}>
+                <Pressable
+                  onPress={() => setAuthMode('login')}
+                  style={[styles.modeTab, authMode === 'login' && { backgroundColor: colors.card }]}
+                >
+                  <Text
+                    style={[
+                      styles.modeTabText,
+                      { color: authMode === 'login' ? colors.clay : colors.muted },
+                      authMode === 'login' && { fontWeight: '700' },
+                    ]}
+                  >
+                    {I18nService.t(locale, 'auth_tab_login', '帳號登入')}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => setAuthMode('register')}
+                  style={[styles.modeTab, authMode === 'register' && { backgroundColor: colors.card }]}
+                >
+                  <Text
+                    style={[
+                      styles.modeTabText,
+                      { color: authMode === 'register' ? colors.clay : colors.muted },
+                      authMode === 'register' && { fontWeight: '700' },
+                    ]}
+                  >
+                    {I18nService.t(locale, 'auth_tab_register', '註冊新帳號')}
+                  </Text>
+                </Pressable>
               </View>
 
               {/* Email Input */}
-              <View style={styles.emailRow}>
+              <View style={[styles.inputContainer, { borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)', backgroundColor: isDark ? '#292524' : '#FFFFFF' }]}>
+                <Mail size={16} color={colors.muted} style={{ marginRight: 8 }} />
                 <TextInput
                   value={email}
                   onChangeText={setEmail}
@@ -320,25 +415,49 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   placeholderTextColor={colors.muted}
                   autoCapitalize="none"
                   keyboardType="email-address"
-                  style={[
-                    styles.emailInput,
-                    {
-                      color: colors.ink,
-                      borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)',
-                      backgroundColor: isDark ? '#292524' : '#FFFFFF',
-                    },
-                  ]}
+                  style={[styles.textInput, { color: colors.ink }]}
                 />
-                <Pressable
-                  onPress={handleEmailLogin}
-                  disabled={loading}
-                  style={[styles.syncBtn, { backgroundColor: colors.clay }]}
-                >
-                  <Text style={styles.syncBtnText}>
-                    {I18nService.t(locale, 'btn_sync_now')}
-                  </Text>
+              </View>
+
+              {/* Password Input */}
+              <View style={[styles.inputContainer, { borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)', backgroundColor: isDark ? '#292524' : '#FFFFFF' }]}>
+                <Lock size={16} color={colors.muted} style={{ marginRight: 8 }} />
+                <TextInput
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder={
+                    authMode === 'register'
+                      ? I18nService.t(locale, 'auth_password_register_placeholder', '設定密碼（至少 6 碼）')
+                      : I18nService.t(locale, 'auth_password_placeholder', '輸入密碼')
+                  }
+                  placeholderTextColor={colors.muted}
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                  style={[styles.textInput, { color: colors.ink }]}
+                />
+                <Pressable onPress={() => setShowPassword(!showPassword)} hitSlop={8}>
+                  {showPassword ? (
+                    <EyeOff size={16} color={colors.muted} />
+                  ) : (
+                    <Eye size={16} color={colors.muted} />
+                  )}
                 </Pressable>
               </View>
+
+              {/* Submit Button */}
+              <Pressable
+                onPress={handleEmailAuth}
+                disabled={loading}
+                style={[styles.submitBtn, { backgroundColor: colors.clay }]}
+              >
+                <Text style={styles.submitBtnText}>
+                  {loading
+                    ? I18nService.t(locale, 'loading', '處理中...')
+                    : authMode === 'login'
+                    ? I18nService.t(locale, 'auth_submit_login', '登入並同步')
+                    : I18nService.t(locale, 'auth_submit_register', '建立帳號並登入')}
+                </Text>
+              </Pressable>
             </View>
           )}
         </View>
@@ -367,7 +486,7 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     maxWidth: 420,
-    borderRadius: 20,
+    borderRadius: 22,
     borderWidth: 1,
     padding: 22,
     ...Platform.select({
@@ -387,11 +506,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   title: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '800',
+    letterSpacing: 0.3,
+  },
+  subtitle: {
+    fontSize: 10,
+    letterSpacing: 1,
+    fontWeight: '600',
+    marginTop: 2,
   },
   closeBtn: {
     width: 30,
@@ -404,10 +530,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
+  gateNoticeBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 12,
+  },
+  gateNoticeText: {
+    flex: 1,
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: '500',
+  },
   desc: {
     fontSize: 13,
     lineHeight: 19,
-    marginBottom: 16,
+    marginBottom: 14,
   },
   feedbackBanner: {
     padding: 10,
@@ -506,34 +646,26 @@ const styles = StyleSheet.create({
   actionsBox: {
     gap: 12,
   },
-  appleBtn: {
-    height: 44,
+  oauthRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  oauthBtn: {
+    flex: 1,
+    height: 40,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  appleBtnText: {
-    fontSize: 14,
+  oauthBtnText: {
+    fontSize: 13,
     fontWeight: '600',
-    letterSpacing: 0.3,
-  },
-  googleBtn: {
-    height: 44,
-    borderRadius: 10,
-    borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  googleBtnText: {
-    fontSize: 14,
-    fontWeight: '600',
-    letterSpacing: 0.3,
   },
   dividerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginVertical: 4,
+    marginVertical: 2,
   },
   dividerLine: {
     flex: 1,
@@ -542,28 +674,43 @@ const styles = StyleSheet.create({
   dividerText: {
     fontSize: 11,
   },
-  emailRow: {
+  modeTabs: {
     flexDirection: 'row',
-    gap: 8,
+    borderRadius: 10,
+    padding: 3,
   },
-  emailInput: {
+  modeTab: {
     flex: 1,
-    borderWidth: 1,
+    paddingVertical: 7,
+    alignItems: 'center',
     borderRadius: 8,
-    paddingHorizontal: 12,
-    height: 40,
-    fontSize: 13,
   },
-  syncBtn: {
-    paddingHorizontal: 14,
-    height: 40,
-    borderRadius: 8,
+  modeTabText: {
+    fontSize: 12,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    height: 42,
+  },
+  textInput: {
+    flex: 1,
+    fontSize: 13,
+    padding: 0,
+  },
+  submitBtn: {
+    height: 44,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 2,
   },
-  syncBtnText: {
+  submitBtnText: {
     color: '#FFFFFF',
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '700',
   },
 });

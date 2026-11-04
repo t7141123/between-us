@@ -5,7 +5,6 @@
  * Supports environment variable overrides for salt and admin credentials.
  */
 
-const DEFAULT_SECRET_SALT = 'between_us_analytics_salt_2026';
 const DEFAULT_ADMIN_USER = 'admin';
 
 function getCorsHeaders(request) {
@@ -42,7 +41,8 @@ async function verifyToken(authHeader, env) {
   const expiresAt = Number(expiresAtStr);
   if (isNaN(expiresAt) || Date.now() > expiresAt) return false;
 
-  const salt = env?.SECRET_SALT || DEFAULT_SECRET_SALT;
+  const salt = env?.SECRET_SALT;
+  if (!salt || salt.length < 16) return false; // fail closed
   const raw = `${adminUser}:${expiresAt}:${salt}`;
   const encoder = new TextEncoder();
   const digest = await crypto.subtle.digest('SHA-256', encoder.encode(raw));

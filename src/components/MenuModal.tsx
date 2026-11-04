@@ -17,7 +17,9 @@ import {
 import {
   Clock,
   Globe,
+  Moon,
   ShieldCheck,
+  Sun,
   Volume2,
   VolumeX,
   X,
@@ -32,6 +34,7 @@ interface MenuModalProps {
   colors: ThemeColors;
   muted: boolean;
   onClose: () => void;
+  onToggleTheme: () => void;
   onToggleMute: () => void;
   onSelectLocale: (locale: LocaleKey) => void;
   onOpenTimer?: () => void;
@@ -50,6 +53,7 @@ export const MenuModal: React.FC<MenuModalProps> = ({
   colors,
   muted,
   onClose,
+  onToggleTheme,
   onToggleMute,
   onSelectLocale,
   onOpenTimer,
@@ -105,8 +109,60 @@ export const MenuModal: React.FC<MenuModalProps> = ({
             {/* Section 1: Appearance & Sound */}
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: colors.muted }]}>
-                偏好體驗
+                {I18nService.t(locale, 'menu_section_pref', '偏好體驗')}
               </Text>
+
+              {/* Theme Mode Toggle Card */}
+              <View
+                style={[
+                  styles.cardRow,
+                  {
+                    backgroundColor: isDark ? '#292524' : '#FFFFFF',
+                    borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                  },
+                ]}
+              >
+                <View style={styles.rowLeft}>
+                  {isDark ? (
+                    <Moon size={20} color={colors.clay} />
+                  ) : (
+                    <Sun size={20} color={colors.clay} />
+                  )}
+                  <View style={styles.textStack}>
+                    <Text style={[styles.itemTitle, { color: colors.ink }]}>
+                      {I18nService.t(locale, 'menu_theme_title', '外觀模式')}
+                    </Text>
+                    <Text style={[styles.itemSub, { color: colors.muted }]}>
+                      {isDark
+                        ? I18nService.t(locale, 'menu_theme_dark', '深色模式（夜談護眼）')
+                        : I18nService.t(locale, 'menu_theme_light', '淺色模式（溫暖紙感）')}
+                    </Text>
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  onPress={onToggleTheme}
+                  style={[
+                    styles.pillToggleBtn,
+                    {
+                      backgroundColor: isDark ? 'rgba(196,112,79,0.2)' : '#FCE7D8',
+                      borderColor: colors.clay,
+                    },
+                  ]}
+                  activeOpacity={0.7}
+                >
+                  <Text
+                    style={[
+                      styles.pillToggleText,
+                      { color: colors.clay },
+                    ]}
+                  >
+                    {isDark
+                      ? I18nService.t(locale, 'menu_theme_switch_light', '切換為淺色')
+                      : I18nService.t(locale, 'menu_theme_switch_dark', '切換為深色')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
               {/* Mute Toggle Card */}
               <View
@@ -155,7 +211,9 @@ export const MenuModal: React.FC<MenuModalProps> = ({
                       { color: muted ? colors.muted : colors.clay },
                     ]}
                   >
-                    {muted ? '已靜音' : '開啟中'}
+                    {muted
+                      ? I18nService.t(locale, 'menu_sound_muted_btn', '已靜音')
+                      : I18nService.t(locale, 'menu_sound_active_btn', '開啟中')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -227,7 +285,7 @@ export const MenuModal: React.FC<MenuModalProps> = ({
             {onOpenTimer && (
               <View style={styles.section}>
                 <Text style={[styles.sectionTitle, { color: colors.muted }]}>
-                  雙人對話輔助
+                  {I18nService.t(locale, 'menu_section_tools', '雙人對話輔助')}
                 </Text>
 
                 <TouchableOpacity
@@ -251,7 +309,7 @@ export const MenuModal: React.FC<MenuModalProps> = ({
                         {I18nService.t(locale, 'menu_timer', '5 分鐘沉思計時')}
                       </Text>
                       <Text style={[styles.itemSub, { color: colors.muted }]}>
-                        給彼此五分鐘，一人傾訴、一人專心聆聽
+                        {I18nService.t(locale, 'menu_timer_sub', '給彼此五分鐘，一人傾訴、一人專心聆聽')}
                       </Text>
                     </View>
                   </View>

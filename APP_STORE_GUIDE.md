@@ -4,34 +4,34 @@
 
 ---
 
-## 🚀 第一部分：本機 Xcode 打包與上傳（無需 EAS）
+## 🚀 第一部分：建置與上傳
 
-由於你使用 Mac 且本機已配置 Xcode 與 CocoaPods，你可以直接在本機編譯並上傳，免去任何雲端等待。
+> `ios/` 為 `expo prebuild` 產生的資料夾（已被 gitignore），**不要直接信任舊的 `ios/` 內容**（例如版本號可能過期）。請用以下任一方式，從 `app.json` 重新產生。
 
-### 步驟 1：開啟 Xcode 專案工作區
-在專案根目錄終端機執行：
+### 方式 A：EAS Build（建議）
 ```bash
+npm i -g eas-cli && eas login
+eas build --platform ios --profile production
+eas submit --platform ios --profile production   # 首次需填入 Apple ID / ASC App ID / Team ID
+```
+`eas.json` 使用 `appVersionSource: remote`，build number 由 EAS 自動遞增。
+
+### 方式 B：本機 Xcode
+```bash
+npx expo prebuild --clean --platform ios
 open ios/BetweenUs.xcworkspace
 ```
-*(注意：務必打開 `.xcworkspace`，而非 `.xcodeproj`)*
+在 **Signing & Capabilities** 選擇你的 Team，Bundle Identifier 為 `com.lovebetweenus.app`；
+選擇 **Any iOS Device (arm64)** → **Product → Archive** → **Distribute App → App Store Connect → Upload**。
 
-### 步驟 2：配置開發者帳號與簽名 (Signing)
-1. 在 Xcode 左側導覽列，點擊最頂端的 **BetweenUs** 專案圖示。
-2. 在中間面板選擇 Target：**BetweenUs**。
-3. 切換到頂部的 **Signing & Capabilities** 標籤。
-4. 勾選 **Automatically manage signing**。
-5. 在 **Team** 下拉選單中，選擇你的 Apple 開發者帳號（若未登入，點選 *Add an Account...* 登入你的 Apple ID 即可）。
-6. Bundle Identifier 確認為：`com.lovebetweenus.app`。
-
-### 步驟 3：封存 (Archive) 與一鍵上傳
-1. 在 Xcode 頂部視窗中央的「執行目標設備」選單，將原本的模擬器切換為：
-   👉 **Any iOS Device (arm64)**
-2. 點選頂部工具列：**Product -> Archive**。
-3. 等待 Xcode 本機編譯完成後，會自動彈出 **Organizer** 視窗。
-4. 點選右側的藍色按鈕 **Distribute App**。
-5. 選擇 **App Store Connect** -> 點選 **Upload**。
-6. 後續選項維持預設值（自動管理憑證、發布符號等），一路點選 **Next** 並按下 **Upload**。
-7. 上傳完成後，約 5~15 分鐘即可在 [App Store Connect](https://appstoreconnect.apple.com) 後台的 TestFlight 看到該版本！
+### 送審前檢查清單
+- [ ] Apple Developer Program 已啟用；App Store Connect 已建立 App
+- [ ] 建立 IAP 商品，Product ID 與 `functions/api/payment/_lib.js` 的 `STORE_ITEMS` key 完全一致（`pack_sensual`、`pack_marriage`、`pack_parenting`、`skin_*`、`bundle_skins`、`tip_coffee`、`tip_afternoon`）
+- [ ] App Store Connect → Integrations → In-App Purchase 產生 API Key，設定 Cloudflare 變數 `APPLE_IAP_ISSUER_ID`、`APPLE_IAP_KEY_ID`、`APPLE_IAP_PRIVATE_KEY`
+- [ ] 實作 `src/services/iap.ts`（`expo-iap`）並在 TestFlight 以 Sandbox 帳號測試購買／恢復購買
+- [ ] 若啟用 Apple / Google 登入：設定 `APPLE_CLIENT_IDS`、`GOOGLE_CLIENT_IDS`，實作 `src/services/oauthNative.ts`，再把 `src/constants/features.ts` 的 `SOCIAL_SIGN_IN_ENABLED` 改為 `true`（兩者必須同時提供）
+- [ ] 確認 Apple 目前要求的最低 Xcode / iOS SDK 版本，必要時升級 Expo SDK
+- [ ] 填寫隱私問卷、年齡分級、審核備註（見第三部分）
 
 ---
 
@@ -54,7 +54,7 @@ open ios/BetweenUs.xcworkspace
   ✦ 700 道精心撰寫的話題：涵蓋「價值與未來」、「靈魂與內心」、「金錢與生活」、「親密與浪漫」、「趣味與童心」、「個人成長」與「信念與世界觀」。
   ✦ 沉浸式擬真 3D 翻牌體驗：像實體卡牌一樣翻轉，每一張牌背面都附有溫暖的引導心法。
   ✦ 5 分鐘專注傾聽計時器：一人專注分享、一人純粹聆聽，學習不打斷、不評判的溝通藝術。
-  ✦ 極致隱私承諾：無使用者帳號、不收集任何個人身分資料、無第三方廣告追蹤，所有收藏與設定純粹保存在您的裝置本機。
+  ✦ 隱私優先：免註冊即可使用免費功能、無廣告、無第三方追蹤；收藏與偏好保存在您的裝置本機，帳號為選填，並可在 App 內隨時刪除。
   ✦ 深淺色模式與優雅字型：專為夜晚睡前床頭談心設計的暖色與暗色模式。
 
   慢慢說，慢慢聽。在我們之間，沒有標準答案。
@@ -73,7 +73,7 @@ open ios/BetweenUs.xcworkspace
   ✦ 700 Curated Thought-Provoking Questions: Across 7 meaningful categories—Values & Future, Soul & Inner Self, Finances, Intimacy, Fun & Play, Growth, and Faith.
   ✦ Tactile 3D Card Flipping: Experience the warmth of physical cards with reflective prompts on the reverse.
   ✦ 5-Minute Active Listening Timer: Practice true listening without interruption.
-  ✦ Absolute Privacy: Zero personal data collected, no account required, no ad tracking. Everything stays on your device.
+  ✦ Privacy First: No ads, no third-party tracking, and no account required for free features. Favorites stay on your device; an optional account can be deleted in-app at any time.
   ✦ Calming Dual Themes: Tailored light and dark modes designed for quiet evening conversations.
   ```
 
@@ -83,24 +83,34 @@ open ios/BetweenUs.xcworkspace
 
 在 App Store Connect 送審時，系統會要求填寫以下資訊：
 
-### 1. 必填網址（已部署生效）
+### 1. 必填網址（部署後生效）
 - **隱私權政策網址 (Privacy Policy URL)**：
-  👉 `https://love-between-us.pages.dev/privacy`
+  👉 `https://between-us.ark-studio.app/privacy.html`
 - **技術支援網址 (Support URL)**：
-  👉 `https://love-between-us.pages.dev`
+  👉 `https://between-us.ark-studio.app/support.html`
 - **行銷網址 (Marketing URL，選填)**：
-  👉 `https://love-between-us.pages.dev`
+  👉 `https://between-us.ark-studio.app`
 
 ### 2. App 隱私問卷 (App Privacy Nutrition Label)
-- 當系統詢問「您或您的第三方合作夥伴是否會從此 App 收集資料？」：
-  👉 **選擇「否，我們不收集任何資料 (Data Not Collected)」**。
-  *(因本 App 無任何追蹤 SDK，所有收藏與偏好皆存在本機 AsyncStorage)*
+本 App **有**收集資料，不可選「Data Not Collected」。請如實勾選（需與 `app.json` 的 `ios.privacyManifests` 一致）：
+
+| 資料類型 | 是否連結到使用者 | 用於追蹤 | 用途 |
+|---|---|---|---|
+| Contact Info → Email Address | 是 | 否 | App Functionality（帳號、跨裝置同步） |
+| Identifiers → User ID | 是 | 否 | App Functionality |
+| Purchases → Purchase History | 是 | 否 | App Functionality（恢復購買） |
+| Usage Data → Product Interaction（匿名裝置編號、時長、平台） | 否 | 否 | Analytics（可在 App 內關閉） |
+
+- 「Do you use data for tracking?」→ **否**（無廣告 SDK、不與第三方共享）。
+- 不需要 ATT（App Tracking Transparency）提示。
 
 ### 3. 年齡分級 (Age Rating)
-- 在問卷中，各項暴力、賭博、藥物等均勾選「無 (None)」。
-- 在「成熟/暗示性內容 (Mature/Suggestive Themes)」或「性內容」項目中：
-  - 勾選 **「偶爾/輕微 (Infrequent/Mild)」**（因為包含「親密與浪漫」類型的戀愛/情感對話話題）。
-  - 系統最終分級會落在 **12+**，可順利在全球各區上架。
+- 「深夜私語」「親密與浪漫」等題包含性相關話題，請在問卷中如實填寫「成熟/暗示性主題」，**不要低報**；預期分級會高於 12+（約 17+/18+，以 Apple 問卷結果為準）。
+- 暴力、賭博、藥物等勾選「無」。
+
+### 3.1 審核備註 (App Review Notes)
+- 提供一組**測試用 Email 帳號與密碼**，讓審核員能測試登入、恢復購買、刪除帳號。
+- 說明：免費功能無須登入；購買使用 Apple 應用程式內購買（IAP）；刪除帳號位於「帳號」頁面。
 
 ### 4. 螢幕截圖需求
 - **必備**：**6.7 吋 iPhone**（例如 iPhone 16 Pro Max / 15 Pro Max 截圖，1290 x 2796 像素）。

@@ -1,9 +1,10 @@
 /**
  * PaymentService: Coordinates Web ECPay checkout and order verification.
- * Follows zero-tracking privacy architecture; unlocked states stored securely on client.
+ * Web uses ECPay; native uses Apple StoreKit via IapService (server-verified entitlements).
  */
 import { Platform } from 'react-native';
 import { StorageService } from './storage';
+import { API_BASE_URL } from '../constants/api';
 
 export type StoreItemKey =
   | 'pack_sensual'
@@ -42,7 +43,7 @@ export const PaymentService = {
     try {
       const user = explicitUserId ? null : await StorageService.getAuthUser();
       const userId = explicitUserId || user?.id || null;
-      const res = await fetch('/api/payment/ecpay/checkout', {
+      const res = await fetch(`${API_BASE_URL}/api/payment/ecpay/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ itemKey, userId }),
@@ -91,13 +92,42 @@ export const PaymentService = {
   /** Verifies if an order has been successfully paid by polling Cloudflare API */
   async verifyOrder(orderId: string): Promise<VerifyOrderResponse | null> {
     try {
-      const res = await fetch(`/api/payment/verify?orderId=${encodeURIComponent(orderId)}`);
+      const res = await fetch(`${API_BASE_URL}/api/payment/verify?orderId=${encodeURIComponent(orderId)}`);
       if (!res.ok) {
         return null;
       }
       return (await res.json()) as VerifyOrderResponse;
     } catch {
       return null;
+    }
+  },
+
+  /**
+   * Asks the server to verify a StoreKit transaction with Apple and grant the entitlement.
+   * The server derives the purchased product from Apple's response, not from the client.
+   */
+  async recordNativeIAP(transactionId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const user = await StorageService.getAuthUser();
+      const res = await fetch(`${API_BASE_URL}/api/payment/iap/verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+        },
+        body: JSON.stringify({ transactionId }),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        return { success: false, error: (errJson as { error?: string }).error || '同步內購失敗' };
+      }
+      return { success: true };
+    } catch (err) {
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : '連線失敗',
+      };
     }
   },
 };

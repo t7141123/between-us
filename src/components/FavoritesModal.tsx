@@ -109,6 +109,11 @@ export const FavoritesModal: React.FC<FavoritesModalProps> = ({
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
+        <TouchableOpacity
+          style={styles.backdropTouch}
+          activeOpacity={1}
+          onPress={onClose}
+        />
         <SafeAreaView
           style={[
             styles.drawerContainer,
@@ -123,8 +128,8 @@ export const FavoritesModal: React.FC<FavoritesModalProps> = ({
                 <Text style={[styles.title, { color: colors.ink }]}>{title}</Text>
                 <Text style={[styles.counterText, { color: colors.muted }]}>
                   {savedQuestions.length > 0
-                    ? `${displayedQuestions.length} / ${savedQuestions.length} 題`
-                    : '0 題'}
+                    ? `${displayedQuestions.length} / ${savedQuestions.length} ${I18nService.t(locale, 'fav_count_unit', '題')}`
+                    : `0 ${I18nService.t(locale, 'fav_count_unit', '題')}`}
                 </Text>
               </View>
             </View>
@@ -258,6 +263,9 @@ const styles = StyleSheet.create({
         WebkitBackdropFilter: 'blur(20px)',
       } as any,
     }),
+  },
+  backdropTouch: {
+    ...StyleSheet.absoluteFillObject,
   },
   drawerContainer: {
     width: '100%',

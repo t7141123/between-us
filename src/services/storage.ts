@@ -3,7 +3,11 @@
  * Guards against data corruption and prototype pollution.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 import { AuthUser, CardSkinId, LocaleKey, ThemeMode } from '../types';
+
+const SECURE_AUTH_KEY = 'betweenus.secure_auth_user';
 
 const STORAGE_KEYS = {
   LANG: 'betweenus.lang',
@@ -133,8 +137,15 @@ export const StorageService = {
   async getCardSkin(fallback: CardSkinId = 'classic'): Promise<CardSkinId> {
     try {
       const val = await AsyncStorage.getItem(STORAGE_KEYS.CARD_SKIN);
-      if (val === 'classic' || val === 'noir_gold' || val === 'midnight' || val === 'caramel') {
-        return val;
+      if (
+        val === 'classic' ||
+        val === 'noir_gold' ||
+        val === 'rose_wine' ||
+        val === 'forest_sage' ||
+        val === 'midnight' ||
+        val === 'caramel'
+      ) {
+        return val as CardSkinId;
       }
     } catch {
       // Ignore read error
@@ -197,12 +208,26 @@ export const StorageService = {
     }
   },
 
+  /**
+   * The signed-in user (including the session token) lives in the OS keychain on native.
+   * Web has no secure store, so it falls back to AsyncStorage (localStorage).
+   */
   async getAuthUser(): Promise<AuthUser | null> {
     try {
-      const raw = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_USER);
-      if (raw) {
-        return JSON.parse(raw) as AuthUser;
+      if (Platform.OS !== 'web') {
+        const secure = await SecureStore.getItemAsync(SECURE_AUTH_KEY);
+        if (secure) return JSON.parse(secure) as AuthUser;
+        // One-time migration of sessions saved in plain AsyncStorage by older versions.
+        const legacy = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_USER);
+        if (legacy) {
+          await SecureStore.setItemAsync(SECURE_AUTH_KEY, legacy);
+          await AsyncStorage.removeItem(STORAGE_KEYS.AUTH_USER);
+          return JSON.parse(legacy) as AuthUser;
+        }
+        return null;
       }
+      const raw = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_USER);
+      if (raw) return JSON.parse(raw) as AuthUser;
     } catch {
       // Ignore read error
     }
@@ -211,6 +236,10 @@ export const StorageService = {
 
   async setAuthUser(user: AuthUser): Promise<void> {
     try {
+      if (Platform.OS !== 'web') {
+        await SecureStore.setItemAsync(SECURE_AUTH_KEY, JSON.stringify(user));
+        return;
+      }
       await AsyncStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(user));
     } catch {
       // Storage write error
@@ -219,6 +248,7 @@ export const StorageService = {
 
   async clearAuthUser(): Promise<void> {
     try {
+      if (Platform.OS !== 'web') await SecureStore.deleteItemAsync(SECURE_AUTH_KEY);
       await AsyncStorage.removeItem(STORAGE_KEYS.AUTH_USER);
     } catch {
       // Storage write error

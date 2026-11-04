@@ -10,12 +10,12 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import { CARD_SKINS, CardSkinConfig, EXPANSION_PACKS } from '../constants/packs';
-import { AuthUser } from '../services/auth';
+import { AuthService, AuthUser } from '../services/auth';
 import { I18nService } from '../services/i18n';
+import { IapService } from '../services/iap';
 import { PaymentService, StoreItemKey } from '../services/payment';
 import { CardSkinId, LocaleKey, ThemeColors, ThemeMode } from '../types';
 
@@ -69,43 +69,47 @@ export const StoreModal: React.FC<StoreModalProps> = ({
   onLogout,
 }) => {
   const [activeTab, setActiveTab] = useState<TabKey>('packs');
-  const [promoCode, setPromoCode] = useState('');
   const [redeemFeedback, setRedeemFeedback] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [pendingCheckout, setPendingCheckout] = useState<PendingCheckout | null>(null);
+  const [queuedCheckout, setQueuedCheckout] = useState<PendingCheckout | null>(null);
 
   const isDark = theme === 'dark';
 
-  const handleRedeem = () => {
-    const code = promoCode.trim().toUpperCase();
-    if (code === 'LOVE2026' || code === 'VIP2026' || code === 'SENSUAL') {
-      onUnlockPack('sensual');
-      setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
-      setPromoCode('');
-    } else if (code === 'MARRIAGE' || code === 'IDO' || code === 'WEDDING') {
-      onUnlockPack('marriage');
-      setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
-      setPromoCode('');
-    } else if (code === 'BABY' || code === 'PARENT' || code === 'NEWBORN') {
-      onUnlockPack('parenting');
-      setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
-      setPromoCode('');
-    } else if (code === 'SKIN' || code === 'GOLD' || code === 'NOIR') {
-      onUnlockSkin?.('noir_gold');
-      onUnlockSkin?.('rose_wine');
-      onUnlockSkin?.('forest_sage');
-      setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
-      setPromoCode('');
-    } else if (code === 'COFFEE' || code === 'SUPPORTER') {
-      onSetSupporter(true);
-      setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
-      setPromoCode('');
-    } else {
-      setRedeemFeedback(I18nService.t(locale, 'redeem_invalid'));
+  // Resume checkout automatically if user just logged in while having a queued purchase
+  React.useEffect(() => {
+    if (currentUser && queuedCheckout) {
+      const target = queuedCheckout;
+      setQueuedCheckout(null);
+
+      // Check if already unlocked in cloud
+      if (target.type === 'pack' && target.targetId && unlockedPacks.includes(target.targetId)) {
+        setRedeemFeedback(I18nService.t(locale, 'item_already_owned', '您的帳號已擁有此擴充包，已自動解鎖！'));
+        setTimeout(() => setRedeemFeedback(null), 3500);
+        return;
+      }
+      if (target.type === 'skin' && target.targetId && unlockedSkins.includes(target.targetId as CardSkinId)) {
+        setRedeemFeedback(I18nService.t(locale, 'item_already_owned', '您的帳號已擁有此主題，已自動解鎖！'));
+        setTimeout(() => setRedeemFeedback(null), 3500);
+        return;
+      }
+      if (target.type === 'supporter' && isSupporter) {
+        setRedeemFeedback(I18nService.t(locale, 'item_already_owned', '您已是金色支持者，感謝您的陪伴！'));
+        setTimeout(() => setRedeemFeedback(null), 3500);
+        return;
+      }
+
+      setPendingCheckout(target);
     }
-    setTimeout(() => {
-      setRedeemFeedback(null);
-    }, 4000);
+  }, [currentUser, queuedCheckout, unlockedPacks, unlockedSkins, isSupporter, locale]);
+
+  const guardAuthForCheckout = (checkout: PendingCheckout): boolean => {
+    if (!currentUser) {
+      setQueuedCheckout(checkout);
+      onOpenAuth?.();
+      return false;
+    }
+    return true;
   };
 
   const requestPackCheckout = (pack: typeof EXPANSION_PACKS[0]) => {
@@ -115,13 +119,16 @@ export const StoreModal: React.FC<StoreModalProps> = ({
         : pack.id === 'parenting'
         ? 'pack_parenting'
         : 'pack_sensual';
-    setPendingCheckout({
+    const checkout: PendingCheckout = {
       itemKey,
       title: I18nService.t(locale, pack.titleKey),
       amountText: pack.priceText,
       type: 'pack',
       targetId: pack.id,
-    });
+    };
+    if (guardAuthForCheckout(checkout)) {
+      setPendingCheckout(checkout);
+    }
   };
 
   const requestSkinCheckout = (skin: CardSkinConfig) => {
@@ -131,32 +138,70 @@ export const StoreModal: React.FC<StoreModalProps> = ({
         : skin.id === 'rose_wine' || skin.id === 'caramel'
         ? 'skin_rose_wine'
         : 'skin_forest_sage';
-    setPendingCheckout({
+    const checkout: PendingCheckout = {
       itemKey,
       title: `${I18nService.t(locale, skin.nameKey)} (${I18nService.t(locale, 'tab_skins')})`,
       amountText: 'NT$ 30',
       type: 'skin',
       targetId: skin.id,
-    });
+    };
+    if (guardAuthForCheckout(checkout)) {
+      setPendingCheckout(checkout);
+    }
   };
 
   const requestBundleSkinsCheckout = () => {
-    setPendingCheckout({
+    const checkout: PendingCheckout = {
       itemKey: 'bundle_skins',
       title: I18nService.t(locale, 'skin_unlock_bundle'),
       amountText: 'NT$ 60',
       type: 'bundle_skins',
-    });
+    };
+    if (guardAuthForCheckout(checkout)) {
+      setPendingCheckout(checkout);
+    }
   };
 
   const requestTipCheckout = (itemKey: 'tip_coffee' | 'tip_afternoon') => {
     const isCoffee = itemKey === 'tip_coffee';
-    setPendingCheckout({
+    const checkout: PendingCheckout = {
       itemKey,
       title: I18nService.t(locale, itemKey),
       amountText: isCoffee ? 'NT$ 60' : 'NT$ 120',
       type: 'supporter',
-    });
+    };
+    if (guardAuthForCheckout(checkout)) {
+      setPendingCheckout(checkout);
+    }
+  };
+
+  const handleRestorePurchases = async () => {
+    setIsProcessing(true);
+    setRedeemFeedback(I18nService.t(locale, 'restoring_purchases', '正在向商店恢復已購買項目…'));
+    try {
+      if (Platform.OS !== 'web' && IapService.isAvailable()) {
+        const restored = await IapService.restore();
+        if (restored.status === 'success' && currentUser) {
+          for (const transactionId of restored.transactionIds) {
+            await PaymentService.recordNativeIAP(transactionId);
+          }
+        }
+      }
+      if (currentUser) {
+        const cloud = await AuthService.syncCloudEntitlements(currentUser.id);
+        if (cloud) {
+          cloud.unlockedPacks.forEach((p) => onUnlockPack(p));
+          cloud.unlockedSkins?.forEach((sk) => onUnlockSkin?.(sk));
+          if (cloud.isSupporter) onSetSupporter(true);
+        }
+      }
+      setRedeemFeedback(I18nService.t(locale, 'restore_completed', '已完成購買項目恢復與同步'));
+    } catch {
+      setRedeemFeedback(I18nService.t(locale, 'restore_failed', '恢復購買失敗，請確認網路連線'));
+    } finally {
+      setIsProcessing(false);
+      setTimeout(() => setRedeemFeedback(null), 3000);
+    }
   };
 
   const handleConfirmCheckout = async () => {
@@ -176,20 +221,32 @@ export const StoreModal: React.FC<StoreModalProps> = ({
         setIsProcessing(false);
       }
     } else {
-      if (checkout.type === 'pack' && checkout.targetId) {
-        onUnlockPack(checkout.targetId);
-      } else if (checkout.type === 'skin' && checkout.targetId) {
-        onUnlockSkin?.(checkout.targetId as CardSkinId);
-        onSelectSkin(checkout.targetId as CardSkinId);
-      } else if (checkout.type === 'bundle_skins') {
-        onUnlockSkin?.('noir_gold');
-        onUnlockSkin?.('rose_wine');
-        onUnlockSkin?.('forest_sage');
-      } else if (checkout.type === 'supporter') {
-        onSetSupporter(true);
+      // Native In-App Purchase (StoreKit / Play Billing)
+      setIsProcessing(true);
+      try {
+        const result = await IapService.purchase(checkout.itemKey);
+        if (result.status === 'success') {
+          const recorded = await PaymentService.recordNativeIAP(result.transactionId);
+          if (recorded.success && currentUser) {
+            const cloud = await AuthService.syncCloudEntitlements(currentUser.id);
+            if (cloud) {
+              cloud.unlockedPacks.forEach((p) => onUnlockPack(p));
+              cloud.unlockedSkins?.forEach((sk) => onUnlockSkin?.(sk));
+              if (cloud.isSupporter) onSetSupporter(true);
+            }
+            setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
+          } else {
+            setRedeemFeedback(recorded.error || I18nService.t(locale, 'restore_failed'));
+          }
+        } else if (result.status === 'unavailable') {
+          setRedeemFeedback(I18nService.t(locale, 'native_iap_notice'));
+        } else if (result.status === 'error') {
+          setRedeemFeedback(result.error);
+        }
+      } finally {
+        setIsProcessing(false);
+        setTimeout(() => setRedeemFeedback(null), 5000);
       }
-      setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
-      setTimeout(() => setRedeemFeedback(null), 3000);
     }
   };
 
@@ -340,7 +397,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                             )}
                           </View>
                           <Text style={[styles.packCount, { color: colors.muted }]}>
-                            {pack.totalCount} 道私密話題
+                            {pack.totalCount} {I18nService.t(locale, 'pack_count_suffix', '道私密話題')}
                           </Text>
                         </View>
                         <Text style={[styles.packPrice, { color: colors.clay }]}>
@@ -387,7 +444,9 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                           ]}
                         >
                           <Text style={styles.unlockBtnText}>
-                            {isUnlocked ? '載入題庫' : I18nService.t(locale, 'unlock_now')}
+                            {isUnlocked
+                              ? I18nService.t(locale, 'store_load_pack', '載入題庫')
+                              : I18nService.t(locale, 'unlock_now')}
                           </Text>
                         </Pressable>
                       </View>
@@ -449,7 +508,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                           { color: isDark ? '#A8A29E' : '#78716C' },
                         ]}
                       >
-                        曜石黑金、薄暮玫瑰、靜謐深林一次珍藏
+                        {I18nService.t(locale, 'skin_bundle_sub', '曜石黑金、薄暮玫瑰、靜謐深林一次珍藏')}
                       </Text>
                     </View>
                     <View style={styles.bundleSkinPriceBadge}>
@@ -618,50 +677,10 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                     </Text>
                   </Pressable>
                 </View>
-
-                {/* Promo Code Box */}
-                <View
-                  style={[
-                    styles.promoBox,
-                    {
-                      backgroundColor: isDark ? '#292524' : '#FFFFFF',
-                      borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-                    },
-                  ]}
-                >
-                  <Text style={[styles.promoTitle, { color: colors.ink }]}>
-                    {I18nService.t(locale, 'redeem_code')}
-                  </Text>
-                  <View style={styles.promoInputRow}>
-                    <TextInput
-                      value={promoCode}
-                      onChangeText={setPromoCode}
-                      placeholder={I18nService.t(locale, 'redeem_placeholder')}
-                      placeholderTextColor={colors.muted}
-                      autoCapitalize="characters"
-                      style={[
-                        styles.promoInput,
-                        {
-                          color: colors.ink,
-                          borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)',
-                          backgroundColor: isDark ? '#1C1917' : '#FAF6F0',
-                        },
-                      ]}
-                    />
-                    <Pressable
-                      onPress={handleRedeem}
-                      style={[styles.redeemBtn, { backgroundColor: colors.clay }]}
-                    >
-                      <Text style={styles.redeemBtnText}>
-                        {I18nService.t(locale, 'redeem_btn')}
-                      </Text>
-                    </Pressable>
-                  </View>
-                </View>
               </View>
             )}
 
-            {/* Cross-device Cloud Sync Card */}
+            {/* Cross-device Cloud Sync Card & Native Restore Purchases */}
             <View
               style={[
                 styles.syncBanner,
@@ -686,27 +705,46 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                   </Text>
                 </View>
               </View>
-              <Pressable
-                onPress={currentUser ? onLogout : onOpenAuth}
-                style={[
-                  styles.syncBannerBtn,
-                  {
-                    borderColor: colors.clay,
-                    backgroundColor: currentUser ? 'transparent' : colors.clay,
-                  },
-                ]}
-              >
-                <Text
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                {Platform.OS !== 'web' && (
+                  <Pressable
+                    onPress={handleRestorePurchases}
+                    disabled={isProcessing}
+                    style={[
+                      styles.syncBannerBtn,
+                      {
+                        borderColor: colors.line,
+                        backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+                      },
+                    ]}
+                  >
+                    <Text style={[styles.syncBannerBtnText, { color: colors.ink }]}>
+                      {I18nService.t(locale, 'restore_purchases_btn', '恢復購買')}
+                    </Text>
+                  </Pressable>
+                )}
+                <Pressable
+                  onPress={currentUser ? onLogout : onOpenAuth}
                   style={[
-                    styles.syncBannerBtnText,
-                    { color: currentUser ? colors.clay : '#FFFFFF' },
+                    styles.syncBannerBtn,
+                    {
+                      borderColor: colors.clay,
+                      backgroundColor: currentUser ? 'transparent' : colors.clay,
+                    },
                   ]}
                 >
-                  {currentUser
-                    ? I18nService.t(locale, 'btn_logout')
-                    : I18nService.t(locale, 'btn_open_sync')}
-                </Text>
-              </Pressable>
+                  <Text
+                    style={[
+                      styles.syncBannerBtnText,
+                      { color: currentUser ? colors.clay : '#FFFFFF' },
+                    ]}
+                  >
+                    {currentUser
+                      ? I18nService.t(locale, 'btn_logout')
+                      : I18nService.t(locale, 'btn_open_sync')}
+                  </Text>
+                </Pressable>
+              </View>
             </View>
           </ScrollView>
         </View>

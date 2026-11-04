@@ -2,7 +2,21 @@
  * Cloudflare Pages Function: /api/sync/entitlements
  * Allows client to fetch and claim unlocked expansion packs and supporter perks across platforms.
  */
-import { STORE_ITEMS, ensureOrdersTable, grantEntitlement, getCorsHeaders } from '../payment/_lib.js';
+import {
+  STORE_ITEMS,
+  ensureOrdersTable,
+  grantEntitlement,
+  getCorsHeaders,
+  verifyAuthToken,
+} from '../payment/_lib.js';
+
+/** Resolve the caller's user id from the Bearer token only (never from query/body). */
+async function getSessionUserId(request, env) {
+  const authHeader = request.headers.get('Authorization') || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  const session = await verifyAuthToken(token, env);
+  return session?.uid ? String(session.uid) : null;
+}
 
 export async function onRequestOptions(context) {
   return new Response(null, {
@@ -11,27 +25,31 @@ export async function onRequestOptions(context) {
   });
 }
 
-/** GET /api/sync/entitlements?userId=... */
+/** GET /api/sync/entitlements (Authorization: Bearer <token>) */
 export async function onRequestGet(context) {
   const { request, env } = context;
   const corsHeaders = getCorsHeaders(request, 'GET, POST, OPTIONS');
-  const url = new URL(request.url);
-  const rawUserId = url.searchParams.get('userId');
-
-  if (!rawUserId || typeof rawUserId !== 'string') {
-    return new Response(
-      JSON.stringify({ error: 'Missing userId' }),
-      { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
-    );
+  let userId;
+  try {
+    userId = await getSessionUserId(request, env);
+  } catch {
+    return new Response(JSON.stringify({ error: 'Service unavailable' }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
   }
-
-  const userId = rawUserId.trim().slice(0, 64);
+  if (!userId) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
+  }
 
   try {
     if (!env.DB) {
       return new Response(
-        JSON.stringify({ entitlements: [], unlockedPacks: [], isSupporter: false }),
-        { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+        JSON.stringify({ error: 'Service unavailable' }),
+        { status: 503, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
@@ -44,6 +62,7 @@ export async function onRequestGet(context) {
 
     const entitlements = (rows.results || []).map((r) => r.item_key);
     const unlockedPacks = [];
+    const unlockedSkins = ['classic'];
     let isSupporter = false;
 
     for (const key of entitlements) {
@@ -52,6 +71,14 @@ export async function onRequestGet(context) {
         if (!unlockedPacks.includes(meta.target)) {
           unlockedPacks.push(meta.target);
         }
+      } else if (meta?.type === 'skin' && meta.target) {
+        if (!unlockedSkins.includes(meta.target)) {
+          unlockedSkins.push(meta.target);
+        }
+      } else if (meta?.type === 'bundle_skins') {
+        if (!unlockedSkins.includes('noir_gold')) unlockedSkins.push('noir_gold');
+        if (!unlockedSkins.includes('rose_wine')) unlockedSkins.push('rose_wine');
+        if (!unlockedSkins.includes('forest_sage')) unlockedSkins.push('forest_sage');
       } else if (meta?.type === 'supporter' || key.includes('tip_') || key === 'supporter') {
         isSupporter = true;
       }
@@ -62,6 +89,7 @@ export async function onRequestGet(context) {
         userId,
         entitlements,
         unlockedPacks,
+        unlockedSkins,
         isSupporter,
       }),
       { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
@@ -81,14 +109,20 @@ export async function onRequestPost(context) {
 
   try {
     const body = await request.json().catch(() => null);
-    if (!body || !body.userId || !body.orderId) {
+    const userId = await getSessionUserId(request, env);
+    if (!userId) {
       return new Response(
-        JSON.stringify({ error: 'Missing userId or orderId' }),
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+      );
+    }
+    if (!body || !body.orderId) {
+      return new Response(
+        JSON.stringify({ error: 'Missing orderId' }),
         { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
-    const userId = String(body.userId).trim().slice(0, 64);
     const orderId = String(body.orderId).trim().slice(0, 32);
 
     if (!env.DB) {

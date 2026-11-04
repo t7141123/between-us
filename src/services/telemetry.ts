@@ -11,8 +11,8 @@ const SESSION_KEY = '@between_us_session_id';
 const SESSION_TIMESTAMP_KEY = '@between_us_session_ts';
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes inactivity timeout
 
+const OPT_OUT_KEY = '@between_us_telemetry_opt_out';
 const PRIMARY_ENDPOINT = 'https://between-us.ark-studio.app/api/track';
-const FALLBACK_ENDPOINT = 'https://between-us.ark-studio.app/api/track';
 
 export class TelemetryService {
   private static cachedUserId: string | null = null;
@@ -20,6 +20,26 @@ export class TelemetryService {
   private static sessionStartTime = Date.now();
   private static heartbeatInterval: ReturnType<typeof setInterval> | null = null;
   private static isInitialized = false;
+  private static optedOut = false;
+
+  /** Whether anonymous usage statistics are enabled (default: on). */
+  public static async isEnabled(): Promise<boolean> {
+    try {
+      this.optedOut = (await AsyncStorage.getItem(OPT_OUT_KEY)) === '1';
+    } catch {
+      // keep current value
+    }
+    return !this.optedOut;
+  }
+
+  public static async setEnabled(enabled: boolean): Promise<void> {
+    this.optedOut = !enabled;
+    try {
+      await AsyncStorage.setItem(OPT_OUT_KEY, enabled ? '0' : '1');
+    } catch {
+      // ignore
+    }
+  }
 
   /**
    * Retrieves or creates a permanent anonymous visitor ID.
@@ -74,6 +94,7 @@ export class TelemetryService {
    */
   private static async sendPing(eventName: 'session_start' | 'session_ping'): Promise<void> {
     try {
+      if (!(await this.isEnabled())) return;
       const userId = await this.getUserId();
       const sessionId = await this.getSessionId();
       const duration = Math.max(0, Math.round((Date.now() - this.sessionStartTime) / 1000));
@@ -101,16 +122,7 @@ export class TelemetryService {
         ...(isWeb ? { keepalive: true } : {}),
       };
 
-      try {
-        const res = await fetch(url, fetchOptions);
-        if (!res.ok && url !== FALLBACK_ENDPOINT) {
-          await fetch(FALLBACK_ENDPOINT, fetchOptions).catch(() => {});
-        }
-      } catch {
-        if (url !== FALLBACK_ENDPOINT) {
-          await fetch(FALLBACK_ENDPOINT, fetchOptions).catch(() => {});
-        }
-      }
+      await fetch(url, fetchOptions).catch(() => {});
     } catch {
       // Silently ignore telemetry transmission failures
     }

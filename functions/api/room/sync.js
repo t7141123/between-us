@@ -48,7 +48,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     if (typeof body.questionText === 'string') {
-      updates.questionText = body.questionText.slice(0, 500);
+      updates.questionText = body.questionText.replace(/[\u0000-\u001F\u007F]/g, ' ').slice(0, 500);
     }
 
     if (body.isFlipped !== undefined) {

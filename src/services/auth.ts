@@ -2,32 +2,41 @@
  * AuthService: Coordinates progressive optional authentication and cross-platform entitlements sync.
  * Zero-forced login; users can freely use the app locally and bind accounts only when they choose.
  */
-import { AuthProvider, AuthUser } from '../types';
+import { AuthUser, CardSkinId } from '../types';
 import { StorageService } from './storage';
+import { API_BASE_URL } from '../constants/api';
 
 export type { AuthUser };
 
 export interface SyncResult {
   unlockedPacks: string[];
+  unlockedSkins?: CardSkinId[];
   isSupporter: boolean;
 }
 
+/** Authorization header for the currently signed-in user (empty when signed out). */
+async function authHeaders(): Promise<Record<string, string>> {
+  const user = await StorageService.getAuthUser();
+  return user?.token ? { Authorization: `Bearer ${user.token}` } : {};
+}
+
 export const AuthService = {
-  /** Log in or bind user with progressive auth */
-  async login(
+  /** Log in or register with email and password */
+  async authenticateWithEmail(
     email: string,
-    provider: AuthProvider = 'email'
+    password: string,
+    mode: 'login' | 'register' = 'login'
   ): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, provider }),
+        body: JSON.stringify({ email, password, mode }),
       });
 
       if (!res.ok) {
         const errJson = await res.json().catch(() => ({}));
-        return { success: false, error: (errJson as { error?: string }).error || 'Login failed' };
+        return { success: false, error: (errJson as { error?: string }).error || '驗證失敗' };
       }
 
       const data = (await res.json()) as { user: AuthUser };
@@ -39,7 +48,41 @@ export const AuthService = {
     } catch (err) {
       return {
         success: false,
-        error: err instanceof Error ? err.message : 'Unknown login error',
+        error: err instanceof Error ? err.message : '連線失敗，請檢查網路',
+      };
+    }
+  },
+
+  /** Log in via Apple / Google OAuth endpoint */
+  async authenticateWithOAuth(
+    provider: 'apple' | 'google',
+    payload: { idToken: string }
+  ): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/oauth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider, ...payload }),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        return {
+          success: false,
+          error: (errJson as { error?: string }).error || `${provider === 'apple' ? 'Apple' : 'Google'} 登入失敗`,
+        };
+      }
+
+      const data = (await res.json()) as { user: AuthUser };
+      if (data.user) {
+        await StorageService.setAuthUser(data.user);
+        return { success: true, user: data.user };
+      }
+      return { success: false, error: 'User data missing' };
+    } catch (err) {
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : '連線逾時，請改用 Email 登入',
       };
     }
   },
@@ -50,12 +93,11 @@ export const AuthService = {
   },
 
   /** Delete user account and all personal data (Apple Guideline 5.1.1(v)) */
-  async deleteAccount(userId: string, email?: string): Promise<{ success: boolean; error?: string }> {
+  async deleteAccount(): Promise<{ success: boolean; error?: string }> {
     try {
-      const res = await fetch('/api/auth/delete', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/delete`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, email }),
+        headers: { 'Content-Type': 'application/json', ...(await authHeaders()) },
       });
 
       if (!res.ok) {
@@ -69,22 +111,22 @@ export const AuthService = {
       await StorageService.clearAuthUser();
       return { success: true };
     } catch {
-      // In offline or local fallback, also clear local state safely
-      await StorageService.clearAuthUser();
-      return {
-        success: true,
-      };
+      // Do NOT report success: the server-side data has not been deleted.
+      return { success: false, error: '網路連線失敗，帳號尚未刪除，請稍後再試 (Network error, account not deleted)' };
     }
   },
 
   /** Sync cloud entitlements down to the client device */
-  async syncCloudEntitlements(userId: string): Promise<SyncResult | null> {
+  async syncCloudEntitlements(_userId?: string): Promise<SyncResult | null> {
     try {
-      const res = await fetch(`/api/sync/entitlements?userId=${encodeURIComponent(userId)}`);
+      const res = await fetch(`${API_BASE_URL}/api/sync/entitlements`, {
+        headers: await authHeaders(),
+      });
       if (!res.ok) return null;
 
       const data = (await res.json()) as {
         unlockedPacks: string[];
+        unlockedSkins?: CardSkinId[];
         isSupporter: boolean;
       };
 
@@ -95,12 +137,19 @@ export const AuthService = {
         await StorageService.unlockPack(p);
       }
 
+      if (data.unlockedSkins && Array.isArray(data.unlockedSkins)) {
+        for (const s of data.unlockedSkins) {
+          await StorageService.unlockSkin(s);
+        }
+      }
+
       if (data.isSupporter) {
         await StorageService.setIsSupporter(true);
       }
 
       return {
         unlockedPacks: mergedPacks,
+        unlockedSkins: data.unlockedSkins || [],
         isSupporter: data.isSupporter,
       };
     } catch {
@@ -109,12 +158,12 @@ export const AuthService = {
   },
 
   /** Link a past anonymous order to the newly authenticated account */
-  async claimOrder(userId: string, orderId: string): Promise<boolean> {
+  async claimOrder(_userId: string, orderId: string): Promise<boolean> {
     try {
-      const res = await fetch('/api/sync/entitlements', {
+      const res = await fetch(`${API_BASE_URL}/api/sync/entitlements`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, orderId }),
+        headers: { 'Content-Type': 'application/json', ...(await authHeaders()) },
+        body: JSON.stringify({ orderId }),
       });
       return res.ok;
     } catch {

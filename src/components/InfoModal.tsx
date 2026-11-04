@@ -2,7 +2,8 @@
  * InfoModal Component: Displays Privacy Policy and App Terms inside the app.
  * Fully supports dark/light mode and multi-language locales.
  */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import Constants from 'expo-constants';
 import {
   View,
   Text,
@@ -12,10 +13,16 @@ import {
   StyleSheet,
   SafeAreaView,
   Platform,
+  Linking,
+  Switch,
 } from 'react-native';
 import { X, ShieldCheck, Mail, Globe } from 'lucide-react-native';
 import { LocaleKey, ThemeColors } from '../types';
 import { I18nService } from '../services/i18n';
+import { TelemetryService } from '../services/telemetry';
+
+const SITE_URL = 'https://between-us.ark-studio.app';
+const SUPPORT_EMAIL = 'support@lovebetweenus.app';
 
 interface InfoModalProps {
   visible: boolean;
@@ -31,13 +38,24 @@ export const InfoModal: React.FC<InfoModalProps> = ({
   onClose,
 }) => {
   const modalTitle = I18nService.t(locale, 'info_title', '隱私政策與說明');
-  const commitmentTitle = I18nService.t(locale, 'commitment_title', '隱私與零資料收集承諾');
-  const commitmentText = I18nService.t(locale, 'commitment_text', '「在我們之間」致力於為您與伴侶打造純淨的對話空間。我們不收集任何個人身分資料、無第三方廣告追蹤器、無登入系統。您的題目收藏與設定全部只儲存在您本人的手機中。');
+  const [telemetryOn, setTelemetryOn] = useState(true);
+  useEffect(() => {
+    if (visible) TelemetryService.isEnabled().then(setTelemetryOn);
+  }, [visible]);
+  const toggleTelemetry = (value: boolean) => {
+    setTelemetryOn(value);
+    void TelemetryService.setEnabled(value);
+  };
+  const open = (url: string) => {
+    Linking.openURL(url).catch(() => {});
+  };
+  const commitmentTitle = I18nService.t(locale, 'commitment_title');
+  const commitmentText = I18nService.t(locale, 'commitment_text');
   const termsTitle = I18nService.t(locale, 'terms_title', '使用條款與版權');
   const termsText = I18nService.t(locale, 'terms_text', '本 App 所提供之 700 道題目與視覺風格均受智慧財產權保護，僅供個人與伴侶交流使用。本 App 按現狀提供，旨在促進伴侶情感交流。');
   const supportTitle = I18nService.t(locale, 'support_title', '聯絡支援');
-  const supportEmail = 'support@lovebetweenus.app';
-  const versionText = 'v1.0.0 (Build 1)';
+  const supportEmail = SUPPORT_EMAIL;
+  const versionText = `v${Constants.expoConfig?.version ?? ''}`;
 
   return (
     <Modal
@@ -73,17 +91,55 @@ export const InfoModal: React.FC<InfoModalProps> = ({
               <Text style={[styles.sectionText, { color: colors.muted }]}>{termsText}</Text>
             </View>
 
+            {/* Analytics opt-out */}
+            <View style={[styles.infoRow, { justifyContent: 'space-between' }]}>
+              <View style={{ flex: 1, paddingRight: 12 }}>
+                <Text style={[styles.sectionTitle, { color: colors.ink }]}>
+                  {I18nService.t(locale, 'telemetry_toggle')}
+                </Text>
+                <Text style={[styles.sectionText, { color: colors.muted }]}>
+                  {I18nService.t(locale, 'telemetry_toggle_desc')}
+                </Text>
+              </View>
+              <Switch
+                value={telemetryOn}
+                onValueChange={toggleTelemetry}
+                accessibilityLabel={I18nService.t(locale, 'telemetry_toggle')}
+              />
+            </View>
+
             {/* Support Section */}
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: colors.ink }]}>{supportTitle}</Text>
-              <View style={styles.infoRow}>
+              <TouchableOpacity
+                style={styles.infoRow}
+                onPress={() => open(`mailto:${supportEmail}`)}
+                accessibilityRole="link"
+                accessibilityLabel={supportEmail}
+              >
                 <Mail size={16} color={colors.clay} style={{ marginRight: 8 }} />
                 <Text style={[styles.infoText, { color: colors.ink }]}>{supportEmail}</Text>
-              </View>
-              <View style={[styles.infoRow, { marginTop: 6 }]}>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.infoRow, { marginTop: 10 }]}
+                onPress={() => open(`${SITE_URL}/support.html`)}
+                accessibilityRole="link"
+              >
                 <Globe size={16} color={colors.clay} style={{ marginRight: 8 }} />
-                <Text style={[styles.infoText, { color: colors.ink }]}>https://between-us.ark-studio.app</Text>
-              </View>
+                <Text style={[styles.infoText, { color: colors.ink }]}>
+                  {I18nService.t(locale, 'support_link')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.infoRow, { marginTop: 10 }]}
+                onPress={() => open(`${SITE_URL}/privacy.html`)}
+                accessibilityRole="link"
+              >
+                <ShieldCheck size={16} color={colors.clay} style={{ marginRight: 8 }} />
+                <Text style={[styles.infoText, { color: colors.ink }]}>
+                  {I18nService.t(locale, 'privacy_policy_link')}
+                </Text>
+              </TouchableOpacity>
             </View>
 
             {/* Version */}

@@ -2,7 +2,7 @@
  * POST /api/room/create
  * Creates a new couple sync room and returns the 4-digit room code.
  */
-import { createRoom, generateRoomCode, getCorsHeaders } from '../payment/_lib.js';
+import { createRoom, generateRoomCode, getCorsHeaders, getRoomState } from '../payment/_lib.js';
 
 export async function onRequestOptions(context) {
   return new Response(null, {
@@ -29,9 +29,19 @@ export async function onRequestPost({ request, env }) {
     const body = await request.json().catch(() => ({}));
     const rawCategory = typeof body.category === 'string' ? body.category.trim().toLowerCase() : 'all';
     const category = ALLOWED_CATEGORIES.has(rawCategory) ? rawCategory : 'all';
-    const questionText = typeof body.questionText === 'string' ? body.questionText.slice(0, 500) : '';
+    const questionText = typeof body.questionText === 'string' ? body.questionText.replace(/[\u0000-\u001F\u007F]/g, ' ').slice(0, 500) : '';
 
-    const code = generateRoomCode();
+    // Pick a code that is not currently in use so we never overwrite another couple's room.
+    let code = generateRoomCode();
+    for (let i = 0; i < 20 && (await getRoomState(env.DB, code)); i++) {
+      code = generateRoomCode();
+    }
+    if (await getRoomState(env.DB, code)) {
+      return new Response(JSON.stringify({ error: 'Service busy, please try again' }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
     const room = await createRoom(env.DB, code, category, questionText);
 
     return new Response(JSON.stringify({ success: true, room }), {

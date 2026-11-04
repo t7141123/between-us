@@ -2,6 +2,8 @@
  * RoomService: Coordinates real-time partner sync sessions over HTTP polling.
  * Zero-configuration 4-digit room code for long-distance couples or dual-phone play.
  */
+import { API_BASE_URL } from '../constants/api';
+
 export interface RoomState {
   code: string;
   category: string;
@@ -18,7 +20,7 @@ export const RoomService = {
     questionText: string
   ): Promise<{ success: boolean; room?: RoomState; error?: string }> {
     try {
-      const res = await fetch('/api/room/create', {
+      const res = await fetch(`${API_BASE_URL}/api/room/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ category, questionText }),
@@ -42,7 +44,7 @@ export const RoomService = {
     code: string
   ): Promise<{ success: boolean; room?: RoomState; error?: string }> {
     try {
-      const res = await fetch('/api/room/join', {
+      const res = await fetch(`${API_BASE_URL}/api/room/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code }),
@@ -67,7 +69,7 @@ export const RoomService = {
     updates: { category?: string; questionText?: string; isFlipped?: boolean }
   ): Promise<{ success: boolean; room?: RoomState }> {
     try {
-      const res = await fetch('/api/room/sync', {
+      const res = await fetch(`${API_BASE_URL}/api/room/sync`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, ...updates }),
@@ -86,7 +88,7 @@ export const RoomService = {
     currentVersion: number
   ): Promise<{ updated: boolean; room?: RoomState }> {
     try {
-      const res = await fetch(`/api/room/poll?code=${encodeURIComponent(code)}&version=${currentVersion}`);
+      const res = await fetch(`${API_BASE_URL}/api/room/poll?code=${encodeURIComponent(code)}&version=${currentVersion}`);
       if (!res.ok) return { updated: false };
       const data = (await res.json()) as { updated: boolean; room?: RoomState };
       return data;

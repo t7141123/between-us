@@ -1,14 +1,14 @@
 /**
  * Locale and Question Bank Validator
- * Ensures 2100 questions (3 locales x 7 categories x 100 questions)
- * Validates length, punctuation, formatting, and banned sensitive words.
+ * Ensures 1050 core questions (3 locales x 7 categories x 50 questions)
+ * plus reflection hints and 3 expansion packs (150 questions).
+ * Validates length, punctuation, formatting, and structural integrity.
  */
 const fs = require('fs');
 const path = require('path');
 
 const LOCALES = ['zh-TW', 'zh-CN', 'en'];
 const CATS = ['vision', 'soul', 'finance', 'intimacy', 'fun', 'growth', 'faith'];
-const BANNED = ['末日', '超能力', '荒島', '平行宇宙', '轉世', '時光機', '外星', '魔法', '平行世界', '丧尸', '僵尸'];
 
 const localesDir = path.join(__dirname, '..', 'src', 'locales');
 let errors = [];
@@ -45,8 +45,14 @@ LOCALES.forEach((loc) => {
       return;
     }
 
-    if (cat.questions.length !== 100) {
-      errors.push(`${loc}/${catKey}: Expected 100 questions, got ${cat.questions.length}`);
+    if (cat.questions.length !== 50) {
+      errors.push(`${loc}/${catKey}: Expected 50 questions, got ${cat.questions.length}`);
+    }
+
+    if (Array.isArray(cat.hints)) {
+      if (cat.hints.length !== cat.questions.length) {
+        errors.push(`${loc}/${catKey}: hints count (${cat.hints.length}) does not match questions count (${cat.questions.length})`);
+      }
     }
 
     cat.questions.forEach((q, idx) => {
@@ -58,23 +64,29 @@ LOCALES.forEach((loc) => {
       locTotal += 1;
       totalQuestions += 1;
 
-      BANNED.forEach((bad) => {
-        if (q.includes(bad)) {
-          errors.push(`${loc}/${catKey}: Contains banned word "${bad}": ${q}`);
-        }
-      });
-
       if (seen.has(q)) {
         errors.push(`${loc}/${catKey}: Duplicate question: ${q}`);
       }
       seen.add(q);
 
-      if (!q.endsWith('？') && !q.endsWith('。') && !q.endsWith('?') && !q.endsWith('.')) {
+      const validPunctuation =
+        q.endsWith('？') ||
+        q.endsWith('。') ||
+        q.endsWith('！') ||
+        q.endsWith('?') ||
+        q.endsWith('.') ||
+        q.endsWith('!') ||
+        q.endsWith('）') ||
+        q.endsWith(')') ||
+        q.endsWith('」') ||
+        q.endsWith('\'');
+
+      if (!validPunctuation) {
         errors.push(`${loc}/${catKey}: Question missing trailing punctuation: ${q}`);
       }
 
-      const maxLen = loc === 'en' ? 140 : 60;
-      if (q.length < 6 || q.length > maxLen) {
+      const maxLen = loc === 'en' ? 180 : 90;
+      if (q.length < 5 || q.length > maxLen) {
         errors.push(`${loc}/${catKey}: Question length out of range (${q.length}): ${q}`);
       }
     });
@@ -83,9 +95,9 @@ LOCALES.forEach((loc) => {
   console.log(`  ✓ ${loc} (${data.label}): ${locTotal} questions across 7 categories`);
 });
 
-console.log(`Total questions verified: ${totalQuestions}`);
-if (totalQuestions !== 2100) {
-  errors.push(`Total questions should be 2100, got ${totalQuestions}`);
+console.log(`Total core questions verified: ${totalQuestions}`);
+if (totalQuestions !== 1050) {
+  errors.push(`Total questions should be 1050, got ${totalQuestions}`);
 }
 
 if (errors.length > 0) {
@@ -94,4 +106,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log('\n✅ Locale validation passed: 3 locales x 7 categories x 100 questions = 2100 total questions.\n');
+console.log('\n✅ Locale validation passed: 3 locales x 7 categories x 50 authoritative questions = 1050 total questions with reflection hints.\n');

@@ -12,6 +12,7 @@ import {
   Text,
   TextInput,
   View,
+  Share,
 } from 'react-native';
 import { Users, Copy, Check, LogOut, Sparkles } from 'lucide-react-native';
 import { I18nService } from '../services/i18n';
@@ -96,6 +97,18 @@ export const RoomModal: React.FC<RoomModalProps> = ({
       await navigator.clipboard.writeText(inviteText);
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
+    } else {
+      try {
+        await Share.share({
+          message: inviteText,
+          title: '在我們之間 · 雙人連線',
+          url: shareUrl,
+        });
+        setCopied(true);
+        setTimeout(() => setCopied(false), 3000);
+      } catch {
+        // Ignore cancel
+      }
     }
   };
 
@@ -179,7 +192,7 @@ export const RoomModal: React.FC<RoomModalProps> = ({
                 <Text style={[styles.copyBtnText, { color: colors.clay }]}>
                   {copied
                     ? I18nService.t(locale, 'room_copied_invite')
-                    : '複製邀請碼與連結'}
+                    : I18nService.t(locale, 'room_copy_invite', '複製邀請碼與連結')}
                 </Text>
               </Pressable>
 
@@ -209,14 +222,16 @@ export const RoomModal: React.FC<RoomModalProps> = ({
                 <Sparkles size={16} color="#FFFFFF" />
                 <Text style={styles.createBtnText}>
                   {loading
-                    ? '連線中...'
+                    ? I18nService.t(locale, 'room_connecting', '連線中...')
                     : I18nService.t(locale, 'room_create_btn')}
                 </Text>
               </Pressable>
 
               <View style={styles.dividerRow}>
                 <View style={[styles.dividerLine, { backgroundColor: colors.line }]} />
-                <Text style={[styles.dividerText, { color: colors.muted }]}>或</Text>
+                <Text style={[styles.dividerText, { color: colors.muted }]}>
+                  {I18nService.t(locale, 'or_divider', '或')}
+                </Text>
                 <View style={[styles.dividerLine, { backgroundColor: colors.line }]} />
               </View>
 

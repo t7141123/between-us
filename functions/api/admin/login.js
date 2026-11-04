@@ -5,11 +5,8 @@
  * Supports environment variable overrides for salt and credentials.
  */
 
-const DEFAULT_SECRET_SALT = 'between_us_analytics_salt_2026';
-
-// Salted SHA-256 hashes of default authorized credentials (no plaintext in source)
-const DEFAULT_EXPECTED_USER_HASH = 'b6b45709bc147dbf9e35ee77e4b8d6bab39436b35a18ebb71f1ff5d51ac606be';
-const DEFAULT_EXPECTED_PASS_HASH = 'e0e8733b5bf9322d36dcba159c4184d6e11c29a6fc48134e90e26a1be62bfff6';
+// Secrets must come from environment variables (SECRET_SALT, ADMIN_USER_HASH, ADMIN_PASS_HASH).
+// There are intentionally no in-source defaults: the endpoint fails closed when unset.
 
 function getCorsHeaders(request) {
   const origin = request ? request.headers.get('Origin') : null;
@@ -54,9 +51,15 @@ export async function onRequestPost(context) {
   const { request, env } = context;
   const corsHeaders = getCorsHeaders(request);
 
-  const salt = env?.SECRET_SALT || DEFAULT_SECRET_SALT;
-  const expectedUserHash = env?.ADMIN_USER_HASH || DEFAULT_EXPECTED_USER_HASH;
-  const expectedPassHash = env?.ADMIN_PASS_HASH || DEFAULT_EXPECTED_PASS_HASH;
+  const salt = env?.SECRET_SALT;
+  const expectedUserHash = env?.ADMIN_USER_HASH;
+  const expectedPassHash = env?.ADMIN_PASS_HASH;
+  if (!salt || salt.length < 16 || !expectedUserHash || !expectedPassHash) {
+    return new Response(JSON.stringify({ error: 'Admin not configured' }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
+  }
 
   try {
     const { username, password } = await request.json().catch(() => ({}));

@@ -185,7 +185,10 @@ export async function ensureOrdersTable(db) {
       CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
         email TEXT UNIQUE,
+        password_hash TEXT,
         provider TEXT DEFAULT 'email',
+        google_sub TEXT,
+        apple_sub TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
@@ -226,6 +229,169 @@ export async function ensureOrdersTable(db) {
       );
     `),
   ]);
+
+  // Try adding columns if existing database table was created with older schema
+  try {
+    await db.prepare('ALTER TABLE users ADD COLUMN password_hash TEXT').run().catch(() => {});
+    await db.prepare('ALTER TABLE users ADD COLUMN google_sub TEXT').run().catch(() => {});
+    await db.prepare('ALTER TABLE users ADD COLUMN apple_sub TEXT').run().catch(() => {});
+  } catch {
+    // Ignore if columns already exist
+  }
+}
+
+/**
+ * PBKDF2 Password Hashing using native Web Crypto API
+ * Format: pbkdf2$100000$<salt_hex>$<hash_hex>
+ */
+export async function hashPassword(password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const saltHex = Array.from(salt).map((b) => b.toString(16).padStart(2, '0')).join('');
+
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(password),
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits']
+  );
+
+  const derivedBits = await crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt,
+      iterations: 100000,
+      hash: 'SHA-256',
+    },
+    keyMaterial,
+    256
+  );
+
+  const hashHex = Array.from(new Uint8Array(derivedBits))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  return `pbkdf2$100000$${saltHex}$${hashHex}`;
+}
+
+/**
+ * Verify a plaintext password against a stored PBKDF2 hash string
+ */
+export async function verifyPassword(password, storedHashStr) {
+  if (!storedHashStr || typeof storedHashStr !== 'string') return false;
+  const parts = storedHashStr.split('$');
+  if (parts.length !== 4 || parts[0] !== 'pbkdf2') return false;
+
+  const iterations = parseInt(parts[1], 10);
+  const saltHex = parts[2];
+  const expectedHashHex = parts[3];
+
+  const salt = new Uint8Array(saltHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
+
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(password),
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits']
+  );
+
+  const derivedBits = await crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt,
+      iterations,
+      hash: 'SHA-256',
+    },
+    keyMaterial,
+    256
+  );
+
+  const computedHashHex = Array.from(new Uint8Array(derivedBits))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  return constantTimeEqual(computedHashHex, expectedHashHex);
+}
+
+/**
+ * Signs an HMAC-SHA256 Session Token
+ * Token format: <base64url_payload>.<signature_hex>
+ */
+export function getAuthSecret(env) {
+  const secret = env?.AUTH_SECRET;
+  if (!secret || typeof secret !== 'string' || secret.length < 16) {
+    // Fail closed: never fall back to a guessable default secret.
+    throw new Error('Server misconfigured: AUTH_SECRET is not set');
+  }
+  return secret;
+}
+
+export async function signAuthToken(userId, email, env) {
+  const secretStr = getAuthSecret(env);
+  const payload = {
+    uid: userId,
+    eml: email,
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + 90 * 24 * 3600, // 90 days validity
+  };
+
+  const payloadB64 = btoa(JSON.stringify(payload))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    enc.encode(secretStr),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+
+  const sigBuffer = await crypto.subtle.sign('HMAC', key, enc.encode(payloadB64));
+  const sigHex = Array.from(new Uint8Array(sigBuffer))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  return `${payloadB64}.${sigHex}`;
+}
+
+/**
+ * Verifies an HMAC-SHA256 Session Token
+ */
+export async function verifyAuthToken(token, env) {
+  if (!token || typeof token !== 'string') return null;
+  const parts = token.split('.');
+  if (parts.length !== 2) return null;
+
+  const [payloadB64, sigHex] = parts;
+  const secretStr = getAuthSecret(env);
+
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    enc.encode(secretStr),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['verify']
+  );
+
+  const sigBytes = new Uint8Array(sigHex.match(/.{1,2}/g)?.map((b) => parseInt(b, 16)) || []);
+  const isValid = await crypto.subtle.verify('HMAC', key, sigBytes, enc.encode(payloadB64));
+  if (!isValid) return null;
+
+  try {
+    const rawJson = atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/'));
+    const payload = JSON.parse(rawJson);
+    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+      return null; // Expired
+    }
+    return payload;
+  } catch {
+    return null;
+  }
 }
 
 /** Grant an entitlement to a user safely */
@@ -257,8 +423,13 @@ const memoryRooms = new Map();
 
 /** Generate 4-digit room code */
 export function generateRoomCode() {
-  return String(Math.floor(1000 + Math.random() * 9000));
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  return String(1000 + (buf[0] % 9000));
 }
+
+/** Rooms are temporary: anything not updated for this long is treated as expired and removed. */
+export const ROOM_TTL_MS = 6 * 60 * 60 * 1000;
 
 /** Get room state */
 export async function getRoomState(db, code) {
@@ -267,6 +438,11 @@ export async function getRoomState(db, code) {
     const row = await db.prepare('SELECT * FROM sync_rooms WHERE code = ?')
       .bind(code)
       .first();
+    if (row && Date.now() - row.updated_at > ROOM_TTL_MS) {
+      await db.prepare('DELETE FROM sync_rooms WHERE code = ?').bind(code).run();
+      memoryRooms.delete(code);
+      return null;
+    }
     if (row) {
       return {
         code: row.code,
@@ -278,7 +454,12 @@ export async function getRoomState(db, code) {
       };
     }
   }
-  return memoryRooms.get(code) || null;
+  const mem = memoryRooms.get(code);
+  if (mem && Date.now() - mem.updatedAt > ROOM_TTL_MS) {
+    memoryRooms.delete(code);
+    return null;
+  }
+  return mem || null;
 }
 
 /** Create or overwrite room state */
@@ -294,6 +475,8 @@ export async function createRoom(db, code, category, questionText) {
   };
   if (db) {
     await ensureOrdersTable(db);
+    // Opportunistic cleanup of expired rooms.
+    await db.prepare('DELETE FROM sync_rooms WHERE updated_at < ?').bind(now - ROOM_TTL_MS).run();
     await db.prepare(`
       INSERT INTO sync_rooms (code, category, question_text, is_flipped, version, updated_at)
       VALUES (?, ?, ?, 0, 1, ?)
@@ -328,7 +511,7 @@ export async function updateRoomState(db, code, updates) {
       SET category = ?, question_text = ?, is_flipped = ?, version = ?, updated_at = ?
       WHERE code = ?
     `)
-      .bind(category, questionText, isFlipped, nextVersion, now)
+      .bind(category, questionText, isFlipped, nextVersion, now, code)
       .run();
 
     return {

@@ -91,4 +91,5 @@ export interface AuthUser {
   id: string;
   email: string;
   provider: AuthProvider;
+  token?: string;
 }

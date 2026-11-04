@@ -12,6 +12,7 @@ import {
   Platform,
   PanResponder,
   useWindowDimensions,
+  Share,
 } from 'react-native';
 import Svg, { Path, Circle, Line } from 'react-native-svg';
 import { Bookmark, Timer, RefreshCw, RotateCcw, Share2, Lock } from 'lucide-react-native';
@@ -21,6 +22,8 @@ import { CARD_SKINS } from '../constants/packs';
 
 export interface Card3DHandle {
   flip: () => void;
+  setFlipped: (flipped: boolean) => void;
+  isFlipped: () => boolean;
 }
 
 interface Card3DProps {
@@ -82,12 +85,29 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
     if (!question || isLocked) return;
     const shareText = `${I18nService.t(locale, 'share_prefix', '💌 在我們之間：「')}${question.text}${I18nService.t(locale, 'share_suffix', '」\n\n今晚我們來聊聊這題吧 ✨')}`;
 
-    const shareUrl =
+    const baseUrl =
       Platform.OS === 'web' && typeof window !== 'undefined'
         ? window.location.origin.includes('localhost')
-          ? window.location.href
+          ? `${window.location.origin}${window.location.pathname}`
           : 'https://between-us.ark-studio.app/'
         : 'https://between-us.ark-studio.app/';
+
+    const params = new URLSearchParams();
+    if (question.id.startsWith('sensual-')) {
+      params.set('pack', 'sensual');
+      params.set('q', String(question.index));
+    } else if (question.id.startsWith('marriage-')) {
+      params.set('pack', 'marriage');
+      params.set('q', String(question.index));
+    } else if (question.id.startsWith('parenting-')) {
+      params.set('pack', 'parenting');
+      params.set('q', String(question.index));
+    } else {
+      params.set('c', question.categoryKey);
+      params.set('q', String(question.index + 1));
+    }
+
+    const shareUrl = `${baseUrl.replace(/\/+$/, '')}/?${params.toString()}`;
 
     if (Platform.OS === 'web' && typeof navigator !== 'undefined') {
       if (navigator.share) {
@@ -107,8 +127,39 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
         setShareToast(true);
         setTimeout(() => setShareToast(false), 2500);
       }
+    } else {
+      try {
+        await Share.share({
+          message: `${shareText}\n${shareUrl}`,
+          title: '在我們之間 Between Us',
+          url: shareUrl,
+        });
+      } catch {
+        // Ignore share cancellation
+      }
     }
   };
+
+  const contentOpacity = useRef(new Animated.Value(1)).current;
+  const contentTranslateY = useRef(new Animated.Value(0)).current;
+
+  // Animate content transition on question change
+  useEffect(() => {
+    contentOpacity.setValue(0);
+    contentTranslateY.setValue(8);
+    Animated.parallel([
+      Animated.timing(contentOpacity, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+      Animated.timing(contentTranslateY, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [question?.text, contentOpacity, contentTranslateY]);
 
   // Reset flip state when question changes
   useEffect(() => {
@@ -146,35 +197,30 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
   const isSwipingRef = useRef(false);
   const lastSwipeTimeRef = useRef(0);
 
+  const setCardFlipped = (targetFlipped: boolean) => {
+    if (isFlippedRef.current === targetFlipped) return;
+    isFlippedRef.current = targetFlipped;
+    Animated.spring(animatedValue, {
+      toValue: targetFlipped ? 180 : 0,
+      friction: 8,
+      tension: 10,
+      useNativeDriver: true,
+    }).start();
+  };
+
   const flipCard = () => {
     const now = Date.now();
     if (isSwipingRef.current || now - lastSwipeTimeRef.current < 350) {
       return;
     }
     onFlipCard?.();
-    if (isFlippedRef.current) {
-      Animated.spring(animatedValue, {
-        toValue: 0,
-        friction: 8,
-        tension: 10,
-        useNativeDriver: true,
-      }).start(() => {
-        isFlippedRef.current = false;
-      });
-    } else {
-      Animated.spring(animatedValue, {
-        toValue: 180,
-        friction: 8,
-        tension: 10,
-        useNativeDriver: true,
-      }).start(() => {
-        isFlippedRef.current = true;
-      });
-    }
+    setCardFlipped(!isFlippedRef.current);
   };
 
   useImperativeHandle(ref, () => ({
     flip: flipCard,
+    setFlipped: setCardFlipped,
+    isFlipped: () => isFlippedRef.current,
   }));
 
   const handleSwipeAction = (diffX: number) => {
@@ -427,7 +473,16 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
           )}
 
           {/* Question Text Body */}
-          <View style={[styles.bodyContainer, isMobile && styles.bodyContainerMobile]}>
+          <Animated.View
+            style={[
+              styles.bodyContainer,
+              isMobile && styles.bodyContainerMobile,
+              {
+                opacity: contentOpacity,
+                transform: [{ translateY: contentTranslateY }],
+              },
+            ]}
+          >
             {isLocked ? (
               <View style={styles.lockContent}>
                 <View style={[styles.lockIconCircle, { backgroundColor: colors.badgeBg }]}>
@@ -479,7 +534,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
                 </Text>
               </>
             )}
-          </View>
+          </Animated.View>
 
           {/* Front Footer */}
           <View style={[styles.cardFooter, { borderTopColor: cardBorderColor }]}>
