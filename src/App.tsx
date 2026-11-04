@@ -19,6 +19,10 @@ import confetti from 'canvas-confetti';
 
 import { LocaleKey, CategoryFilter, QuestionEntry, CardSkinId } from './types';
 import { DeckEndModal } from './components/DeckEndModal';
+import { OnboardingModal } from './components/OnboardingModal';
+import { ProgressBadge } from './components/ProgressBadge';
+import { useProgress } from './hooks/useProgress';
+import { countSeen, currentStreak, dayKey, prioritizeUnseen } from './services/progressCore';
 import { useTheme } from './hooks/useTheme';
 import { useSound } from './hooks/useSound';
 import { useHaptics } from './hooks/useHaptics';
@@ -122,6 +126,10 @@ export const MainApp: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentRoom, setCurrentRoom] = useState<RoomState | null>(null);
 
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+  const progress = useProgress();
+  const hydrateProgress = progress.hydrate;
+
   const cardRef = useRef<Card3DHandle>(null);
 
   const favoriteCount = useMemo(() => Object.keys(favorites).length, [favorites]);
@@ -156,8 +164,14 @@ export const MainApp: React.FC = () => {
       StorageService.getIsSupporter(),
       StorageService.getAuthUser(),
       StorageService.getUnlockedSkins(),
-    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter, savedUser, savedSkins]) => {
+      StorageService.getSeen(),
+      StorageService.getStreak(),
+      StorageService.getOnboarded(),
+    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter, savedUser, savedSkins, savedSeen, savedStreak, onboarded]) => {
       if (!mounted) return;
+      hydrateProgress(savedSeen, savedStreak);
+      // First run: show the short guide (not for visitors arriving via a shared question or room link).
+      if (!onboarded && !initialShareTargetRef.current) setIsOnboardingOpen(true);
       setLocale(savedLocale);
       const migrated = migrateFavorites(savedFavs);
       if (migrated.changed) StorageService.setFavorites(migrated.favorites);
@@ -189,12 +203,14 @@ export const MainApp: React.FC = () => {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [hydrateProgress]);
 
   // Rebuild the deck when locale, category, unlocked packs or the reshuffle key change.
   useEffect(() => {
     if (!isStorageLoaded) return;
 
+    // A shared / remembered target must stay on top; otherwise unseen questions come first.
+    const hasTarget = Boolean(initialShareTargetRef.current || pendingPaidTargetRef.current);
     const result = buildDeck({
       category: currentCategory,
       locale,
@@ -204,15 +220,16 @@ export const MainApp: React.FC = () => {
     });
     initialShareTargetRef.current = null;
     pendingPaidTargetRef.current = result.pendingPaid;
+    const ordered = prioritizeUnseen(result.deck, progress.seenRef.current, hasTarget);
 
     const jumpQid = pendingJumpQidRef.current;
     pendingJumpQidRef.current = null;
-    const jumpIdx = jumpQid ? findQidIndex(result.deck, jumpQid) : -1;
+    const jumpIdx = jumpQid ? findQidIndex(ordered, jumpQid) : -1;
 
-    setDeck(result.deck);
+    setDeck(ordered);
     setCurrentIndex(jumpIdx >= 0 ? jumpIdx : result.startIndex);
     setIsDeckEndOpen(false);
-  }, [isStorageLoaded, locale, currentCategory, unlockedPacks, reshuffleKey]);
+  }, [isStorageLoaded, locale, currentCategory, unlockedPacks, reshuffleKey, progress.seenRef]);
 
   /** Opens a question by its language-independent id, switching category when needed. */
   const jumpToQid = useCallback(
@@ -235,6 +252,27 @@ export const MainApp: React.FC = () => {
     if (deck.length === 0) return null;
     return deck[currentIndex] ?? null;
   }, [deck, currentIndex]);
+
+  // Count a question as seen once the user has spent a moment on it (also marks today as a talking day).
+  const currentQid = currentQuestion?.qid;
+  const currentIsLock = isLockCard(currentQuestion);
+  const markSeen = progress.markSeen;
+  useEffect(() => {
+    if (!currentQid || currentIsLock) return;
+    const timer = setTimeout(() => markSeen(currentQid), 1500);
+    return () => clearTimeout(timer);
+  }, [currentQid, currentIsLock, markSeen]);
+
+  const deckProgress = useMemo(() => countSeen(deck, progress.seen), [deck, progress.seen]);
+  const streakDays = currentStreak(progress.streak, dayKey(new Date()));
+  const handleResetProgress = useCallback(() => {
+    progress.resetSeen(deck.map((q) => q.qid));
+  }, [deck, progress]);
+
+  const handleCloseOnboarding = useCallback(() => {
+    setIsOnboardingOpen(false);
+    void StorageService.setOnboarded(true);
+  }, []);
 
   const lastNavTimeRef = useRef(0);
 
@@ -363,6 +401,7 @@ export const MainApp: React.FC = () => {
 
   const handleFlipCard = useCallback((skipSync = false) => {
     playFlip();
+    if (currentQuestion && !isLockCard(currentQuestion)) markSeen(currentQuestion.qid);
     if (!skipSync && currentRoom && currentQuestion) {
       RoomService.syncAction(currentRoom.code, {
         qid: currentQuestion.qid,
@@ -373,7 +412,7 @@ export const MainApp: React.FC = () => {
         if (res.room) setCurrentRoom(res.room);
       });
     }
-  }, [currentQuestion, currentRoom, currentCategory, playFlip]);
+  }, [currentQuestion, currentRoom, currentCategory, playFlip, markSeen]);
 
   const handleSelectFromDrawer = useCallback((item: QuestionEntry) => {
     setIsFavoritesOpen(false);
@@ -585,6 +624,17 @@ export const MainApp: React.FC = () => {
           }}
         />
 
+        {!isLockCard(currentQuestion) && (
+          <ProgressBadge
+            locale={locale}
+            colors={colors}
+            seen={deckProgress.seen}
+            total={deckProgress.total}
+            streak={streakDays}
+            onReset={handleResetProgress}
+          />
+        )}
+
         {/* 3D Flippable Question Card */}
         <View style={[styles.cardWrapper, isMobile && styles.cardWrapperMobile]}>
           <Card3D
@@ -693,6 +743,14 @@ export const MainApp: React.FC = () => {
         }}
       />
 
+      <OnboardingModal
+        visible={isOnboardingOpen}
+        locale={locale}
+        colors={colors}
+        isDark={isDark}
+        onClose={handleCloseOnboarding}
+      />
+
       {/* End-of-deck completion */}
       <DeckEndModal
         visible={isDeckEndOpen}
@@ -790,6 +848,10 @@ export const MainApp: React.FC = () => {
         onOpenTimer={() => {
           playClick();
           setIsTimerOpen(true);
+        }}
+        onOpenOnboarding={() => {
+          playClick();
+          setIsOnboardingOpen(true);
         }}
       />
     </SafeAreaView>

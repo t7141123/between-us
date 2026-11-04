@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { AuthUser, CardSkinId, LocaleKey, ThemeMode } from '../types';
+import { EMPTY_STREAK, StreakState } from './progressCore';
 
 const SECURE_AUTH_KEY = 'betweenus.secure_auth_user';
 
@@ -19,6 +20,9 @@ const STORAGE_KEYS = {
   UNLOCKED_SKINS: 'betweenus.unlocked_skins',
   SUPPORTER: 'betweenus.supporter',
   AUTH_USER: 'betweenus.auth_user',
+  SEEN: 'betweenus.seen',
+  STREAK: 'betweenus.streak',
+  ONBOARDED: 'betweenus.onboarded',
 } as const;
 
 export const StorageService = {
@@ -203,6 +207,67 @@ export const StorageService = {
   async setIsSupporter(isSupporter: boolean): Promise<void> {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.SUPPORTER, isSupporter ? '1' : '0');
+    } catch {
+      // Storage write error
+    }
+  },
+
+  /** Question ids the user has already been through (language-independent qids). */
+  async getSeen(): Promise<string[]> {
+    try {
+      const raw = await AsyncStorage.getItem(STORAGE_KEYS.SEEN);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed.filter((x): x is string => typeof x === 'string');
+      }
+    } catch {
+      // Ignore parse failure
+    }
+    return [];
+  },
+
+  async setSeen(qids: string[]): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.SEEN, JSON.stringify(qids));
+    } catch {
+      // Storage write error
+    }
+  },
+
+  async getStreak(): Promise<StreakState> {
+    try {
+      const raw = await AsyncStorage.getItem(STORAGE_KEYS.STREAK);
+      if (raw) {
+        const p = JSON.parse(raw) as Partial<StreakState>;
+        if (typeof p.lastDay === 'string' && Number.isFinite(p.count) && Number.isFinite(p.best)) {
+          return { lastDay: p.lastDay, count: Number(p.count), best: Number(p.best) };
+        }
+      }
+    } catch {
+      // Ignore parse failure
+    }
+    return EMPTY_STREAK;
+  },
+
+  async setStreak(streak: StreakState): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.STREAK, JSON.stringify(streak));
+    } catch {
+      // Storage write error
+    }
+  },
+
+  async getOnboarded(): Promise<boolean> {
+    try {
+      return (await AsyncStorage.getItem(STORAGE_KEYS.ONBOARDED)) === '1';
+    } catch {
+      return false;
+    }
+  },
+
+  async setOnboarded(done: boolean): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDED, done ? '1' : '0');
     } catch {
       // Storage write error
     }
