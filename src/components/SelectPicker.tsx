@@ -67,7 +67,7 @@ export function SelectPicker<T extends string>({
         ]}
         activeOpacity={0.75}
       >
-        <View style={styles.triggerLeft}>
+        <View style={[styles.triggerCenter, compact ? styles.triggerCenterCompact : styles.triggerCenterRegular]}>
           {icon && <View style={styles.iconContainer}>{icon}</View>}
           <Text
             style={[
@@ -82,7 +82,7 @@ export function SelectPicker<T extends string>({
         <ChevronDown
           size={compact ? 13 : 15}
           color={colors.muted}
-          style={styles.chevron}
+          style={[styles.chevron, compact ? styles.chevronCompact : styles.chevronRegular]}
         />
       </TouchableOpacity>
 
@@ -186,7 +186,8 @@ const styles = StyleSheet.create({
   triggerBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    position: 'relative',
     borderWidth: 1,
     borderRadius: 22,
     shadowOffset: { width: 0, height: 1 },
@@ -195,20 +196,27 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   triggerCompact: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 28,
     height: 34,
   },
   triggerRegular: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 36,
     height: 42,
     minWidth: 160,
     alignSelf: 'center',
   },
-  triggerLeft: {
+  triggerCenter: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 6,
     flexShrink: 1,
+  },
+  triggerCenterCompact: {
+    maxWidth: '100%',
+  },
+  triggerCenterRegular: {
+    maxWidth: '100%',
   },
   iconContainer: {
     marginRight: 2,
@@ -217,16 +225,25 @@ const styles = StyleSheet.create({
   triggerTextCompact: {
     fontSize: 12,
     fontWeight: '500',
+    textAlign: 'center',
     flexShrink: 1,
   },
   triggerTextRegular: {
     fontSize: 15,
     fontWeight: '600',
+    textAlign: 'center',
     flexShrink: 1,
   },
   chevron: {
-    marginLeft: 6,
     flexShrink: 0,
+  },
+  chevronCompact: {
+    position: 'absolute',
+    right: 10,
+  },
+  chevronRegular: {
+    position: 'absolute',
+    right: 14,
   },
   modalBackdrop: {
     flex: 1,
