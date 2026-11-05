@@ -8,6 +8,7 @@ import { Platform } from 'react-native';
 import { AuthUser, CardSkinId, LocaleKey, ThemeMode } from '../types';
 import { EMPTY_STREAK, StreakState } from './progressCore';
 import type { SyncState } from './cloudSync';
+import { CustomQuestion, sanitizeCustom } from './customCore';
 import { NoteMap, sanitizeNotes } from './notesCore';
 import { DEFAULT_REMINDER, ReminderSettings, sanitizeReminder } from './dailyCore';
 
@@ -29,6 +30,7 @@ const STORAGE_KEYS = {
   ONBOARDED: 'betweenus.onboarded',
   REMINDER: 'betweenus.reminder',
   NOTES: 'betweenus.notes',
+  CUSTOM: 'betweenus.custom',
   SYNC_STATE: 'betweenus.sync_state',
 } as const;
 
@@ -300,6 +302,24 @@ export const StorageService = {
   async setSyncState(state: SyncState): Promise<void> {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.SYNC_STATE, JSON.stringify(state));
+    } catch {
+      // Storage write error
+    }
+  },
+
+  async getCustomQuestions(): Promise<CustomQuestion[]> {
+    try {
+      const raw = await AsyncStorage.getItem(STORAGE_KEYS.CUSTOM);
+      if (raw) return sanitizeCustom(JSON.parse(raw));
+    } catch {
+      // Ignore parse failure
+    }
+    return [];
+  },
+
+  async setCustomQuestions(list: CustomQuestion[]): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.CUSTOM, JSON.stringify(list));
     } catch {
       // Storage write error
     }

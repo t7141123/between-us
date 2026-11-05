@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import {
   CalendarHeart,
+  ListPlus,
   CloudUpload,
   NotebookPen,
   Clock,
@@ -46,6 +47,8 @@ interface MenuModalProps {
   onOpenOnboarding?: () => void;
   onOpenDaily?: () => void;
   onOpenNotes?: () => void;
+  onOpenCustom?: () => void;
+  customLocked?: boolean;
   cloudBackup?: { state: 'locked' | 'needs_login' | 'idle' | 'syncing' | 'ok' | 'error' | 'plus_required'; onPress: () => void };
 }
 
@@ -69,6 +72,8 @@ export const MenuModal: React.FC<MenuModalProps> = ({
   onOpenOnboarding,
   onOpenDaily,
   onOpenNotes,
+  onOpenCustom,
+  customLocked = false,
   cloudBackup,
 }) => {
   const isDark = theme === 'dark';
@@ -354,6 +359,37 @@ export const MenuModal: React.FC<MenuModalProps> = ({
                         </Text>
                         <Text style={[styles.itemSub, { color: colors.muted }]}>
                           {I18nService.t(locale, `menu_cloud_${cloudBackup.state}`)}
+                        </Text>
+                      </View>
+                    </View>
+                    <Text style={[styles.arrowText, { color: colors.muted }]}>›</Text>
+                  </TouchableOpacity>
+                )}
+
+                {onOpenCustom && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      onClose();
+                      onOpenCustom();
+                    }}
+                    style={[
+                      styles.cardRow,
+                      {
+                        marginTop: 10,
+                        backgroundColor: isDark ? '#292524' : '#FFFFFF',
+                        borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                      },
+                    ]}
+                    activeOpacity={0.8}
+                  >
+                    <View style={styles.rowLeft}>
+                      <ListPlus size={20} color={colors.clay} />
+                      <View style={styles.textStack}>
+                        <Text style={[styles.itemTitle, { color: colors.ink }]}>
+                          {I18nService.t(locale, 'custom_label')}
+                        </Text>
+                        <Text style={[styles.itemSub, { color: colors.muted }]}>
+                          {I18nService.t(locale, customLocked ? 'menu_custom_locked' : 'menu_custom_sub')}
                         </Text>
                       </View>
                     </View>

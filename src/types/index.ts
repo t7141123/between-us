@@ -16,6 +16,7 @@ export type CategoryKey =
 export type CategoryFilter =
   | CategoryKey
   | 'all'
+  | 'custom'
   | 'pack_sensual'
   | 'pack_marriage'
   | 'pack_parenting';

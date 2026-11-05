@@ -8,7 +8,7 @@ export const FREE_TRIAL_COUNT = 3;
 export const PACK_IDS: ExpansionPackId[] = ['sensual', 'marriage', 'parenting'];
 
 /** "vision:12" or "pack:sensual:5" */
-export const QID_PATTERN = /^(?:pack:(?:sensual|marriage|parenting)|vision|soul|finance|intimacy|fun|growth|faith):\d{1,3}$/;
+export const QID_PATTERN = /^(?:(?:pack:(?:sensual|marriage|parenting)|vision|soul|finance|intimacy|fun|growth|faith):\d{1,3}|custom:[a-z0-9]{1,12})$/;
 
 export interface ShareTarget {
   category?: CategoryFilter;
@@ -38,7 +38,7 @@ export function packIdOfCategory(category: CategoryFilter): ExpansionPackId | nu
 export function categoryOfQid(qid: string): CategoryFilter | null {
   if (!QID_PATTERN.test(qid)) return null;
   const parts = qid.split(':');
-  return (parts[0] === 'pack' ? `pack_${parts[1]}` : parts[0]) as CategoryFilter;
+  return (parts[0] === 'pack' ? `pack_${parts[1]}` : parts[0]) as CategoryFilter; // 'custom:x' -> 'custom'
 }
 
 export function findQidIndex(deck: QuestionEntry[], qid: string): number {

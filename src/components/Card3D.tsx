@@ -106,12 +106,13 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
     } else if (question.id.startsWith('parenting-')) {
       params.set('pack', 'parenting');
       params.set('q', String(question.index));
-    } else {
+    } else if (!question.id.startsWith('custom-')) {
       params.set('c', question.categoryKey);
       params.set('q', String(question.index + 1));
     }
+    // A couple's own question has no public deep link: share the text and the app link only.
 
-    const shareUrl = `${baseUrl.replace(/\/+$/, '')}/?${params.toString()}`;
+    const shareUrl = params.toString() ? `${baseUrl.replace(/\/+$/, '')}/?${params.toString()}` : baseUrl;
 
     if (Platform.OS === 'web' && typeof navigator !== 'undefined') {
       if (navigator.share) {

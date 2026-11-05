@@ -19,12 +19,14 @@ import { Bookmark, Search, X } from 'lucide-react-native';
 import { LocaleKey, QuestionEntry, ThemeColors } from '../types';
 import { I18nService } from '../services/i18n';
 import { getAllQuestions } from '../services/deck';
+import type { CustomQuestion } from '../services/customCore';
 
 interface FavoritesModalProps {
   visible: boolean;
   locale: LocaleKey;
   colors: ThemeColors;
   favorites: Record<string, boolean>;
+  customQuestions?: CustomQuestion[];
   onClose: () => void;
   onSelectQuestion: (question: QuestionEntry) => void;
   onToggleFavorite?: (qid: string) => void;
@@ -35,6 +37,7 @@ export const FavoritesModal: React.FC<FavoritesModalProps> = ({
   locale,
   colors,
   favorites,
+  customQuestions = [],
   onClose,
   onSelectQuestion,
   onToggleFavorite,
@@ -42,7 +45,7 @@ export const FavoritesModal: React.FC<FavoritesModalProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
 
   // Every question the app ships (core categories + expansion packs)
-  const allPossibleQuestions = useMemo<QuestionEntry[]>(() => getAllQuestions(locale), [locale]);
+  const allPossibleQuestions = useMemo<QuestionEntry[]>(() => getAllQuestions(locale, customQuestions), [locale, customQuestions]);
 
   // Filter only saved/favorited cards
   const savedQuestions = useMemo(() => {

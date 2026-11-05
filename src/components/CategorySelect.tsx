@@ -14,6 +14,8 @@ interface CategorySelectProps {
   locale: LocaleKey;
   colors: ThemeColors;
   unlockedPacks?: string[];
+  isPlus?: boolean;
+  customCount?: number;
   onSelectCategory: (cat: CategoryFilter) => void;
 }
 
@@ -22,6 +24,8 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
   locale,
   colors,
   unlockedPacks = [],
+  isPlus = false,
+  customCount = 0,
   onSelectCategory,
 }) => {
   const { width, height } = useWindowDimensions();
@@ -58,8 +62,13 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
         label: `${I18nService.t(locale, 'pack_parenting_title', '🌱 新生兒與新手父母')}${isParentingUnlocked ? '' : ' 🔒'}`,
         badge: '50',
       },
+      {
+        value: 'custom',
+        label: `${I18nService.t(locale, 'custom_label')}${isPlus ? '' : ' 🔒'}`,
+        badge: isPlus ? String(customCount) : 'Plus',
+      },
     ];
-  }, [locale, unlockedPacks]);
+  }, [locale, unlockedPacks, isPlus, customCount]);
 
   return (
     <View style={[styles.container, isMobile && styles.containerMobile]}>

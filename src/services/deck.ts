@@ -10,6 +10,8 @@ import {
 import type { CategoryFilter, ExpansionPackId, LocaleKey, QuestionEntry } from '../types';
 import { buildDeckCore, migrateFavoriteKeys, PACK_IDS } from './deckCore';
 import type { BuildDeckResult, FavoriteMigration, PendingPaid, ShareTarget } from './deckCore';
+import { customEntries } from './customCore';
+import type { CustomQuestion } from './customCore';
 import { I18nService } from './i18n';
 
 export * from './deckCore';
@@ -46,10 +48,11 @@ export function buildPackQuestions(packId: ExpansionPackId, locale: LocaleKey): 
 }
 
 /** Every question the app ships (core categories + all packs), for lookups such as favorites. */
-export function getAllQuestions(locale: LocaleKey): QuestionEntry[] {
+export function getAllQuestions(locale: LocaleKey, custom: CustomQuestion[] = []): QuestionEntry[] {
   return [
     ...I18nService.getQuestions(locale, 'all'),
     ...PACK_IDS.flatMap((id) => buildPackQuestions(id, locale)),
+    ...customEntries(custom, I18nService.t(locale, 'custom_label')),
   ];
 }
 
@@ -68,13 +71,17 @@ export function buildDeck(input: {
   unlockedPacks: string[];
   initialTarget?: ShareTarget | null;
   pendingPaid?: PendingPaid | null;
+  custom?: CustomQuestion[];
 }): BuildDeckResult {
   const { locale } = input;
   return buildDeckCore({
     category: input.category,
     unlockedPacks: input.unlockedPacks,
     shuffle: shuffleQuestions,
-    baseQuestions: (cat) => I18nService.getQuestions(locale, cat),
+    baseQuestions: (cat) =>
+      cat === 'custom'
+        ? customEntries(input.custom ?? [], I18nService.t(locale, 'custom_label'))
+        : I18nService.getQuestions(locale, cat),
     packQuestions: (packId) => buildPackQuestions(packId, locale),
     makeLockCard: (packId, sharedLocked) => ({
       id: `${packId}-lock`,

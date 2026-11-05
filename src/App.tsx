@@ -23,8 +23,10 @@ import { OnboardingModal } from './components/OnboardingModal';
 import { DailyModal } from './components/DailyModal';
 import { CARD_SKINS } from './constants/packs';
 import { NotesModal } from './components/NotesModal';
+import { CustomQuestionsModal } from './components/CustomQuestionsModal';
+import { addCustom, CustomQuestion, makeCustomQuestion, removeCustom, sanitizeCustom } from './services/customCore';
 import { NoteMap, sanitizeNotes, saveNote } from './services/notesCore';
-import { contentHash, mergeFavorites, mergeNotes, mergeSeen } from './services/syncCore';
+import { contentHash, mergeCustom, mergeFavorites, mergeNotes, mergeSeen } from './services/syncCore';
 import type { KindAdapter } from './services/cloudSync';
 import { useCloudSync } from './hooks/useCloudSync';
 import { ReminderService } from './services/reminders';
@@ -82,6 +84,8 @@ function readInitialShareTarget(): ShareTarget | null {
       }
       return null;
     }
+
+const NO_CUSTOM: CustomQuestion[] = [];
 
 const LEGACY_ROOM_CATEGORIES: Record<string, string> = {
   sensual: 'pack_sensual',
@@ -148,6 +152,8 @@ export const MainApp: React.FC = () => {
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const [notesBrowseOnly, setNotesBrowseOnly] = useState(false);
   const [notes, setNotes] = useState<NoteMap>({});
+  const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
+  const [isCustomOpen, setIsCustomOpen] = useState(false);
   const [reminder, setReminder] = useState<ReminderSettings>(DEFAULT_REMINDER);
   const [permissionDenied, setPermissionDenied] = useState(false);
   const progress = useProgress();
@@ -194,8 +200,10 @@ export const MainApp: React.FC = () => {
       StorageService.getReminder(),
       StorageService.getNotes(),
       StorageService.getIsPlus(),
-    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter, savedUser, savedSkins, savedSeen, savedStreak, onboarded, savedReminder, savedNotes, savedPlus]) => {
+      StorageService.getCustomQuestions(),
+    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter, savedUser, savedSkins, savedSeen, savedStreak, onboarded, savedReminder, savedNotes, savedPlus, savedCustom]) => {
       if (!mounted) return;
+      setCustomQuestions(savedCustom);
       setIsPlus(savedPlus);
       setNotes(savedNotes);
       setReminder(savedReminder);
@@ -236,6 +244,9 @@ export const MainApp: React.FC = () => {
     };
   }, [hydrateProgress]);
 
+  // Custom questions only matter to the deck while the custom category is open (avoids needless reshuffles).
+  const customForDeck = useMemo(() => (currentCategory === 'custom' ? customQuestions : NO_CUSTOM), [currentCategory, customQuestions]);
+
   // Rebuild the deck when locale, category, unlocked packs or the reshuffle key change.
   useEffect(() => {
     if (!isStorageLoaded) return;
@@ -248,6 +259,7 @@ export const MainApp: React.FC = () => {
       unlockedPacks,
       initialTarget: initialShareTargetRef.current,
       pendingPaid: pendingPaidTargetRef.current,
+      custom: customForDeck,
     });
     initialShareTargetRef.current = null;
     pendingPaidTargetRef.current = result.pendingPaid;
@@ -260,7 +272,7 @@ export const MainApp: React.FC = () => {
     setDeck(ordered);
     setCurrentIndex(jumpIdx >= 0 ? jumpIdx : result.startIndex);
     setIsDeckEndOpen(false);
-  }, [isStorageLoaded, locale, currentCategory, unlockedPacks, reshuffleKey, progress.seenRef]);
+  }, [isStorageLoaded, locale, currentCategory, unlockedPacks, reshuffleKey, progress.seenRef, customForDeck]);
 
   /** Opens a question by its language-independent id, switching category when needed. */
   const jumpToQid = useCallback(
@@ -335,9 +347,27 @@ export const MainApp: React.FC = () => {
 
   const allQuestionTexts = useMemo(() => {
     const map = new Map<string, string>();
-    for (const q of getAllQuestions(locale)) map.set(q.qid, q.text);
+    for (const q of getAllQuestions(locale, customQuestions)) map.set(q.qid, q.text);
     return map;
-  }, [locale]);
+  }, [locale, customQuestions]);
+
+  const handleAddCustom = useCallback((text: string) => {
+    const q = makeCustomQuestion(text, Date.now());
+    if (!q) return;
+    setCustomQuestions((prev) => {
+      const next = addCustom(prev, q);
+      void StorageService.setCustomQuestions(next);
+      return next;
+    });
+  }, []);
+
+  const handleRemoveCustom = useCallback((id: string) => {
+    setCustomQuestions((prev) => {
+      const next = removeCustom(prev, id);
+      void StorageService.setCustomQuestions(next);
+      return next;
+    });
+  }, []);
 
   const handleSaveNote = useCallback((qid: string, text: string) => {
     setNotes((prev) => {
@@ -385,10 +415,24 @@ export const MainApp: React.FC = () => {
         merge: mergeSeen,
         isEmpty: (v: string[]) => v.length === 0,
       },
+      {
+        kind: 'custom',
+        read: () => customQuestions,
+        normalize: sanitizeCustom,
+        apply: (v: CustomQuestion[]) => {
+          setCustomQuestions(v);
+          void StorageService.setCustomQuestions(v);
+        },
+        merge: mergeCustom,
+        isEmpty: (v: CustomQuestion[]) => v.length === 0,
+      },
     ],
-    [favorites, notes, seenSorted, replaceSeen]
+    [favorites, notes, seenSorted, replaceSeen, customQuestions]
   );
-  const cloudDataKey = useMemo(() => contentHash([favorites, notes, seenSorted]), [favorites, notes, seenSorted]);
+  const cloudDataKey = useMemo(
+    () => contentHash([favorites, notes, seenSorted, customQuestions]),
+    [favorites, notes, seenSorted, customQuestions]
+  );
   const cloud = useCloudSync({
     enabled: isPlus && currentUser !== null && isStorageLoaded,
     userId: currentUser?.id ?? null,
@@ -750,8 +794,20 @@ export const MainApp: React.FC = () => {
           locale={locale}
           colors={colors}
           unlockedPacks={unlockedPacks}
+          isPlus={isPlus}
+          customCount={customQuestions.length}
           onSelectCategory={(cat) => {
             playClick();
+            if (cat === 'custom') {
+              if (!isPlus) {
+                setIsStoreOpen(true);
+                return;
+              }
+              if (customQuestions.length === 0) {
+                setIsCustomOpen(true);
+                return;
+              }
+            }
             setCurrentCategory(cat);
           }}
         />
@@ -867,6 +923,7 @@ export const MainApp: React.FC = () => {
         locale={locale}
         colors={colors}
         favorites={favorites}
+        customQuestions={customQuestions}
         onClose={() => setIsFavoritesOpen(false)}
         onSelectQuestion={handleSelectFromDrawer}
         onToggleFavorite={(qid) => {
@@ -897,6 +954,22 @@ export const MainApp: React.FC = () => {
         }}
         onOpenStore={() => setIsStoreOpen(true)}
         onClose={() => setIsNotesOpen(false)}
+      />
+
+      <CustomQuestionsModal
+        visible={isCustomOpen}
+        locale={locale}
+        colors={colors}
+        isDark={isDark}
+        questions={customQuestions}
+        onAdd={handleAddCustom}
+        onRemove={handleRemoveCustom}
+        onStartTalking={() => {
+          setIsCustomOpen(false);
+          setCurrentCategory('custom');
+          setReshuffleKey((k) => k + 1);
+        }}
+        onClose={() => setIsCustomOpen(false)}
       />
 
       <DailyModal
@@ -1035,6 +1108,12 @@ export const MainApp: React.FC = () => {
             else void cloud.syncNow();
           },
         }}
+        onOpenCustom={() => {
+          playClick();
+          if (isPlus) setIsCustomOpen(true);
+          else setIsStoreOpen(true);
+        }}
+        customLocked={!isPlus}
         onOpenNotes={() => {
           playClick();
           setNotesBrowseOnly(true);
