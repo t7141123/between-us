@@ -7,6 +7,7 @@ import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { AuthUser, CardSkinId, LocaleKey, ThemeMode } from '../types';
 import { EMPTY_STREAK, StreakState } from './progressCore';
+import { NoteMap, sanitizeNotes } from './notesCore';
 import { DEFAULT_REMINDER, ReminderSettings, sanitizeReminder } from './dailyCore';
 
 const SECURE_AUTH_KEY = 'betweenus.secure_auth_user';
@@ -25,6 +26,7 @@ const STORAGE_KEYS = {
   STREAK: 'betweenus.streak',
   ONBOARDED: 'betweenus.onboarded',
   REMINDER: 'betweenus.reminder',
+  NOTES: 'betweenus.notes',
 } as const;
 
 export const StorageService = {
@@ -254,6 +256,24 @@ export const StorageService = {
   async setStreak(streak: StreakState): Promise<void> {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.STREAK, JSON.stringify(streak));
+    } catch {
+      // Storage write error
+    }
+  },
+
+  async getNotes(): Promise<NoteMap> {
+    try {
+      const raw = await AsyncStorage.getItem(STORAGE_KEYS.NOTES);
+      if (raw) return sanitizeNotes(JSON.parse(raw));
+    } catch {
+      // Ignore parse failure
+    }
+    return {};
+  },
+
+  async setNotes(notes: NoteMap): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
     } catch {
       // Storage write error
     }

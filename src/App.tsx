@@ -21,6 +21,8 @@ import { LocaleKey, CategoryFilter, QuestionEntry, CardSkinId } from './types';
 import { DeckEndModal } from './components/DeckEndModal';
 import { OnboardingModal } from './components/OnboardingModal';
 import { DailyModal } from './components/DailyModal';
+import { NotesModal } from './components/NotesModal';
+import { NoteMap, saveNote } from './services/notesCore';
 import { ReminderService } from './services/reminders';
 import { dailyQid, DEFAULT_REMINDER, ReminderSettings } from './services/dailyCore';
 import { ProgressBadge } from './components/ProgressBadge';
@@ -38,6 +40,7 @@ import {
   buildDeck,
   categoryOfQid,
   findQidIndex,
+  getAllQuestions,
   isLockCard,
   migrateFavorites,
   PACK_IDS,
@@ -131,6 +134,11 @@ export const MainApp: React.FC = () => {
 
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isDailyOpen, setIsDailyOpen] = useState(false);
+  const [isNotesOpen, setIsNotesOpen] = useState(false);
+  const [notesBrowseOnly, setNotesBrowseOnly] = useState(false);
+  const [notes, setNotes] = useState<NoteMap>({});
+  // Plus (one-time unlock of everything) arrives in a later release; free limits apply until then.
+  const isPlus = false;
   const [reminder, setReminder] = useState<ReminderSettings>(DEFAULT_REMINDER);
   const [permissionDenied, setPermissionDenied] = useState(false);
   const progress = useProgress();
@@ -174,8 +182,10 @@ export const MainApp: React.FC = () => {
       StorageService.getStreak(),
       StorageService.getOnboarded(),
       StorageService.getReminder(),
-    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter, savedUser, savedSkins, savedSeen, savedStreak, onboarded, savedReminder]) => {
+      StorageService.getNotes(),
+    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter, savedUser, savedSkins, savedSeen, savedStreak, onboarded, savedReminder, savedNotes]) => {
       if (!mounted) return;
+      setNotes(savedNotes);
       setReminder(savedReminder);
       hydrateProgress(savedSeen, savedStreak);
       // First run: show the short guide (not for visitors arriving via a shared question or room link).
@@ -309,6 +319,20 @@ export const MainApp: React.FC = () => {
     setReminder(next);
     void StorageService.setReminder(next);
   }, [reminder.enabled]);
+
+  const allQuestionTexts = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const q of getAllQuestions(locale)) map.set(q.qid, q.text);
+    return map;
+  }, [locale]);
+
+  const handleSaveNote = useCallback((qid: string, text: string) => {
+    setNotes((prev) => {
+      const next = saveNote(prev, qid, text, Date.now());
+      void StorageService.setNotes(next);
+      return next;
+    });
+  }, []);
 
   const lastNavTimeRef = useRef(0);
 
@@ -687,6 +711,12 @@ export const MainApp: React.FC = () => {
               playClick();
               setIsTimerOpen(true);
             }}
+            onOpenNote={() => {
+              playClick();
+              setNotesBrowseOnly(false);
+              setIsNotesOpen(true);
+            }}
+            hasNote={Boolean(currentQuestion && notes[currentQuestion.qid])}
             onNextQuestion={handleNextQuestion}
             onPrevQuestion={handlePrevQuestion}
             onDeckEnd={handleDeckEnd}
@@ -777,6 +807,24 @@ export const MainApp: React.FC = () => {
             return next;
           });
         }}
+      />
+
+      <NotesModal
+        visible={isNotesOpen}
+        locale={locale}
+        colors={colors}
+        isDark={isDark}
+        isPlus={isPlus}
+        currentQid={notesBrowseOnly || isLockCard(currentQuestion) ? null : currentQuestion?.qid ?? null}
+        currentQuestionText={currentQuestion?.text ?? ''}
+        notes={notes}
+        textOf={(qid) => allQuestionTexts.get(qid)}
+        onSave={handleSaveNote}
+        onOpenQuestion={(qid) => {
+          jumpToQid(qid);
+        }}
+        onOpenStore={() => setIsStoreOpen(true)}
+        onClose={() => setIsNotesOpen(false)}
       />
 
       <DailyModal
@@ -902,6 +950,11 @@ export const MainApp: React.FC = () => {
         onOpenTimer={() => {
           playClick();
           setIsTimerOpen(true);
+        }}
+        onOpenNotes={() => {
+          playClick();
+          setNotesBrowseOnly(true);
+          setIsNotesOpen(true);
         }}
         onOpenDaily={() => {
           playClick();

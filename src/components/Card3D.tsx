@@ -15,7 +15,7 @@ import {
   Share,
 } from 'react-native';
 import Svg, { Path, Circle, Line } from 'react-native-svg';
-import { Bookmark, Timer, RefreshCw, RotateCcw, Share2, Lock } from 'lucide-react-native';
+import { Bookmark, Timer, RefreshCw, RotateCcw, Share2, Lock, PenLine } from 'lucide-react-native';
 import { CardSkinId, LocaleKey, QuestionEntry, ThemeColors } from '../types';
 import { I18nService } from '../services/i18n';
 import { CARD_SKINS } from '../constants/packs';
@@ -36,6 +36,8 @@ interface Card3DProps {
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onOpenTimer: () => void;
+  onOpenNote?: () => void;
+  hasNote?: boolean;
   onNextQuestion: () => void;
   onPrevQuestion?: () => void;
   onDeckEnd?: () => void;
@@ -53,6 +55,8 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
   isFavorite,
   onToggleFavorite,
   onOpenTimer,
+  onOpenNote,
+  hasNote = false,
   onNextQuestion,
   onPrevQuestion,
   onDeckEnd,
@@ -434,6 +438,19 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
                   hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                 >
                   <Share2 size={isMobile ? 15 : 17} color={shareToast ? cardAccentColor : cardSubTextColor} />
+                </TouchableOpacity>
+              )}
+
+              {!isLocked && onOpenNote && (
+                <TouchableOpacity
+                  onPress={onOpenNote}
+                  style={styles.actionBtn}
+                  activeOpacity={0.7}
+                  accessibilityRole="button"
+                  accessibilityLabel={I18nService.t(locale, 'a11y_note')}
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                >
+                  <PenLine size={isMobile ? 15 : 17} color={hasNote ? cardAccentColor : cardSubTextColor} />
                 </TouchableOpacity>
               )}
 

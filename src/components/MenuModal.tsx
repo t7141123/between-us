@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import {
   CalendarHeart,
+  NotebookPen,
   Clock,
   Globe,
   HelpCircle,
@@ -43,6 +44,7 @@ interface MenuModalProps {
   onOpenTimer?: () => void;
   onOpenOnboarding?: () => void;
   onOpenDaily?: () => void;
+  onOpenNotes?: () => void;
 }
 
 const LOCALES: { key: LocaleKey; label: string; subLabel: string }[] = [
@@ -64,6 +66,7 @@ export const MenuModal: React.FC<MenuModalProps> = ({
   onOpenTimer,
   onOpenOnboarding,
   onOpenDaily,
+  onOpenNotes,
 }) => {
   const isDark = theme === 'dark';
 
@@ -322,6 +325,37 @@ export const MenuModal: React.FC<MenuModalProps> = ({
                   </View>
                   <Text style={[styles.arrowText, { color: colors.muted }]}>›</Text>
                 </TouchableOpacity>
+
+                {onOpenNotes && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      onClose();
+                      onOpenNotes();
+                    }}
+                    style={[
+                      styles.cardRow,
+                      {
+                        marginTop: 10,
+                        backgroundColor: isDark ? '#292524' : '#FFFFFF',
+                        borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                      },
+                    ]}
+                    activeOpacity={0.8}
+                  >
+                    <View style={styles.rowLeft}>
+                      <NotebookPen size={20} color={colors.clay} />
+                      <View style={styles.textStack}>
+                        <Text style={[styles.itemTitle, { color: colors.ink }]}>
+                          {I18nService.t(locale, 'menu_notes')}
+                        </Text>
+                        <Text style={[styles.itemSub, { color: colors.muted }]}>
+                          {I18nService.t(locale, 'menu_notes_sub')}
+                        </Text>
+                      </View>
+                    </View>
+                    <Text style={[styles.arrowText, { color: colors.muted }]}>›</Text>
+                  </TouchableOpacity>
+                )}
 
                 {onOpenDaily && (
                   <TouchableOpacity
