@@ -97,20 +97,17 @@ export const CARD_SKINS: CardSkinConfig[] = [
   },
 ];
 
-export const SENSUAL_PACK_DATA = require('../../scripts/questions-data/sensual.js') as {
+export interface PackQuestionItem {
   tw: string;
   cn: string;
   en: string;
-}[];
+  hint_tw?: string;
+  hint_cn?: string;
+  hint_en?: string;
+}
 
-export const MARRIAGE_PACK_DATA = require('../../scripts/questions-data/marriage.js') as {
-  tw: string;
-  cn: string;
-  en: string;
-}[];
+export const SENSUAL_PACK_DATA = require('../../scripts/questions-data/sensual.js') as PackQuestionItem[];
 
-export const PARENTING_PACK_DATA = require('../../scripts/questions-data/parenting.js') as {
-  tw: string;
-  cn: string;
-  en: string;
-}[];
+export const MARRIAGE_PACK_DATA = require('../../scripts/questions-data/marriage.js') as PackQuestionItem[];
+
+export const PARENTING_PACK_DATA = require('../../scripts/questions-data/parenting.js') as PackQuestionItem[];

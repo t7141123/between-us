@@ -6,6 +6,7 @@ import {
   MARRIAGE_PACK_DATA,
   PARENTING_PACK_DATA,
   SENSUAL_PACK_DATA,
+  PackQuestionItem,
 } from '../constants/packs';
 import type { CategoryFilter, ExpansionPackId, LocaleKey, QuestionEntry } from '../types';
 import { buildDeckCore, migrateFavoriteKeys, PACK_IDS } from './deckCore';
@@ -22,7 +23,7 @@ export * from './deckCore';
 const PACKS: Record<
   ExpansionPackId,
   {
-    data: { tw: string; cn: string; en: string }[];
+    data: PackQuestionItem[];
     categoryKey: QuestionEntry['categoryKey'];
     titleKey: string;
     titleFallback: string;
@@ -37,6 +38,12 @@ function pick(item: { tw: string; cn: string; en: string }, locale: LocaleKey): 
   return locale === 'zh-TW' ? item.tw : locale === 'zh-CN' ? item.cn : item.en;
 }
 
+function pickHint(item: PackQuestionItem, locale: LocaleKey): string | undefined {
+  if (locale === 'zh-TW') return item.hint_tw;
+  if (locale === 'zh-CN') return item.hint_cn;
+  return item.hint_en;
+}
+
 export function buildPackQuestions(packId: ExpansionPackId, locale: LocaleKey): QuestionEntry[] {
   const pack = PACKS[packId];
   const label = I18nService.t(locale, pack.titleKey, pack.titleFallback);
@@ -46,6 +53,7 @@ export function buildPackQuestions(packId: ExpansionPackId, locale: LocaleKey): 
     categoryKey: pack.categoryKey,
     categoryLabel: label,
     text: pick(item, locale),
+    hint: pickHint(item, locale),
     index: idx + 1,
   }));
 }

@@ -36,8 +36,9 @@ LOCALES = [
     ("en", "en", "question_en", "hint_en"),
 ]
 
+base_dir = os.path.dirname(os.path.abspath(__file__))
 for locale_name, short_k, long_k, hint_k in LOCALES:
-    file_path = f"../src/locales/{locale_name}.json"
+    file_path = os.path.join(base_dir, "..", "src", "locales", f"{locale_name}.json")
     with open(file_path, "r", encoding="utf-8") as f:
         loc_data = json.load(f)
 

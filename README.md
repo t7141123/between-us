@@ -2,13 +2,16 @@
 
 以最新版 **Expo SDK 58** 與 **React Native (`0.88`)** 建構的跨平台雙人對話沙龍應用，支援單一 TypeScript 程式碼庫同時發佈至 **iOS (App Store)**、**Android (Google Play)** 及 **Web (Cloudflare Pages)**。
 
-精選 **1050 道權威深度對話問題**（3 種語言 × 7 個核心主題 × 各 50 題，全數附帶心理學深度傾聽引導）、**3 款專題擴充包**（深夜私語、婚姻誓約前夕、新生兒與新手父母），並具備 **純 Cloudflare 原生架構** 的跨平台帳號與全通路購買權益互通。
+精選 **1050 道權威深度對話問題**（3 種語言 × 7 個核心主題 × 各 50 題）與 **3 款專題擴充包**（深夜私語、婚姻誓約前夕、新生兒與新手父母，共 150 題），**全題庫 500 道獨立題目（三語系共 1500 張卡片）100% 配備心理學深度傾聽引導提示**，並具備 **純 Cloudflare 原生架構** 的跨平台帳號與全通路購買權益互通。
 
 ---
 
 ## 🌟 核心特色與亮點
 
 - **全平台一致體驗**：單一 TypeScript 程式碼庫，無縫適配 iOS、Android 與 Web，兼顧桌面快捷鍵（空白鍵翻牌、箭頭換題）與手機原生手勢。
+- **100% 全題目背面專屬傾聽引導（Full Prompt & Reflection Coverage）**：
+  - 全面導入 Gottman「愛的藍圖與衝突修復」、EFT 情緒取向與 PREPARE/ENRICH 心理學諮商架構。
+  - **7 大核心主題（350 題）** + **3 大專題擴充包（150 題）** 全數 500 道題翻面皆具備專屬溫柔提示（支援繁中、簡中、英文三語系），告別千篇一律的通用模板，精準引導深層安全對話。
 - **純 Cloudflare 原生後端架構**：
   - 基於 **Cloudflare Pages Functions** 與 **Cloudflare D1** 輕量關聯式資料庫。
   - **三合一安全認證**：支援 **Email + 密碼（PBKDF2-SHA256 10 萬次雜湊）**、**Apple 登入**、**Google 登入**。
@@ -45,15 +48,16 @@ between-us/
 │   │   └── track.js          # 隱私友善匿名統計
 │   └── _middleware.js        # 安全回應標頭與全域防護
 ├── src/
-│   ├── locales/              # 獨立三語系檔案 (zh-TW, zh-CN, en) 各 350 題 + 引導
+│   ├── locales/              # 獨立三語系檔案 (zh-TW, zh-CN, en) 各 350 題 + 100% 專屬傾聽引導
 │   ├── components/           # 模組化 UI 元件 (Card3D, StoreModal, RoomModal, AuthModal, MenuModal 等)
 │   ├── hooks/                # 自訂 Hooks (主題切換、音效播放、觸覺震動)
-│   ├── services/             # 前端服務層 (i18n、auth、payment、room、storage、telemetry)
+│   ├── services/             # 前端服務層 (i18n、deck、auth、payment、room、storage、telemetry)
 │   ├── constants/            # 設計 Tokens、擴充包定義、分類清單、跨平台 API 路徑
 │   ├── types/                # TypeScript 型別宣告
 │   └── App.tsx               # 應用主架構與狀態協調器
 └── scripts/
-    ├── validate-locales.js   # 1050 題題庫與擴充包格式完整性校驗腳本
+    ├── questions-data/       # 3 款專題擴充包 (sensual, marriage, parenting) 各 50 題 + 專屬提示
+    ├── validate-locales.js   # 核心題庫與擴充包 100% 背面提示格式完整性校驗腳本
     └── postbuild.js          # Web 建置後 PWA 與 Meta 標籤注入腳本
 ```
 
@@ -96,7 +100,7 @@ npm run typecheck
 # 2. ESLint 程式碼規範檢查
 npm run lint
 
-# 3. 1050 題核心題庫與專題包完整性校驗
+# 3. 500 題（1050 核心 + 150 擴充包）背面提示 100% 完整性校驗
 npm run validate
 ```
 

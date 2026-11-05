@@ -1,257 +1,406 @@
 /**
- * Expansion Pack: Late Night Whispers (深夜私語) - 50 curated intimate prompts.
+ * Expansion Pack: Late Night Whispers (深夜私語) - 50 curated prompts with 3-locale listening hints.
  * Fully compliant with Apple App Store Guideline 1.1.4 & Google Play Policies.
- * Elegant, deeply sensual, consensual, and psychological intimacy without vulgarity or explicit pornography.
  */
 module.exports = [
   {
     tw: "在我的身體上，哪一個部位是你平常最想親吻、但很少親吻的？",
     cn: "在我的身体上，哪一个部位是你平时最想亲吻、但很少亲吻的？",
-    en: "Which spot on my body do you secretly love kissing the most, but don't kiss often enough?"
+    en: "Which spot on my body do you secretly love kissing the most, but don't kiss often enough?",
+    hint_tw: "鎖骨、指尖、後頸還是腳踝？拋開羞澀，用眼神或輕碰指引我今晚走向那片柔軟。",
+    hint_cn: "锁骨、指尖、后颈还是脚踝？抛开羞涩，用眼神或轻碰指引我今晚走向那片柔软。",
+    hint_en: "Collarbone, nape, or fingertips? Guide me with your gaze to where you long to be kissed.",
   },
   {
     tw: "當我們兩個人關上燈、躺在床上的時候，你最希望我用什麼樣的聲音在你的耳邊說話？",
     cn: "当我们两个人关上灯、躺在床上的时候，你最希望我用什么样的声音在你的耳边说话？",
-    en: "When the lights are out and we're tangled in bed, what tone of voice do you love hearing me whisper into your ear?"
+    en: "When the lights are out and we're tangled in bed, what tone of voice do you love hearing me whisper into your ear?",
+    hint_tw: "低沉的氣音、溫熱的耳語，還是帶著笑意的呢喃？告訴我最能讓你背脊酥麻的頻率。",
+    hint_cn: "低沉的气音、温热的耳语，还是带着笑意的呢喃？告诉我最能让你背脊酥麻的频率。",
+    hint_en: "Husky whispers, warm breath, or teasing giggles? Name the cadence that melts your defenses.",
   },
   {
     tw: "如果今晚你可以完全掌控節奏，你最希望我配合你嘗試哪一種親密互動？",
     cn: "如果今晚你可以完全掌控节奏，你最希望我配合你尝试哪一种亲密互动？",
-    en: "If you had total control over our pace and rhythm tonight, what tender desire would you guide us into?"
+    en: "If you had total control over our pace and rhythm tonight, what tender desire would you guide us into?",
+    hint_tw: "把掌控權放心交給對方，今晚沒有標準劇本，只有完全放鬆的信賴與呼吸交融。",
+    hint_cn: "把掌控权放心交给对方，今晚没有标准剧本，只有完全放松的信赖与呼吸交融。",
+    hint_en: "Surrender control safely; tonight holds no agenda but total trust and entwined breath.",
   },
   {
     tw: "當我們接吻的時候，你喜歡慢慢探索、還是充滿佔有欲的深吻？",
     cn: "当我们接吻的时候，你喜欢慢慢探索、还是充满占有欲的深吻？",
-    en: "When we kiss, do you prefer a lingering, slow exploration, or a breathless, possessive deep kiss?"
+    en: "When we kiss, do you prefer a lingering, slow exploration, or a breathless, possessive deep kiss?",
+    hint_tw: "閉上眼回味那份溫存：是細細品嚐彼此唇瓣的溫度，還是帶著微喘氣息的深情探尋？",
+    hint_cn: "闭上眼回味那份温存：是细细品尝彼此唇瓣的温度，还是带着微喘气息的深情探寻？",
+    hint_en: "Close your eyes: do you crave slow, lingering softness, or a breathless, passionate pull?",
   },
   {
     tw: "有沒有哪一次我的撫摸或是眼神，讓你那一秒整個人起雞皮疙瘩、心跳漏了一拍？",
     cn: "有没有哪一次我的抚摸或是眼神，让你那一秒整个人起鸡皮疙瘩、心跳漏了一拍？",
-    en: "Was there a specific touch or look from me that gave you electric goosebumps and made your heart skip a beat?"
+    en: "Was there a specific touch or look from me that gave you electric goosebumps and made your heart skip a beat?",
+    hint_tw: "重溫那個令神經末梢發燙的瞬間，告訴我當時是哪一處觸碰讓你徹底失守。",
+    hint_cn: "重温那个令神经末梢发烫的瞬间，告诉我当时是哪一处触碰让你彻底失守。",
+    hint_en: "Relive that electrifying spark; teach me which touch made your entire body shiver with joy.",
   },
   {
     tw: "在你看來，前戲最重要的究竟是身體上的觸碰，還是心裡的放鬆與氣氛？",
     cn: "在你看来，前戏最重要的究竟是身体上的触碰，还是心里的放松与气氛？",
-    en: "To you, is foreplay more about gentle physical touch, or mental safety, slow buildup, and atmosphere?"
+    en: "To you, is foreplay more about gentle physical touch, or mental safety, slow buildup, and atmosphere?",
+    hint_tw: "身體的慾望往往源自於心靈的安全感；聊聊什麼樣的氛圍能讓你卸下整天的防禦盔甲。",
+    hint_cn: "身体的欲望往往源自于心灵的安全感；聊聊什么样的氛围能让你卸下整天的防御盔甲。",
+    hint_en: "Sensual desire blooms from psychological safety; share what setting helps you truly let go.",
   },
   {
     tw: "如果今晚我為你進行全身精油放鬆按摩，你希望整個過程持續多久？",
     cn: "如果今晚我为你进行全身精油放松按摩，你希望整个过程持续多久？",
-    en: "If I gave you a warm massage with fragrant oils tonight, how long would you want me to take my time?"
+    en: "If I gave you a warm massage with fragrant oils tonight, how long would you want me to take my time?",
+    hint_tw: "從肩頸到足尖，伴隨著淡淡精油香氣，告訴我你最緊繃、最渴望被溫熱雙手安撫的部位。",
+    hint_cn: "从肩颈到足尖，伴随着淡淡精油香气，告诉我你最紧绷、最渴望被温热双手安抚的部位。",
+    hint_en: "From shoulders to toes in warm scents, point to where tension gathers and craves melting.",
   },
   {
     tw: "在親密的過程中，你最喜歡聽到我的讚美、急促的呼吸聲，還是眼神的注視？",
     cn: "在亲密的过程中，你最喜欢听到我的赞美、急促的呼吸声，还是眼神的注视？",
-    en: "During intimate moments, what turns you on most: vocal appreciation, breathless whispers, or locked eye contact?"
+    en: "During intimate moments, what turns you on most: vocal appreciation, breathless whispers, or locked eye contact?",
+    hint_tw: "親密中的聲音與注視是最純粹的肯定，誠實說出哪種反饋能讓你的靈魂感到無比渴望。",
+    hint_cn: "亲密中的声音与注视是最纯粹的肯定，诚实说出哪种反馈能让你的灵魂感到无比渴望。",
+    hint_en: "Vocal sighs and locked gazes validate desire; share what reaction makes you feel deeply wanted.",
   },
   {
     tw: "有沒有哪件睡衣或衣服，是你每次看我穿上，心裡都會有一種想靠近的衝動？",
     cn: "有没有哪件睡衣或衣服，是你每次看我穿上，心里都会有一种想靠近的冲动？",
-    en: "Is there an outfit or piece of loungewear that always sparks an immediate magnetic pull toward me?"
+    en: "Is there an outfit or piece of loungewear that always sparks an immediate magnetic pull toward me?",
+    hint_tw: "寬鬆的白襯衫、絲質睡袍還是簡單的棉質居家服？大方說出那個讓你心癢難耐的畫面。",
+    hint_cn: "宽松的白衬衫、丝质睡袍还是简单的棉质居家服？大方说出那个让你心痒难耐的画面。",
+    hint_en: "Oversized tee, silk robe, or cozy jersey? Paint that effortlessly seductive picture for me.",
   },
   {
     tw: "當你感到累了一整天時，怎樣的親密接觸最能幫你卸下防備與疲憊？",
     cn: "当你感到累了一整天时，怎样的亲密接触最能帮你卸下防备与疲惫？",
-    en: "After an exhausting day, what style of physical affection melts away your tension fastest?"
+    en: "After an exhausting day, what style of physical affection melts away your tension fastest?",
+    hint_tw: "累的時候最怕負擔；告訴我是一次默默的額頭貼額頭，還是安靜被摟在胸前的無聲陪伴。",
+    hint_cn: "累的时候最怕负担；告诉我是一次默默的额头贴额头，还是安静被搂在胸前的无声陪伴。",
+    hint_en: "Exhaustion craves gentleness: forehead against forehead, or nesting soundlessly against my chest?",
   },
   {
     tw: "你覺得我們在親密生活裡的默契，和剛在一起的時候相比，最大的進步是什麼？",
     cn: "你觉得我们在亲密生活里的默契，和刚在一起的时候相比，最大的进步是什么？",
-    en: "How has our physical connection evolved and deepened compared to the early days of our relationship?"
+    en: "How has our physical connection evolved and deepened compared to the early days of our relationship?",
+    hint_tw: "從當初的生澀小心到現在的身心相通，欣賞我們在彼此體溫裡所培養出來的篤定與自由。",
+    hint_cn: "从当初的生涩小心到现在的身心相通，欣赏我们在彼此体温里所培养出来的笃定与自由。",
+    hint_en: "Celebrate the journey from shy hesitation to easy, wordless intimacy and playful belonging.",
   },
   {
     tw: "如果有一段半小時完全不被打擾的時間，你希望我們兩個人只是相擁著、還是有一些新的探索？",
     cn: "如果有一段半小时完全不被打扰的时间，你希望我们两个人只是相拥着、还是有一些新的探索？",
-    en: "With thirty uninterrupted minutes together, would you rather sink into slow cuddles or try something playfully new?"
+    en: "With thirty uninterrupted minutes together, would you rather sink into slow cuddles or try something playfully new?",
+    hint_tw: "三十分鐘完全留給彼此：純粹四目相望撫摸彼此的髮絲，或是帶著好奇心展開溫柔探索。",
+    hint_cn: "三十分钟完全留给彼此：纯粹四目相望抚摸彼此的发丝，或是带着好奇心展开温柔探索。",
+    hint_en: "Thirty minutes of pure presence: stroke hair in quiet gaze, or explore new tender desires.",
   },
   {
     tw: "在親密接觸後，你最享受的是兩個人緊緊抱著聊天，還是一起安靜地睡去？",
     cn: "在亲密接触后，你最享受的是两个人紧紧抱着聊天，还是一起安静地睡去？",
-    en: "In the afterglow, do you prefer pillow talk held close in my arms, or drifting off in companionable silence?"
+    en: "In the afterglow, do you prefer pillow talk held close in my arms, or drifting off in companionable silence?",
+    hint_tw: "餘溫散去時的溫存最撫慰人心，聊聊被臂彎環繞入眠與依偎耳語帶給你的踏實滿足。",
+    hint_cn: "余温散去时的温存最抚慰人心，聊聊被臂弯环绕入眠与依偎耳语带给你的踏实满足。",
+    hint_en: "The sweet afterglow anchors the soul: whispering quietly or drifting to sleep in locked arms?",
   },
   {
     tw: "有沒有哪個時間點是你覺得特別有情調的？比如清晨剛醒、午後陽光下，還是深夜雨天？",
     cn: "有没有哪个时间点是你觉得特别有情调的？比如清晨刚醒、午后阳光下，还是深夜雨天？",
-    en: "What time of day feels most naturally romantic to you: lazy Sunday mornings, sunny afternoons, or rainy midnight hours?"
+    en: "What time of day feels most naturally romantic to you: lazy Sunday mornings, sunny afternoons, or rainy midnight hours?",
+    hint_tw: "光線與空氣賦予親密不同的質地；描述那個最讓你放鬆、情慾自然流淌的夢幻時分。",
+    hint_cn: "光线与空气赋予亲密不同的质地；描述那个最让你放松、情欲自然流淌的梦幻时分。",
+    hint_en: "Dawn light, lazy afternoon warmth, or rainy midnight? Describe your ideal sensual atmosphere.",
   },
   {
     tw: "在我們日常的互動裡，哪一種不經意的身體觸碰（比如摸後頸、摟腰），最容易讓你心動？",
     cn: "在我们日常的互动里，哪一种不经意的身体触碰（比如摸后颈、搂腰），最容易让你心动？",
-    en: "In casual daily moments, what offhand touch—like resting a hand on the neck or hip—sends a quick shiver through you?"
+    en: "In casual daily moments, what offhand touch—like resting a hand on the neck or hip—sends a quick shiver through you?",
+    hint_tw: "做飯時從身後攬住腰、看電視時指尖劃過耳際……那些不經意的微小親暱往往最讓人心顫。",
+    hint_cn: "做饭时从身后揽住腰、看电视时指尖划过耳际……那些不经意的微小亲昵往往最让人心颤。",
+    hint_en: "Hands on hips while cooking, fingers brushing ears on the couch—which casual graze thrills you?",
   },
   {
     tw: "如果用一個詞來形容你對我們親密生活的期待，你希望是「溫柔」、「熱烈」還是「充滿驚喜」？",
     cn: "如果用一个词来形容你对我们亲密生活的期待，你希望是「温柔」、「热烈」还是「充满惊喜」？",
-    en: "If you had to pick one word for your ideal intimacy with me, would it be 'gentle', 'passionate', or 'adventurous'?"
+    en: "If you had to pick one word for your ideal intimacy with me, would it be 'gentle', 'passionate', or 'adventurous'?",
+    hint_tw: "溫柔如細水長流、熱烈如夏夜雷雨、驚喜如拆封未知禮物……說出你此時此刻的心之所向。",
+    hint_cn: "温柔如细水长流、热烈如夏夜雷雨、惊喜如拆封未知礼物……说出你此时此刻的心之所向。",
+    hint_en: "Tender like a calm river, stormy like summer thunder, or playful surprise? Name your longing.",
   },
   {
     tw: "在親密相處時，如果某個姿勢或節奏讓你不舒服，你敢不敢直接告訴我？你希望我怎麼回應？",
     cn: "在亲密相处时，如果某个姿势或节奏让你不舒服，你敢不敢直接告诉我？你希望我怎么回应？",
-    en: "If something feels awkward or uncomfortable during intimacy, can you tell me easily? How can I best respond with grace?"
+    en: "If something feels awkward or uncomfortable during intimacy, can you tell me easily? How can I best respond with grace?",
+    hint_tw: "不舒服就要勇敢叫停，真正的親密建立在絕對的身體自主與無條件的尊重關懷之上。",
+    hint_cn: "不舒服就要勇敢叫停，真正的亲密建立在绝对的身体自主与无条件的尊重关怀之上。",
+    hint_en: "Safe boundaries make ecstasy possible: gentle directness ensures intimacy stays sacred and joyful.",
   },
   {
     tw: "有沒有哪一次我們兩個人在鏡子前或是洗澡時的互動，讓你在心裡偷偷回味很久？",
     cn: "有没有哪一次我们两个人在镜子前或是洗澡时的互动，让你在心里偷偷回味很久？",
-    en: "Was there a playful moment sharing a shower or standing before a mirror that lived rent-free in your mind?"
+    en: "Was there a playful moment sharing a shower or standing before a mirror that lived rent-free in your mind?",
+    hint_tw: "浴室的水氣、鏡中交疊的身影與滴落的水珠，重溫那個只屬於你們兩人的蒸騰私密記憶。",
+    hint_cn: "浴室的水汽、镜中交叠的身影与滴落的水珠，重温那个只属于你们两人的蒸腾私密记忆。",
+    hint_en: "Misty glass, warm steam, and locked silhouettes: savor that private memory of raw beauty.",
   },
   {
     tw: "當我主動靠近你、向你示好時，什麼樣的動作或暗號最能讓你瞬間感受到我的渴望？",
     cn: "当我主动靠近你、向你示好时，什么样的动作或暗号最能让你瞬间感受到我的渴望？",
-    en: "When I initiate intimacy, what cue or gesture from me makes my desire unmistakably clear?"
+    en: "When I initiate intimacy, what cue or gesture from me makes my desire unmistakably clear?",
+    hint_tw: "是一個主動的牽引、一個專注的凝視，還是把下巴輕輕放在你鎖骨上的依戀？",
+    hint_cn: "是一个主动的牵引、一个专注的凝视，还是把下巴轻轻放在你锁骨上的依恋？",
+    hint_en: "A hand pulling you close, an unblinking gaze, or resting my chin on your collarbone?",
   },
   {
     tw: "你覺得我們兩個人在親密探索上，還有哪些心裡的好奇是我們至今還沒聊過的？",
     cn: "你觉得我们两个人你在亲密探索上，还有哪些心里的好奇是我们至今还没聊过的？",
-    en: "What gentle curiosity or unexpressed fantasy about intimacy haven't we put into words yet?"
+    en: "What gentle curiosity or unexpressed fantasy about intimacy haven't we put into words yet?",
+    hint_tw: "把這當作一場心靈與感官的探險地圖，毫無防備地聊聊那些藏在心底、渴望被聽見的奇思妙想。",
+    hint_cn: "把这当作一场心灵与感官的探险地图，毫无防备地聊聊那些藏在心底、渴望被听见的奇思妙想。",
+    hint_en: "Treat curiosity as a gentle expedition: share secret wishes with zero shame or self-judgment.",
   },
   {
     tw: "在你的身體記憶裡，哪一次的牽手或擁抱，給過你最強烈的安全感？",
     cn: "在你的身体记忆里，哪一次的牵手或拥抱，给过你最强烈的安全感？",
-    en: "In your body's memory, which specific hug or hand-hold delivered the deepest sense of peace?"
+    en: "In your body's memory, which specific hug or hand-hold delivered the deepest sense of peace?",
+    hint_tw: "身體記憶最誠實，回想哪一次緊緊擁抱，讓你在混亂的世界裡瞬間找到了回家的感覺。",
+    hint_cn: "身体记忆最诚实，回想哪一次紧紧拥抱，让您在混乱的世界里瞬间找到了回家的感觉。",
+    hint_en: "Somatic memory never lies: recall the embrace where your soul sighed and truly felt at home.",
   },
   {
     tw: "如果在臥室裡放一盞微弱溫暖的床頭燈，和完全漆黑的環境相比，你更喜歡哪一個？",
     cn: "如果在卧室里放一盏微弱温暖的床头灯，和完全漆黑的环境相比，你更喜欢哪一个？",
-    en: "Between a soft, dim amber lamp and total darkness in the bedroom, which lighting helps you let go more?"
+    en: "Between a soft, dim amber lamp and total darkness in the bedroom, which lighting helps you let go more?",
+    hint_tw: "微光能看清愛人眼裡的波光與羞澀，漆黑能放大觸覺與聽覺的敏銳，說說你的偏好。",
+    hint_cn: "微光能看清爱人眼里的波光与羞涩，漆黑能放大触觉与听觉的敏锐，说说你的偏好。",
+    hint_en: "Warm amber glow illuminates adoration; pure dark heightens touch and sound. Which calls to you?",
   },
   {
     tw: "當你看見我為你洗頭髮、吹乾頭髮時，那種被呵護的感覺會讓你產生想親吻我的衝動嗎？",
     cn: "当你看着我为你洗头发、吹干头发时，那种被呵护的感觉会让你产生想亲吻我的冲动吗？",
-    en: "When I tenderly wash or blow-dry your hair, does that feeling of care stir a warm romantic impulse in you?"
+    en: "When I tenderly wash or blow-dry your hair, does that feeling of care stir a warm romantic impulse in you?",
+    hint_tw: "指腹穿過髮絲的溫柔、吹風機的暖風與彼此近在咫尺的呼吸，細細品味這份深情照顧。",
+    hint_cn: "指腹穿过发丝的温柔、吹风机的暖风与彼此近在咫尺的呼吸，细细品味这份深情照顾。",
+    hint_en: "Warm air in your hair, fingers massaging your scalp—tenderness that naturally awakens deep affection.",
   },
   {
     tw: "在你看來，兩個人在親密生活中的坦誠，對於彼此信任感的建立有多大的幫助？",
     cn: "在你看来，两个人在亲密生活中的坦诚，对于彼此信任感的建立有多大的帮助？",
-    en: "How heavily does emotional honesty between the sheets impact the overall foundation of trust in our relationship?"
+    en: "How heavily does emotional honesty between the sheets impact the overall foundation of trust in our relationship?",
+    hint_tw: "毫無保留的身體坦誠，往往是心靈深處最極致的信任投射；聊聊如何讓彼此感到完全被接納。",
+    hint_cn: "毫无保留的身体坦诚，往往是心灵深处最极致的信任投射；聊聊如何让彼此感到完全被接纳。",
+    hint_en: "Unashamed physical candor is soul trust made tangible; reflect on feeling wholly safe and loved.",
   },
   {
     tw: "如果今晚我們可以放下所有的羞澀，你最想問我一個關於我身體或喜好的什麼問題？",
     cn: "如果今晚我们可以放下所有的羞涩，你最想问我一个关于我身体或喜好的什么问题？",
-    en: "If we stripped away all embarrassment tonight, what question about my body or desires would you ask me?"
+    en: "If we stripped away all embarrassment tonight, what question about my body or desires would you ask me?",
+    hint_tw: "今晚拋開所有矜持，大膽問出那個盤旋在你心頭已久、想更深層懂我身體的小問題。",
+    hint_cn: "今晚抛开所有矜持，大胆问出那个盘旋在你心头已久、想更深层懂我身体的小问题。",
+    hint_en: "Drop all reservation tonight; ask that playful or tender question you've wondered in secret.",
   },
   {
     tw: "在日常生活中，如果我偷偷在你的耳邊輕聲說一句悄悄話，你最希望我說什麼？",
     cn: "在日常生活中，如果我偷偷在你的耳边轻声说一句悄悄话，你最希望我说什么？",
-    en: "If I leaned in to murmur a secret into your ear right now, what phrase would make you smile?"
+    en: "If I leaned in to murmur a secret into your ear right now, what phrase would make you smile?",
+    hint_tw: "是調皮的挑逗、一句堅定的表白，還是一句簡單的『今晚我很想你』？說出你的專屬耳語。",
+    hint_cn: "是调皮的挑逗、一句坚定的表白，还是一句简单的“今晚我很想你”？说出你的专属耳语。",
+    hint_en: "Playful teasing, raw confession, or simple longing? What whispers would make your knees weak?",
   },
   {
     tw: "有沒有哪個地方是你一直覺得如果我們在那裡親吻會非常浪漫的？比如雨中的屋簷下？",
     cn: "有没有哪个地方是你一直觉得我们在那里亲吻会非常浪漫的？比如雨中的屋檐下？",
-    en: "Is there a picturesque spot—like under a rain-soaked canopy or on a dark beach—where you dream of kissing me?"
+    en: "Is there a picturesque spot—like under a rain-soaked canopy or on a dark beach—where you dream of kissing me?",
+    hint_tw: "微雨的屋簷下、無人的海灘夜色、或是深夜電梯裡的短暫私奔……想像那個心跳加速的場景。",
+    hint_cn: "微雨的屋檐下、无人的海滩夜色、或是深夜电梯里的短暂私奔……想象那个心跳加速的场景。",
+    hint_en: "Under a rainy awning, deserted night beach, or stolen elevator kisses—paint your wild cinema.",
   },
   {
     tw: "當我們兩個人身體貼得很近時，你最喜歡感受我的手掌溫度，還是我胸口的起伏？",
     cn: "当我们两个人身体贴得很近时，你最喜欢感受我的手掌温度，还是我胸口的起伏？",
-    en: "Held chest-to-chest, do you focus more on the warmth of my palms or the steady rise of my breathing?"
+    en: "Held chest-to-chest, do you focus more on the warmth of my palms or the steady rise of my breathing?",
+    hint_tw: "掌心的溫熱撫平焦慮，胸膛的起伏確認存在；現在就將你的掌心貼在我的心口上感受它。",
+    hint_cn: "掌心的温热抚平焦虑，胸膛的起伏确认存在；现在就将你的掌心贴在我的心口上感受它。",
+    hint_en: "Warm palms soothe worries; steady heartbeats anchor existence. Place your hand on my chest now.",
   },
   {
     tw: "在你看來，一場美好的親密互動，是不是就像一場合奏，需要兩個人互相傾聽與配合？",
     cn: "在你看来，一场美好的亲密互动，是不是就像一场合奏，需要两个人互相倾听与配合？",
-    en: "Does great physical intimacy feel like a shared duet, requiring both partners to listen as much as they play?"
+    en: "Does great physical intimacy feel like a shared duet, requiring both partners to listen as much as they play?",
+    hint_tw: "好的親密就像雙人探戈，一個眼神示意、一個呼吸停頓，都能讓樂章變得無比流暢動人。",
+    hint_cn: "好的亲密就像双人探戈，一个眼神示意、一个呼吸停顿，都能让乐章变得无比流畅动人。",
+    hint_en: "Lovemaking is a duet: listening to tempo and pauses is just as vital as the grand crescendos.",
   },
   {
     tw: "如果我們可以給彼此設定一個「專屬親密密碼」，當說出這個詞就代表想要抱抱，你希望是什麼詞？",
     cn: "如果我们可以给彼此设定一个「专属亲密密码」，当说出这个词就代表想要抱抱，你希望是什么词？",
-    en: "If we created a secret safe-word or code that meant 'I need you to hold me right now', what would it be?"
+    en: "If we created a secret safe-word or code that meant 'I need you to hold me right now', what would it be?",
+    hint_tw: "可以是一個可愛的動物名字、一句俏皮短語，或是彼此手臂上特定的三下輕撫信號。",
+    hint_cn: "可以是一个可爱的小动物名字、一句俏皮短语，或是彼此手臂上特定的三下轻抚信号。",
+    hint_en: "A whimsical code word, sweet creature nickname, or three taps on the arm that says 'hold me now'.",
   },
   {
     tw: "在你看來，兩個人在一起久了，如何維持在對方面前那份既放鬆又帶有一點性感的魅力？",
     cn: "在你看来，两个人在一起久了，如何维持在对方面前那份既放松又带有一点性感的魅力？",
-    en: "After years together, how do we balance being totally comfortable while still keeping that quiet, confident allure?"
+    en: "After years together, how do we balance being totally comfortable while still keeping that quiet, confident allure?",
+    hint_tw: "舒適鬆弛的居家感不等於放棄自我；適時的一點香氣、一個專注的眼神，就能重燃神秘魅力。",
+    hint_cn: "舒适松弛的居家感不等于放弃自我；适时的一点香气、一个专注的眼神，就能重燃神秘魅力。",
+    hint_en: "Comfort needn't kill allure; a hint of scent and an intentional, admiring gaze keep mystery alive.",
   },
   {
     tw: "當我們在被窩裡聊天時，如果我輕輕把玩你的手指或頭髮，會讓你覺得更放鬆嗎？",
     cn: "我们在被窝里聊天时，如果我轻轻把玩你的手指或头发，会让你觉得更放松吗？",
-    en: "When we're talking in bed, does idly twirling your fingers or stroking your hair help soothe your mind?"
+    en: "When we're talking in bed, does idly twirling your fingers or stroking your hair help soothe your mind?",
+    hint_tw: "細微的指尖觸感能直接繞過理性大腦，讓神經系統深層放鬆下來；現在就牽起對方的手感受。",
+    hint_cn: "细微的指尖触感能直接绕过理性大脑，让神经系统深层放松下来；现在就牵起对方的手感受。",
+    hint_en: "Gentle skin-on-skin touches bypass mental noise and calm the nervous system. Trace each finger now.",
   },
   {
     tw: "如果今晚睡前我們可以喝一小杯溫熱的紅酒或熱可可，你最想靠在我懷裡聊些什麼？",
     cn: "如果今晚睡前我们可以喝一小杯温热的红酒或热可可，你最想靠在我怀里聊些什么？",
-    en: "Sipping a nightcap or warm cocoa under the blanket tonight, what soft topic do you want to drift into?"
+    en: "Sipping a nightcap or warm cocoa under the blanket tonight, what soft topic do you want to drift into?",
+    hint_tw: "溫熱的液體滑過喉嚨，卸下生活的疲憊，靠在彼此懷裡聊聊今夜最想被傾聽的柔軟心事。",
+    hint_cn: "温热的液体滑过喉咙，卸下生活的疲惫，靠在彼此怀里聊聊今夜最想被倾听的柔软心事。",
+    hint_en: "Warm sips unwinding tired muscles; sink into the embrace and let honest, tender thoughts surface.",
   },
   {
     tw: "在我們相處的這些日子裡，你覺得我身上哪一個部位最有線條美感？",
     cn: "在我们相处的这些日子里，你觉得我身上哪一个部位最有线条美感？",
-    en: "In our time together, what part of my physique or posture do you admire the shape and line of most?"
+    en: "In our time together, what part of my physique or posture do you admire the shape and line of most?",
+    hint_tw: "鎖骨、腰窩、下顎線還是手背凸起的青筋？大方告訴對方那處讓你著迷讚嘆的美感線條。",
+    hint_cn: "锁骨、腰窝、下颚线还是手背凸起的青筋？大方告诉对方那处让你着迷赞叹的美感线条。",
+    hint_en: "Collarbones, curve of waist, jawline, or hands? Compliment that silhouette you love studying.",
   },
   {
     tw: "當你在外面感到壓力很大時，回到家給我一個長達兩分鐘的無聲擁抱，對你來說有充電效果嗎？",
     cn: "当你外面感到压力很大时，回到家给我一个长达两分钟的无声拥抱，对你来说有充电效果吗？",
-    en: "After a brutal day out in the world, does a long 2-minute unbroken silent embrace recharge your batteries?"
+    en: "After a brutal day out in the world, does a long 2-minute unbroken silent embrace recharge your batteries?",
+    hint_tw: "兩分鐘完整的長擁抱能促使催產素大量分泌；閉上眼，今晚就給彼此一個無聲的長抱充飽電。",
+    hint_cn: "两分钟完整的长拥抱能促使催产素大量分泌；闭上眼，今晚就给彼此一个无声的长抱充饱电。",
+    hint_en: "A 2-minute embrace floods bodies with oxytocin; wrap around each other and breathe deeply.",
   },
   {
     tw: "在親密接觸時，如果播放一些慢節奏的爵士樂或輕柔吉他聲，你覺得會加分還是讓你分心？",
     cn: "在亲密接触时，如果播放一些慢节奏的爵士乐或轻柔吉他声，你觉得会加分还是让你分心？",
-    en: "Does gentle background music—like slow jazz or acoustic guitar—enhance intimacy, or distract you?"
+    en: "Does gentle background music—like slow jazz or acoustic guitar—enhance intimacy, or distract you?",
+    hint_tw: "音樂營造出一層溫柔的隱私薄紗，遮蔽外界喧囂；分享最符合你們頻率的慢板旋律風格。",
+    hint_cn: "音乐营造出一层温柔的隐私薄纱，遮蔽外界喧嚣；分享最符合你们频率的慢板旋律风格。",
+    hint_en: "Music creates a cocoon of privacy; do soft acoustic chords or velvety jazz enhance your mood?",
   },
   {
     tw: "有沒有哪一次我為你挑選的衣服或是噴的香水，讓你覺得特別有吸引力？",
     cn: "有没有哪一次我为你挑选的衣服或是喷的香水，让你觉得特别有吸引力？",
-    en: "Did a scent or clothing style of mine ever catch you off guard and make me extra irresistible?"
+    en: "Did a scent or clothing style of mine ever catch you off guard and make me extra irresistible?",
+    hint_tw: "嗅覺是愛的無形錨點，聊聊伴侶身上哪款香氛或天然氣味，總能在瞬間喚醒你的心動記憶。",
+    hint_cn: "嗅觉是爱的无形锚点，聊聊伴侣身上哪款香氛或天然气味，总能在瞬间唤醒你的心动记忆。",
+    hint_en: "Scent anchors desire; which fragrance or clean skin note instantly stirs your senses toward love?",
   },
   {
     tw: "如果今晚我們可以完全放下第二天的鬧鐘，你最希望我們怎麼消磨這段深夜時光？",
     cn: "如果今晚我们可以完全放下第二天的闹钟，你最希望我们怎么消磨这段深夜时光？",
-    en: "With no morning alarms ringing tomorrow, how would you most love to spend these midnight hours together?"
+    en: "With no morning alarms ringing tomorrow, how would you most love to spend these midnight hours together?",
+    hint_tw: "沒有時間追趕、沒有明日晨鐘，把整個深夜揮霍在彼此的體溫、笑聲與綿密長吻之中。",
+    hint_cn: "没有时间追赶、没有明日晨钟，把整个深夜挥霍在彼此的体温、笑声与绵密长吻之中。",
+    hint_en: "No alarm clocks tomorrow: spend midnight on lingering warmth, tangled sheets, and sweet unhurried talk.",
   },
   {
     tw: "在你看來，好的親密關係裡，是不是也包含了一起笑場、一起覺得笨拙但很甜蜜的時刻？",
     cn: "在你看来，好的亲密关系里，是不是也包含了一起笑场、一起觉得笨拙但很甜蜜的时刻？",
-    en: "Isn't true intimacy also about being able to burst out laughing mid-moment when something clumsy happens?"
+    en: "Isn't true intimacy also about being able to burst out laughing mid-moment when something clumsy happens?",
+    hint_tw: "真實的親密從不要求完美無瑕，能一起為笨拙笑場的伴侶，才擁有世界上最堅韌放鬆的愛。",
+    hint_cn: "真实的亲密从不要求完美无瑕，能一起为笨拙笑场的伴侣，才拥有世界上最坚韧放松的爱。",
+    hint_en: "Flawless performance is a myth; couples who laugh at clumsy moments share the most joyful bond.",
   },
   {
     tw: "當你看著我沉睡時安靜的側臉，你的心底最常浮現的一種情感是什麼？",
     cn: "当你看着我沉睡时安静的侧脸，你的心底最常浮现的一种情感是什么？",
-    en: "Looking at my sleeping face in early dawn, what feeling most quietly wells up in your chest?"
+    en: "Looking at my sleeping face in early dawn, what feeling most quietly wells up in your chest?",
+    hint_tw: "毫無防備的睡顏是靈魂最赤裸的展現；聊聊那一刻心頭湧上的溫柔守護欲與滿溢的感恩。",
+    hint_cn: "毫无防备的睡颜是灵魂最赤裸的展现；聊聊那一刻心头涌上的温柔守护欲与满溢的感恩。",
+    hint_en: "Sleeping faces reveal the innocent child within; reflect on that instinct to guard and cherish them.",
   },
   {
     tw: "如果我們每個月固定保留一個完全屬於兩個人的「浪漫之夜」，你最希望那個晚上的規矩是什麼？",
     cn: "如果我们每个月固定保留一个完全属于两个人的「浪漫之夜」，你最希望那个晚上的规矩是什么？",
-    en: "If we locked in a monthly 'Sacred Romance Night', what ground rule—like zero phones—would you mandate?"
+    en: "If we locked in a monthly 'Sacred Romance Night', what ground rule—like zero phones—would you mandate?",
+    hint_tw: "例如關掉所有手機、點上香氛蠟燭、準備彼此最愛的小點心，把一整晚的時光全然奉獻給彼此。",
+    hint_cn: "例如关掉所有手机、点上香氛蜡烛、准备彼此最爱的小点心，把一整晚的时光全然奉献给彼此。",
+    hint_en: "No phones allowed, candlelight, favorite bites: sacred rules for an undisturbed date night sanctuary.",
   },
   {
     tw: "在親密的過程中，如果由你來引導我的手去觸碰你最舒服的地方，你會覺得害羞還是很放鬆？",
     cn: "在亲密的过程中，如果由你来引导我的手去触碰你最舒服的地方，你会觉得害羞还是更放松？",
-    en: "If you took my hand to show me exactly where and how you like being touched, would you feel shy or empowered?"
+    en: "If you took my hand to show me exactly where and how you like being touched, would you feel shy or empowered?",
+    hint_tw: "主動引導不是強求，而是對愛人最美麗的信任與贈禮；大膽說出你的身體最想被如何寵溺。",
+    hint_cn: "主动引导不是强求，而是对爱人最美丽信任与赠礼；大胆说出你的身体最想被如何宠溺。",
+    hint_en: "Guiding hands is a gift of trust, not selfishness; teach your partner how your skin feels joy.",
   },
   {
     tw: "當我們兩個人牽手走在寒冷的冬天街頭時，你最喜歡把手放進我的大衣口袋裡取暖嗎？",
     cn: "当我们两个人牵手走在寒冷的冬天街头时，你最喜欢把手放进我的大衣口袋里取暖吗？",
-    en: "Walking on a freezing winter sidewalk, do you love tucking our linked hands deep into my coat pocket?"
+    en: "Walking on a freezing winter sidewalk, do you love tucking our linked hands deep into my coat pocket?",
+    hint_tw: "大衣口袋裡緊扣的十指，是寒冬裡最滾燙的小暖爐；回味那些只屬於冬夜街頭的浪漫記憶。",
+    hint_cn: "大衣口袋里紧扣的十指，是寒冬里最滚烫的小暖炉；回味那些只属于冬夜街头的浪漫记忆。",
+    hint_en: "Fingers twined inside a woolen coat pocket: the warmest refuge against cold winter nights.",
   },
   {
     tw: "在你看來，被另一半完全接納自己真實的身材與外貌，是不是人生最踏實的一種釋放？",
     cn: "在你看来，被另一半完全接纳自己真实的身材与外貌，是不是人生最踏实的一种释放？",
-    en: "Is there any greater quiet relief than knowing your partner adores your real, unfiltered body just as it is?"
+    en: "Is there any greater quiet relief than knowing your partner adores your real, unfiltered body just as it is?",
+    hint_tw: "在愛人的眼睛裡，你的每一吋肌膚、每道紋理都是被深愛珍惜的；感受這份完全釋懷的安全感。",
+    hint_cn: "在爱人的眼睛里，你的每一寸肌肤、每道纹理都是被深爱珍惜的；感受这份完全释怀的安全感。",
+    hint_en: "In your lover's gaze, every curve and scar is beloved; breathe in the liberation of full acceptance.",
   },
   {
     tw: "如果今晚我們可以一起做一件平常不會做、但很親密的浪漫小事，你會想做什麼？",
     cn: "如果今晚我们可以一起做一件平常不会做、但很亲密的浪漫小事，你会想做什么？",
-    en: "If we did one small, slightly adventurous romantic thing we rarely do tonight, what would you choose?"
+    en: "If we did one small, slightly adventurous romantic thing we rarely do tonight, what would you choose?",
+    hint_tw: "一起泡澡、互相為對方擦乳液、在客廳慢舞……挑一件微小但心動爆棚的專屬儀式。",
+    hint_cn: "一起泡澡、互相为对方擦乳液、在客厅慢舞……挑一件微小但心动爆棚的专属仪式。",
+    hint_en: "A warm bath, massaging lotion onto shoulders, slow dancing in the kitchen—pick a cozy dream.",
   },
   {
     tw: "在我們的日常生活中，哪一種親吻最能讓你感受到「我正在全身心地愛著你」？",
     cn: "在我们的日常生活中，哪一种亲吻最能让你感受到「我正在全身心地爱着你」？",
-    en: "What kind of kiss—forehead, cheek, or lingering lip kiss—communicates 'I love you with all my heart' clearest?"
+    en: "What kind of kiss—forehead, cheek, or lingering lip kiss—communicates 'I love you with all my heart' clearest?",
+    hint_tw: "額頭的吻代表珍視守護、鼻尖的吻代表寵溺、唇齒的深吻代表渴望……告訴對方你此時最想要哪個。",
+    hint_cn: "额头的吻代表珍视守护、鼻尖的吻代表宠溺、唇齿的深吻代表渴望……告诉对方你此时最想要哪个。",
+    hint_en: "Forehead kisses mean protection, nose kisses mean adoration, deep lip kisses mean passion. Choose.",
   },
   {
     tw: "當你看見我站在浴室門口帶著笑意看著你時，你那一秒心裡會閃過什麼念頭？",
     cn: "当你看着我站在浴室门口带着笑意看着你时，你那一秒心里会闪过什么念头？",
-    en: "When you catch me leaning against the bathroom doorway smiling warmly at you, what thought crosses your mind?"
+    en: "When you catch me leaning against the bathroom doorway smiling warmly at you, what thought crosses your mind?",
+    hint_tw: "那抹眼底的笑意盛滿了溫柔與欣賞；大方說出那一秒心裡湧現的怦然心跳與愛意。",
+    hint_cn: "那抹眼底的笑意盛满了温柔与欣赏；大方说出那一秒心里涌现的怦然心跳与爱意。",
+    hint_en: "That warm bathroom smile radiates pure devotion; share the thrill that raced through your chest.",
   },
   {
     tw: "在親密接觸的最後，你最希望我留在你額頭上的，是一個輕輕的吻還是一句溫柔的耳語？",
     cn: "在亲密接触的最后，你最希望我留在你额头上的，是一个轻轻的吻还是一句温柔的耳语？",
-    en: "As things settle down, do you crave a soft kiss planted on your forehead or a tender whisper in your ear?"
+    en: "As things settle down, do you crave a soft kiss planted on your forehead or a tender whisper in your ear?",
+    hint_tw: "額頭的吻沉靜安詳，耳畔的呢喃溫軟綿長；告訴對方你想帶著哪一份溫存踏入甜美夢鄉。",
+    hint_cn: "额头的吻沉静安详，耳畔的呢喃温软绵长；告诉对方你想带着哪一份温存踏入甜美梦乡。",
+    hint_en: "A steady forehead kiss or a tender whispered blessing? Choose how you want to drift into dreams.",
   },
   {
     tw: "如果今晚我們要用一個深情的長吻來結束這場對話，你準備好現在閉上眼睛了嗎？",
     cn: "如果今晚我们要用一个深情的长吻来结束这场对话，你准备好现在闭上眼睛了吗？",
-    en: "If we closed this deck with a long, unhurried kiss, are you ready to close your eyes right now?"
+    en: "If we closed this deck with a long, unhurried kiss, are you ready to close your eyes right now?",
+    hint_tw: "放慢呼吸，深深凝視彼此十秒鐘，然後輕輕閉上眼睛，把所有未盡的話語交給這記溫柔長吻。",
+    hint_cn: "放慢呼吸，深深凝视彼此十秒钟，然后轻轻闭上眼睛，把所有未尽的话语交给这记温柔长吻。",
+    hint_en: "Slow your breath, hold gaze for 10 seconds, close your eyes, and seal everything in this long kiss.",
   },
   {
     tw: "謝謝你願意跟我分享這麼多真實的感受。今晚，你想讓我怎麼抱著你入睡？",
     cn: "谢谢你愿意跟我分享这么多真实的感受。今晚，你想让我怎么抱着你入睡？",
-    en: "Thank you for sharing your heart so vulnerably. Tonight, exactly how do you want me holding you as we fall asleep?"
-  }
+    en: "Thank you for sharing your heart so vulnerably. Tonight, exactly how do you want me holding you as we fall asleep?",
+    hint_tw: "面對面相擁、背後環抱（湯匙式）還是枕在臂彎？用你最自在舒適的姿態，在彼此懷裡沉沉睡去。",
+    hint_cn: "面对面相拥、背后环抱（汤匙式）还是枕在臂弯？用你最自在舒适的姿态，在彼此怀里沉沉睡去。",
+    hint_en: "Facing chest-to-chest, gentle spooning, or resting on my arm? Settle in and let love hold you safe.",
+  },
 ];

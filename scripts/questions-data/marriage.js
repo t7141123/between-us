@@ -1,258 +1,406 @@
 /**
- * Expansion Pack: Before 'I Do' (婚姻誓約前夕) - 50 curated marital readiness prompts.
- * Designed for couples discussing marriage, engagement, or deep long-term commitment.
- * Covers finances, in-laws, parenting, division of labor, intimacy, and conflict repair.
- * Fully compliant with iOS and Android guidelines.
+ * Expansion Pack: Marriage Vows Eve (婚姻誓約前夕) - 50 curated prompts with 3-locale listening hints.
+ * Fully compliant with Apple App Store Guideline 1.1.4 & Google Play Policies.
  */
 module.exports = [
   {
     tw: "關於結婚登記和婚禮，你心裡最在乎的是辦一場讓大家都開心的婚禮，還是省下預算去過我們想要的生活？",
     cn: "关于结婚登记和婚礼，你心里最在乎的是办一场让大家都开心的婚礼，还是省下预算去过我们想要的生活？",
-    en: "When it comes to wedding plans, do you care more about hosting a celebration that satisfies everyone, or saving the budget for the life we want afterwards?"
+    en: "When it comes to wedding plans, do you care more about hosting a celebration that satisfies everyone, or saving the budget for the life we want afterwards?",
+    hint_tw: "婚禮是為期一天的儀式，婚姻是一輩子的日子；誠實說出在預算與儀式感之間的平衡。",
+    hint_cn: "婚礼是为期一天的仪式，婚姻是一辈子的日子；诚实说出在预算与仪式感之间的平衡。",
+    hint_en: "A wedding lasts one day, marriage lasts a lifetime; align expectations between ritual and life budget.",
   },
   {
     tw: "結婚之後每年的除夕和農曆過年，如果兩邊家庭都希望我們回去，你覺得我們怎麼安排最公平？",
     cn: "结婚之后每年的除夕和农历过年，如果两边家庭都希望我们回去，你觉得我们怎么安排最公平？",
-    en: "During major holidays like New Year, if both of our families hope to see us, how should we balance or alternate our visits fairly?"
+    en: "During major holidays like New Year, if both of our families hope to see us, how should we balance or alternate our visits fairly?",
+    hint_tw: "輪流過年、分開陪各自父母，或是除夕與初一各跑一邊？找到讓兩個人都心安的默契。",
+    hint_cn: "轮流过年、分开陪各自父母，或是除夕与初一各跑一边？找到让两个人都心安的默契。",
+    hint_en: "Alternate years, split holidays, or spend with each side? Find the rhythm that respects both families.",
   },
   {
     tw: "婚後如果要開一個共同生活帳戶，你覺得每個月我們各自拿薪水的幾成放進去最合適？",
     cn: "婚后如果要开一个共同生活账户，你觉得每个月我们各自拿薪水的几成放进去最合适？",
-    en: "If we set up a joint household account after marriage, what percentage of our respective monthly incomes feels fair to contribute?"
+    en: "If we set up a joint household account after marriage, what percentage of our respective monthly incomes feels fair to contribute?",
+    hint_tw: "按薪資比例提撥（如各50%）或固定金額？大原則是共同支出透明，個人自由保有尊嚴。",
+    hint_cn: "按薪资比例提拨（如各50%）或固定金额？大原则是共同支出透明，个人自由保有尊严。",
+    hint_en: "Percentage-based or fixed contribution? Ensure joint expenses are clear while personal dignity remains intact.",
   },
   {
     tw: "如果我的父母對我們住哪裡、或是婚禮細節提出很多意見，你希望我在第一時間怎麼跟他們溝通？",
     cn: "如果我的父母对我们住哪里、或是婚礼细节提出很多意见，你希望我在第一时间怎么跟他们沟通？",
-    en: "If my parents have strong opinions about where we live or wedding details, how do you hope I handle communication with them right away?"
+    en: "If my parents have strong opinions about where we live or wedding details, how do you hope I handle communication with them right away?",
+    hint_tw: "『誰的父母誰出面溝通』是黃金法則；在長輩面前堅定成為伴侶最可靠的防護盾牌。",
+    hint_cn: "“谁的父母谁出面沟通”是黄金法则；在长辈面前坚定成为伴侣最可靠的防护盾牌。",
+    hint_en: "Golden rule: each talks to their own parents, standing firmly as a united shield for their spouse.",
   },
   {
     tw: "如果將來我們有了孩子，但產後我們都很疲倦、生活一團亂，你最希望我們怎麼分工夜間照顧？",
     cn: "如果将来我们有了孩子，但产后我们都很疲倦、生活一团乱，你最希望我们怎么分工夜间照顾？",
-    en: "If we have a baby and are completely exhausted in the newborn phase, how do you envision us dividing night shifts and feeds?"
+    en: "If we have a baby and are completely exhausted in the newborn phase, how do you envision us dividing night shifts and feeds?",
+    hint_tw: "育兒初期睡眠剝奪最考驗感情；討論輪班機制或尋求外援，絕不把疲憊化為互相指責。",
+    hint_cn: "育儿初期睡眠剥夺最考验感情；讨论轮班机制或寻求外援，绝不把疲惫化为互相指责。",
+    hint_en: "Sleep deprivation strains love; agree on night shifts or help so exhaustion never turns to resentment.",
   },
   {
     tw: "如果我們在生育這件事上努力了一兩年卻沒有結果，你願意一起考慮領養，還是選擇過兩個人的日子？",
     cn: "如果我们在生育这件事上努力了一两年却没有结果，你愿意一起考虑领养，还是选择过两个人的日子？",
-    en: "If we try to conceive for a couple of years without success, would you want to explore adoption or happily enjoy a life together just the two of us?"
+    en: "If we try to conceive for a couple of years without success, would you want to explore adoption or happily enjoy a life together just the two of us?",
+    hint_tw: "孩子是緣分，伴侶才是核心；聊聊如何讓彼此成為生命中最不可替代的靈魂伴侶。",
+    hint_cn: "孩子是缘分，伴侣才是核心；聊聊如何让彼此成为生命中最无可替代的灵魂伴侣。",
+    hint_en: "Children are a blessing, but your spouse is the core bond; nurture partnership first.",
   },
   {
     tw: "將來如果有親友向我們借一筆不小的錢（比如十萬以上），你的底線是什麼？什麼情況下你絕對不會答應？",
     cn: "将来如果有亲友向我们借一笔不小的钱（比如十万以上），你的底线是什么？什么情况下你绝对不会答应？",
-    en: "If a friend or relative asks to borrow a significant amount of money from us, what is your boundary and when would you firmly say no?"
+    en: "If a friend or relative asks to borrow a significant amount of money from us, what is your boundary and when would you firmly say no?",
+    hint_tw: "借貸是婚姻關係的大考；設立『只借出不影響家庭安危的額度，且雙方一致同意』的底線。",
+    hint_cn: "借贷是婚姻关系的大考；设立“只借出不影响家庭安危的额度，且双方一致同意”的底线。",
+    hint_en: "Lending money tests marriage; enforce the rule that both must enthusiastically agree.",
   },
   {
     tw: "如果我們其中一個人將來遇到很棒的升遷或外派機會，但需要搬到另一個城市，我們會怎麼一起做決定？",
     cn: "如果我们其中一个人将来遇到很棒的升迁或外派机会，但需要搬到另一个城市，我们会怎么一起做决定？",
-    en: "If one of us gets an incredible career or relocation opportunity in another city, how should we weigh it together as a team?"
+    en: "If one of us gets an incredible career or relocation opportunity in another city, how should we weigh it together as a team?",
+    hint_tw: "探討各自職涯發展的優先順序，如何兼顧個人抱負與家庭生活品質的平衡。",
+    hint_cn: "探讨各自职涯发展的优先顺序，如何兼顾个人抱负与家庭生活品质的平衡。",
+    hint_en: "Discuss career trajectories: weigh individual ambition against family well-being collaboratively.",
   },
   {
     tw: "結婚之後，你覺得每週保留多少屬於自己的獨處時間或個人社交，會讓你感到最自在？",
     cn: "结婚之后，你觉得每周保留多少属于自己的独处时间或个人社交，会让你感到最自在？",
-    en: "After we marry, how much weekly alone time or personal social life would keep you feeling balanced and grounded?"
+    en: "After we marry, how much weekly alone time or personal social life would keep you feeling balanced and grounded?",
+    hint_tw: "健康婚姻需要適度的氧氣與留白，誠實說出每週需要多少不受打擾的個人時間充電。",
+    hint_cn: "健康婚姻需要适度的氧气与留白，诚实说出每周需要多少不受打扰的个人时间充电。",
+    hint_en: "Marriage needs oxygen: name how many solo hours you need weekly to recharge without guilt.",
   },
   {
     tw: "如果我們吵架陷入僵局、兩個人都不說話，你希望我們訂立哪一條規矩，來打破冷戰？",
     cn: "如果我们吵架陷入僵局、两个人都不说话，你希望我们订立哪一条规矩，来打破冷战？",
-    en: "When a heated argument turns into stubborn silence, what golden ground rule should we establish to break the cold war?"
+    en: "When a heated argument turns into stubborn silence, what golden ground rule should we establish to break the cold war?",
+    hint_tw: "冷戰最傷感情；約定冷靜最多不超過兩小時，並由某個暗號或一杯水開啟修復台階。",
+    hint_cn: "冷战最伤感情；约定冷静最多不超过两小时，并由某个暗号或一杯水开启修复台阶。",
+    hint_en: "Stonewalling harms intimacy; cap cooling pauses at 2 hours and agree on a peacemaking signal.",
   },
   {
     tw: "將來如果我們跟彼此的長輩住很近，有什麼家裡的習慣是你絕對不想被長輩干涉的？",
     cn: "将来如果我们跟彼此的长辈住很近，有什么家里的习惯是你绝对不想被长辈干涉的？",
-    en: "If we end up living close to our parents, what household routine or boundary is completely non-negotiable for you?"
+    en: "If we end up living close to our parents, what household routine or boundary is completely non-negotiable for you?",
+    hint_tw: "清楚標定小家庭的獨立主權：作息、飲食、家務標準或育兒理念，不允許外界無端越界。",
+    hint_cn: "清楚标定小家庭的独立主权：作息、饮食、家务标准或育儿理念，不允许外界无端越界。",
+    hint_en: "Assert your household sovereignty: chores, parenting, and privacy belong strictly to the two of you.",
   },
   {
     tw: "如果我們買房要背三十年房貸，你會希望每個月的房貸支出不要超過家庭總收入的多少百分比？",
     cn: "如果我们买房要背三十年房贷，你会希望每个月的房贷支出不要超过家庭总收入的多少百分比？",
-    en: "If we take on a 30-year mortgage, what maximum percentage of our combined monthly income should comfortably go towards it?"
+    en: "If we take on a 30-year mortgage, what maximum percentage of our combined monthly income should comfortably go towards it?",
+    hint_tw: "房貸比例建議不超過家庭收入的三分之一，別讓磚瓦的重量壓垮了生活裡該有的笑容與旅行。",
+    hint_cn: "房贷比例建议不超过家庭收入的三分之一，别让砖瓦的重量压垮了生活里该有的笑容与旅行。",
+    hint_en: "Keep mortgage within a third of income; never let mortar and bricks crush smiles, dates, and rest.",
   },
   {
     tw: "如果將來某一方的父母年老生病需要長期照顧，你希望我們用什麼樣的方式一起分擔？",
     cn: "如果将来某一方的父母年老生病需要长期照顾，你希望我们用什么样的方式一起分担？",
-    en: "If either of our aging parents needs long-term care down the road, how do you envision us sharing that emotional and practical care?"
+    en: "If either of our aging parents needs long-term care down the road, how do you envision us sharing that emotional and practical care?",
+    hint_tw: "孝道需要智慧與資源，討論請看護、長照機構或共同分擔，避免單方面過度消耗。",
+    hint_cn: "孝道需要智慧与资源，讨论请看护、长照机构或共同分担，避免单方面过度消耗。",
+    hint_en: "Filial care requires wisdom; balance professional caregiving with personal support sustainably.",
   },
   {
     tw: "你覺得在我們這段關係裡，什麼樣的行為就算是精神出軌？你的界線劃在哪裡？",
     cn: "你觉得在我们这段关系里，什么样的行为就算是精神出轨？你的界线划在哪里？",
-    en: "In our relationship, what kinds of emotional behavior would cross the line into emotional infidelity for you?"
+    en: "In our relationship, what kinds of emotional behavior would cross the line into emotional infidelity for you?",
+    hint_tw: "深夜私聊、分享感情脆弱給第三方、還是隱瞞秘密？清楚界定各自的情感純潔界線。",
+    hint_cn: "深夜私聊、分享感情脆弱给第三方、还是隐瞒秘密？清楚界定各自的情感纯洁界线。",
+    hint_en: "Late-night chats or emotional confessions to outsiders? Define emotional fidelity boundaries clearly.",
   },
   {
     tw: "當我們結婚滿五週年、生活被柴米油鹽填滿的時候，你希望我們每年做什麼來提醒彼此當初為什麼相愛？",
     cn: "当我们结婚满五周年、生活被柴米油盐填满的时候，你希望我们每年做什么来提醒彼此当初为什么相爱？",
-    en: "Five years into marriage, when daily routines become ordinary, what annual ritual would remind us why we fell in love?"
+    en: "Five years into marriage, when daily routines become ordinary, what annual ritual would remind us why we fell in love?",
+    hint_tw: "每年的週年旅行、寫一封信重讀婚禮誓詞，用專屬儀式抵禦瑣碎柴米油鹽的侵蝕。",
+    hint_cn: "每年的周年旅行、写一封信重读婚礼誓词，用专属仪式抵御琐碎柴米油盐的侵蚀。",
+    hint_en: "Annual anniversary trips or rereading your vows—recharge love's flame against routine.",
   },
   {
     tw: "在日常家務上，比如洗衣服、倒垃圾、煮飯、打掃，你最討厭做哪一項？你最願意固定承包哪一項？",
     cn: "在日常家务上，比如洗衣服、倒垃圾、煮饭、打扫，你最讨厌做哪一项？你最愿意固定承包哪一项？",
-    en: "Among daily chores like laundry, trash, cooking, and deep cleaning, which chore do you hate most, and which one would you gladly own?"
+    en: "Among daily chores like laundry, trash, cooking, and deep cleaning, which chore do you hate most, and which one would you gladly own?",
+    hint_tw: "不喜歡做的事交給家電或另一半承包，明確分工勝過日後在水槽邊無休止的埋怨碎念。",
+    hint_cn: "不喜欢做的事交给家电或另一半承包，明确分工胜过日后在水槽边无休止的埋怨碎念。",
+    hint_en: "Automate or swap dreaded chores; explicit agreements beat silent resentment by the sink.",
   },
   {
     tw: "如果我們生了小孩，教育理念出現分歧（比如一個想嚴格要求、一個主張快樂成長），我們該聽誰的？",
     cn: "如果我们生了小孩，教育理念出现分歧（比如一个想严格要求、一个主张快乐成长），我们该听谁的？",
-    en: "If we disagree on parenting styles—like strict discipline versus playful exploration—how should we resolve differences in front of the kids?"
+    en: "If we disagree on parenting styles—like strict discipline versus playful exploration—how should we resolve differences in front of the kids?",
+    hint_tw: "在孩子面前永遠統一口徑，關起房門再理性探討，把彼此的情緒與育兒初衷說清楚。",
+    hint_cn: "在孩子面前永远统一步调，关起房门再理性探讨，把彼此的情绪与育儿初衷说清楚。",
+    hint_en: "Present a united front before children; debate parenting styles behind closed doors in kindness.",
   },
   {
     tw: "婚後你希望我們各自保有完全不需要報備的私房錢嗎？多少金額以內的個人花費你覺得不需要互相過問？",
     cn: "婚后你希望我们各自保有完全不需要报备的私房钱吗？多少金额以内的个人花费你觉得不需要互相过问？",
-    en: "Do you want us each to have our own guilt-free spending budget, and above what price tag should we always consult each other?"
+    en: "Do you want us each to have our own guilt-free spending budget, and above what price tag should we always consult each other?",
+    hint_tw: "私房錢不是欺騙，而是給彼此喘息的消費尊嚴；定一個額度，花得開心且不用任何報備。",
+    hint_cn: "私房钱不是欺骗，而是给彼此喘息的消费尊严；定一个额度，花得开心且不用任何报备。",
+    hint_en: "Personal allowance isn't secrecy; it's healthy breathing room for joyful, unpoliced spending.",
   },
   {
     tw: "如果將來我的父母或你的父母不敲門就直接走進我們家，你會怎麼跟我表達你的感受？",
     cn: "如果将来我的父母或你的父母不敲门就直接走进我们家，你会怎么跟我表达你的感受？",
-    en: "If either of our parents walks into our home unannounced without knocking, how would you comfortably communicate your feelings to me?"
+    en: "If either of our parents walks into our home unannounced without knocking, how would you comfortably communicate your feelings to me?",
+    hint_tw: "家是兩人的私密城堡；討論如何委婉但堅定地與長輩溝通來訪前先傳訊息或按門鈴的習慣。",
+    hint_cn: "家是两人的私密城堡；讨论如何委婉但坚定地与长辈沟通来访前先发消息或按门铃的习惯。",
+    hint_en: "Home is a private sanctuary; agree on firm, polite boundaries around in-laws visiting unannounced.",
   },
   {
     tw: "結婚之後，你最害怕我們兩個人不知不覺變成只談生活雜事的室友嗎？我們要怎麼預防這件事？",
     cn: "结婚之后，你最害怕我们两个人不知不觉变成只谈生活杂事的室友吗？我们要怎么预防这件事？",
-    en: "Are you afraid of us quietly slipping into merely functional roommates who only discuss chores? How do we proactively prevent that?"
+    en: "Are you afraid of us quietly slipping into merely functional roommates who only discuss chores? How do we proactively prevent that?",
+    hint_tw: "固定保留每週一次約會之夜，拋開待辦清單，專注凝視彼此的雙眼，維持愛情的溫度。",
+    hint_cn: "固定保留每周一次约会之夜，抛开待办清单，专注凝视彼此的双眼，维持爱情的温度。",
+    hint_en: "Protect a weekly date night like gold; keep romance alive so you stay lovers, not just roommates.",
   },
   {
     tw: "如果我們其中一人在工作上突然被裁員或是想辭職休息半年，另一個人願意承擔全家開銷多久？",
     cn: "如果我们其中一人在工作上突然被裁员或是想辞职休息半年，另一个人愿意承担全家开销多久？",
-    en: "If one of us is laid off or needs to take a six-month career break to recharge, how long could the other comfortably carry the bills?"
+    en: "If one of us is laid off or needs to take a six-month career break to recharge, how long could the other comfortably carry the bills?",
+    hint_tw: "婚姻是彼此的降落傘；坦白討論托底的時間與心理準備，在一方低谷時成為最穩固的港灣。",
+    hint_cn: "婚姻是彼此的降落伞；坦白讨论托底的时间与心理准备，在一方低谷时成为最稳固的港湾。",
+    hint_en: "Marriage is a mutual parachute; discuss financial runways when one partner needs to recharge.",
   },
   {
     tw: "面對未來的避孕和懷孕規劃，如果意外懷孕了，但在我們原本的人生計劃之外，你的第一反應會是什麼？",
     cn: "面对未来的避孕和怀孕规划，如果意外怀孕了，但在我们原本的人生计划之外，你的第一反应会是什么？",
-    en: "If an unexpected pregnancy happens outside of our timeline, what would your immediate gut reaction and discussion approach be?"
+    en: "If an unexpected pregnancy happens outside of our timeline, what would your immediate gut reaction and discussion approach be?",
+    hint_tw: "無論選擇迎來新生命還是其他決定，首要之務是守護彼此的身心健康與共同承擔的勇氣。",
+    hint_cn: "无论选择迎来新生命还是其他决定，首要之务是守护彼此的身心健康与共同承担的勇气。",
+    hint_en: "Whatever decision is made, prioritize maternal well-being and stand shoulder-to-shoulder.",
   },
   {
     tw: "如果未來長輩堅持要幫我們帶小孩，但帶法跟我們的觀念完全相反，你願意站在我這邊一起去溝通嗎？",
     cn: "如果未来长辈坚持要帮我们带小孩，但带法跟我们的观念完全相反，你愿意站在我这边一起去沟通吗？",
-    en: "If in-laws offer childcare but use parenting methods that contradict our wishes, will you stand united with me to communicate boundaries?"
+    en: "If in-laws offer childcare but use parenting methods that contradict our wishes, will you stand united with me to communicate boundaries?",
+    hint_tw: "育兒責任在夫妻身上，長輩的協助是禮物不是義務；堅定站在同一陣線溫柔化解觀念衝突。",
+    hint_cn: "育儿责任在夫妻身上，长辈的协助是礼物不是义务；坚定站在同一阵线温柔化解观念冲突。",
+    hint_en: "Parenting belongs to you two; grandparent help is a bonus. Stand united when methods differ.",
   },
   {
     tw: "你覺得結婚之後，我們還能跟各自的異性好友單獨約出去吃飯或看電影嗎？你的界限是什麼？",
     cn: "你觉得结婚之后，我们还能跟各自的异性好友单独约出去吃饭或看电影吗？你的界限是什么？",
-    en: "After marriage, what are your feelings and healthy boundaries regarding one-on-one dinners or hangouts with close friends of the other gender?"
+    en: "After marriage, what are your feelings and healthy boundaries regarding one-on-one dinners or hangouts with close friends of the other gender?",
+    hint_tw: "坦白說出彼此能感到安心的社交邊界，建立既有信任感又對外界保持分寸感的健康默契。",
+    hint_cn: "坦白说出彼此能感到安心的社交边界，建立既有信任感又对外界保持分寸感的健康默契。",
+    hint_en: "Openly define boundaries with friends so trust flourishes without creeping anxiety.",
   },
   {
     tw: "在我們現在的相處裡，有沒有哪一個小缺點，是你希望我在走入婚姻前能慢慢調整的？",
     cn: "在我们现在的相处里，有没有哪一个小缺点，是你希望我在走入婚姻前能慢慢调整的？",
-    en: "Looking at our habits right now, is there a small tendency you hope I can gently work on before we tie the knot?"
+    en: "Looking at our habits right now, is there a small tendency you hope I can gently work on before we tie the knot?",
+    hint_tw: "抱著想為彼此變得更好的心態，溫和提出那個小建議，並用感激肯定對方的努力與改變。",
+    hint_cn: "抱着想为彼此变得更好的心态，温和提出那个小建议，并用感激肯定对方的努力与改变。",
+    hint_en: "Offer constructive wishes gently, celebrating each other's conscious steps toward growth.",
   },
   {
     tw: "如果要簽一份婚前協議或是討論婚前財產，你會覺得傷害感情，還是覺得這是成熟面對現實的表現？",
     cn: "如果要签一份婚前协议或是讨论婚前财产，你会觉得伤害感情，还是觉得这是成熟面对现实的表现？",
-    en: "How do you view discussing premarital assets or signing a prenuptial agreement—does it hurt trust, or does it reflect mature responsibility?"
+    en: "How do you view discussing premarital assets or signing a prenuptial agreement—does it hurt trust, or does it reflect mature responsibility?",
+    hint_tw: "理性的協議不是不信任，而是給予這段成熟關係最負責任的基石；卸下情緒、就事論事。",
+    hint_cn: "理性的协议不是不信任，而是给予这段成熟关系最负责任的基石；卸下情绪、就事论事。",
+    hint_en: "Premarital clarity is mature stewardship, not cynicism; build on clear ground with mutual care.",
   },
   {
     tw: "如果將來我們的親密互動頻率不如預期，你希望我們怎麼坐下來聊這件事，才不會讓彼此感到受挫或有壓力？",
     cn: "如果将来我们的亲密互动频率不如预期，你希望我们怎么坐下来聊这件事，才不会让彼此感到受挫或有压力？",
-    en: "If our physical intimacy rhythm dips below expectations, how can we bring it up gently without guilt or pressure?"
+    en: "If our physical intimacy rhythm dips below expectations, how can we bring it up gently without guilt or pressure?",
+    hint_tw: "不帶指責、不帶防備，從彼此的身心疲憊與親密需求出發，像探險夥伴一樣溫柔討論。",
+    hint_cn: "不带指责、不带防备，从彼此的身心疲惫与亲密需求出发，像探险伙伴一样温柔讨论。",
+    hint_en: "Approach bedroom shifts with curiosity and compassion; talk fatigue and tenderness without shame.",
   },
   {
     tw: "當你工作壓力極大、回到家心情很差的時候，你最需要我給你安靜的空間，還是聽你吐苦水？",
     cn: "当你工作压力极大、回到家心情很差的时候，你最需要我给你安静的空间，还是听你吐苦水？",
-    en: "When you return home exhausted and stressed from work, do you usually crave uninterrupted quiet time, or an attentive listening ear?"
+    en: "When you return home exhausted and stressed from work, do you usually crave uninterrupted quiet time, or an attentive listening ear?",
+    hint_tw: "給對方最精準的安撫：是一杯熱茶配上安靜獨處，還是坐在一旁耐心聽完他所有的憋屈？",
+    hint_cn: "给对方最精准的安抚：是一杯热茶配上安静独处，还是坐在一旁耐心听完他所有的憋屈？",
+    hint_en: "Offer tailored comfort: quiet alone-time with hot tea, or active listening to vent the day's stress?",
   },
   {
     tw: "如果我們買房子，產權登記和頭期款出資比例，你覺得怎麼處理雙方心裡最踏實？",
     cn: "如果我们买房子，产权登记和首付款出资比例，你觉得怎么处理双方心里最踏实？",
-    en: "When buying our first home, how should down payments, mortgage shares, and title deeds be registered so both of us feel secure?"
+    en: "When buying our first home, how should down payments, mortgage shares, and title deeds be registered so both of us feel secure?",
+    hint_tw: "算清帳目是為了感情長治久安；用公平、透明且體貼彼此感受的方案來登記與出資。",
+    hint_cn: "算清账目是为了感情长治久安；用公平、透明且体贴彼此感受的方案来登记与出资。",
+    hint_en: "Financial clarity preserves marital peace; structure property equity fairly and transparently.",
   },
   {
     tw: "將來如果有天我們感情遇到嚴重的瓶頸、甚至聊到分開，你願意在做最後決定前先一起去做伴侶諮商嗎？",
     cn: "将来如果有天我们感情遇到严重的瓶颈、甚至聊到分开，你愿意在做最后决定前先一起去做伴侣咨询吗？",
-    en: "If we ever hit an intense marital crisis in the distant future, would you promise to attend couple's counseling together before giving up?"
+    en: "If we ever hit an intense marital crisis in the distant future, would you promise to attend couple's counseling together before giving up?",
+    hint_tw: "把專業諮商視為給婚姻做的健康檢查，約定在任何重大關卡前，願意藉由專業第三者理清心結。",
+    hint_cn: "把专业咨询视为给婚姻做的健康检查，约定在任何重大关卡前，愿意借由专业第三者理清心结。",
+    hint_en: "View counseling as relational maintenance; agree to seek wise guidance before drastic steps.",
   },
   {
     tw: "婚後如果遇上節日送禮或給雙方父母的孝親費紅包，我們應該給一樣的金額，還是按照各自的收入給？",
     cn: "婚后如果遇上节日送礼或给双方父母的孝亲费红包，我们应该给一样的金额，还是按照各自的收入给？",
-    en: "When giving holiday gifts or support allowances to our parents, should the amounts be strictly identical, or tailored to our separate family norms?"
+    en: "When giving holiday gifts or support allowances to our parents, should the amounts be strictly identical, or tailored to our separate family norms?",
+    hint_tw: "紅包金額在於心意與能力，討論如何以大局為重、彼此協調出一份體面且合理的方案。",
+    hint_cn: "红包金额在于心意与能力，讨论如何以大局为重、彼此协调出一份体面且合理的方案。",
+    hint_en: "Gift amounts reflect heart and means; harmonize family giving fairly without competitive stress.",
   },
   {
     tw: "如果我們有了孩子，你希望在產後前幾個月去月子中心、請月嫂，還是請長輩幫忙？預算怎麼考量？",
     cn: "如果我们有了孩子，你希望在产后前几个月去月子中心、请月嫂，还是请长辈帮忙？预算怎么考量？",
-    en: "After giving birth, would you lean toward a postpartum care center, a private newborn nanny, or family assistance? How should we budget for that?"
+    en: "After giving birth, would you lean toward a postpartum care center, a private newborn nanny, or family assistance? How should we budget for that?",
+    hint_tw: "產後媽媽的身心修復是最高優先級；評估預算與舒適度，選出能讓兩個人都睡得好覺的安排。",
+    hint_cn: "产后妈妈的身心修复是最高优先级；评估预算与舒适度，选出能让两个人都睡得好觉的安排。",
+    hint_en: "Maternal postpartum healing comes first; budget for whichever option best ensures rest and care.",
   },
   {
     tw: "結婚之後，你希望我們每年至少安排一次只有我們兩個人的單獨旅行，還是帶雙方家人一起出遊？",
     cn: "结婚之后，你希望我们每年至少安排一次只有我们两个人的单独旅行，还是带双方家人一起出游？",
-    en: "Do you prioritize taking at least one trip every year just for the two of us, or do you prefer family-wide vacations?"
+    en: "Do you prioritize taking at least one trip every year just for the two of us, or do you prefer family-wide vacations?",
+    hint_tw: "長輩同行是孝心，兩人同行是愛情的氧氣；約定好每年的比例，確保兩者都不被忽視。",
+    hint_cn: "长辈同行是孝心，两人同行是爱情的氧气；约定好每年的比例，确保两者都不被忽视。",
+    hint_en: "Family trips honor roots; couple trips feed the spark. Balance both intentionally each year.",
   },
   {
     tw: "當我們在朋友或外人面前的時候，有什麼事情是你希望我絕對不要拿來開玩笑或提起的？",
     cn: "当我们在朋友或外人面前的时候，有什么事情是你希望我绝对不要拿来开玩笑或提起的？",
-    en: "When we are around friends or extended family, what is one topic you strictly never want me to tease you about in public?"
+    en: "When we are around friends or extended family, what is one topic you strictly never want me to tease you about in public?",
+    hint_tw: "在外人面前永遠彼此維護；嚴禁把伴侶的私密脆弱、身材或尷尬糗事當作廉價的笑料。",
+    hint_cn: "在外人面前永远彼此维护；严禁把伴侣的私密脆弱、身材或尴尬糗事当作廉价的笑料。",
+    hint_en: "Never make a punchline out of your spouse's insecurities; protect each other's dignity publicly.",
   },
   {
     tw: "如果將來因為照顧小孩或長輩，需要有一方暫時回歸家庭當全職照顧者，你怎麼看待全職者的家庭價值與經濟補貼？",
     cn: "如果将来因为照顾小孩或长辈，需要有一方暂时回归家庭当全职照顾者，你怎么看待全职者的家庭价值与经济补贴？",
-    en: "If one of us pauses our career to manage the home or care for children, how will we acknowledge and financially safeguard that contribution?"
+    en: "If one of us pauses our career to manage the home or care for children, how will we acknowledge and financially safeguard that contribution?",
+    hint_tw: "全職家庭照顧者的付出支撐了整個家的運轉；建立尊嚴補貼與充分認可，絕不視為理所當然。",
+    hint_cn: "全职家庭照顾者的付出支撑了整个家的运转；建立尊严补贴与充分认可，绝不视为理所当然。",
+    hint_en: "Full-time caregiving anchors the home; provide full financial agency and profound gratitude.",
   },
   {
     tw: "在你看來，婚姻裡最重要的承諾，是在順境時一起分享，還是在逆境、疾病或低潮時不離不棄？",
     cn: "在你看来，婚姻里最重要的承诺，是在顺境时一起分享，还是在逆境、疾病或低潮时不离不弃？",
-    en: "To you, does the heart of marital commitment lie in celebrating victories together, or sticking close during illnesses and hard trials?"
+    en: "To you, does the heart of marital commitment lie in celebrating victories together, or sticking close during illnesses and hard trials?",
+    hint_tw: "順境共享容易，逆境共擔才是誓詞的真諦；聊聊在疾病或低谷時，我們如何做對方的依靠。",
+    hint_cn: "顺境共享容易，逆境共担才是誓词的真谛；聊聊在疾病或低谷时，我们如何做对方的依靠。",
+    hint_en: "Easy to celebrate in sunshine; sacred vows shine in sickness and valley: be each other's rock.",
   },
   {
     tw: "如果哪一天你發現我做了一件違背當初承諾的事，但不是出軌，你最希望我第一時間怎麼做？",
     cn: "如果哪一天你发现我做了一件违背当初承诺的事，但不是出轨，你最希望我第一时间怎么做？",
-    en: "If I break an important promise to you (non-infidelity), what is the very first thing you need from me to begin repairing trust?"
+    en: "If I break an important promise to you (non-infidelity), what is the very first thing you need from me to begin repairing trust?",
+    hint_tw: "不掩蓋、不辯解、第一時間真誠坦白並主動補救；誠實往往能把信任的裂痕化為更堅實的黏合。",
+    hint_cn: "不掩盖、不辩解、第一时间真诚坦白并主动补救；诚实往往能把信任的裂痕化为更坚实的粘合。",
+    hint_en: "No cover-ups: prompt transparency and active amends turn a painful slip into deeper trust.",
   },
   {
     tw: "我們兩個人現在的生活作息（例如早起晚睡、對整潔的要求），你覺得哪一點是婚後最需要互相磨合的？",
     cn: "我们两个人现在的生活作息（例如早起晚睡、对整洁的要求），你觉得哪一点是婚后最需要互相磨合的？",
-    en: "Between our sleep cycles and neatness standards, which daily habit do you anticipate needing the most patient compromise?"
+    en: "Between our sleep cycles and neatness standards, which daily habit do you anticipate needing the most patient compromise?",
+    hint_tw: "整潔標準不同是常見矛盾；建立『互相退一步、分區自治』的彈性原則，別讓毛巾毀了感情。",
+    hint_cn: "整洁标准不同是常见矛盾；建立“互相退一步、分区自治”的弹性原则，别让毛巾毁了感情。",
+    hint_en: "Cleanliness differences are normal; adopt zone ownership and compromise over minor clutter.",
   },
   {
     tw: "如果將來某一方的家人遇到重大經濟危機來求助，我們在家庭財務上最多能承擔到什麼程度？",
     cn: "如果将来某一方的家人遇到重大经济危机来求助，我们在家庭财务上最多能承担到什么程度？",
-    en: "If extended family faces a major financial emergency and asks for help, what is the maximum assistance our household could afford?"
+    en: "If extended family faces a major financial emergency and asks for help, what is the maximum assistance our household could afford?",
+    hint_tw: "救急不救窮、量力而行，建立不可動搖的家庭安全防波堤，避免一人拖垮全家生活。",
+    hint_cn: "救急不救穷、量力而行，建立不可动摇的家庭安全防波堤，避免一人拖垮全家生活。",
+    hint_en: "Help in genuine emergencies within agreed bounds; never compromise your household stability.",
   },
   {
     tw: "你希望我們在結婚週年紀念日時，是用一頓大餐、一份用心挑選的禮物，還是寫一封長信來度過？",
     cn: "你希望我们在结婚周年纪念日时，是用一顿大餐、一份用心挑选的礼物，还是写一封长信来度过？",
-    en: "For our wedding anniversaries, do you treasure a memorable dinner, a meaningful gift, or a heartfelt written letter the most?"
+    en: "For our wedding anniversaries, do you treasure a memorable dinner, a meaningful gift, or a heartfelt written letter the most?",
+    hint_tw: "儀式不在奢華，在於兩顆心的專注交會；說說怎樣的度過方式最能讓你感受到被深深在乎。",
+    hint_cn: "仪式不在奢华，在于两颗心的专注交会；说说怎样的度过方式最能让你感受到被深深在乎。",
+    hint_en: "Celebration isn't about luxury; it's about locked eyes, tender words, and heartfelt remembrance.",
   },
   {
     tw: "生完小孩之後，如果我們兩人的身體或精力大幅改變，你覺得我們該如何保持對彼此的身體吸引力？",
     cn: "生完小孩之后，如果我们两人的身体或精力大幅改变，你觉得我们该如何保持对彼此的身体吸引力？",
-    en: "If our bodies, energy, or appearances naturally change after having children, how will we sustain romantic attraction and appreciation?"
+    en: "If our bodies, energy, or appearances naturally change after having children, how will we sustain romantic attraction and appreciation?",
+    hint_tw: "用欣賞的眼光看待因孕育而改變的身體；主動給予深情撫摸與讚美，重塑彼此的性感認同。",
+    hint_cn: "用欣赏的眼光看待因孕育而改变的身体；主动给予深情抚摸与赞美，重塑彼此的性感认同。",
+    hint_en: "Cherish postpartum changes with reverence; affectionate touch restores erotic confidence.",
   },
   {
     tw: "結婚之後，如果我們其中一個人的薪水是另一個人的兩到三倍，你覺得家庭重大支出的負擔比例該怎麼算？",
     cn: "结婚之后，如果我们其中一个人的薪水是另一个人的两到三倍，你觉得家庭重大支出的负担比例该怎么算？",
-    en: "If one partner earns significantly more than the other, should major household expenses be split 50/50 or proportional to income?"
+    en: "If one partner earns significantly more than the other, should major household expenses be split 50/50 or proportional to income?",
+    hint_tw: "拋開斤斤計較的對等，以大局同心為前提；賺得多的一方帶著感恩承擔，賺得少的一方貢獻心力。",
+    hint_cn: "抛开斤斤计较的对等，以大局同心为前提；赚得多的一方带着感恩承担，赚得少的一方贡献心力。",
+    hint_en: "Move past penny-matching: higher earners contribute joyfully, while teamwork balances the scales.",
   },
   {
     tw: "如果你的父母和我發生了生活上的摩擦或誤會，你希望自己扮演的是傳話者、緩衝者，還是保護我的角色？",
     cn: "如果你的父母和我发生了生活上的摩擦或误会，你希望自己扮演的是传话者、缓冲者，还是保护我的角色？",
-    en: "If misunderstandings arise between me and your parents, how do you see your role: mediator, neutral buffer, or my protective ally?"
+    en: "If misunderstandings arise between me and your parents, how do you see your role: mediator, neutral buffer, or my protective ally?",
+    hint_tw: "在長輩與伴侶產生摩擦時，堅定站在伴侶這邊給予保護與化解，絕不讓伴侶感到孤立無援。",
+    hint_cn: "在长辈与伴侣产生摩擦时，坚定站在伴侣这边给予保护与化解，绝不让伴侣感到孤立无援。",
+    hint_en: "When friction arises with parents, protect your spouse so they never feel stranded or alone.",
   },
   {
     tw: "你覺得兩個人走進婚姻之後，最不該放棄的個人熱情或夢想是什麼？",
     cn: "你觉得两个人走进婚姻之后，最不该放弃的个人热情或梦想是什么？",
-    en: "What personal passion, hobby, or creative dream should neither of us ever abandon, even inside a committed marriage?"
+    en: "What personal passion, hobby, or creative dream should neither of us ever abandon, even inside a committed marriage?",
+    hint_tw: "婚姻是兩棵大樹並肩生長，而不是藤蔓纏繞窒息；支持對方保有心底那份閃閃發光的熱愛。",
+    hint_cn: "婚姻是两棵大树并肩生长，而不是藤蔓缠绕窒息；支持对方保有心底那份闪闪发光的热爱。",
+    hint_en: "Stand as twin oaks side by side, not choking ivy; fiercely champion each other's personal passions.",
   },
   {
     tw: "當我們各自感到很累、家裡又一團亂的時候，我們會怎麼決定誰去洗碗或誰去整理？",
     cn: "当我们各自感到很累、家里又一团乱的时候，我们会怎么决定谁去洗碗或谁去整理？",
-    en: "When we are both completely drained and the house is a mess, how will we gently decide who tackles the mess without resentment?"
+    en: "When we are both completely drained and the house is a mess, how will we gently decide who tackles the mess without resentment?",
+    hint_tw: "今天你累我先頂上，明天我累你來分擔；用彈性協商與一句溫柔的『你去休息我來』化解僵局。",
+    hint_cn: "今天你累我先顶上，明天我累你来分担；用弹性协商与一句温柔的“你去休息我来”化解僵局。",
+    hint_en: "Trade off tired days flexibly: 'Go rest, I've got this' is the sweetest phrase in marriage.",
   },
   {
     tw: "如果未來孩子長大後的性取向或人生選擇跟我們的預期完全不同，你希望我們以怎樣的態度陪伴他？",
     cn: "如果未来孩子长大后的性取向或人生选择跟我们的预期完全不同，你希望我们以怎样的态度陪伴他？",
-    en: "If our future child's identity, orientation, or career path is completely unexpected, how do you want us to support and love them?"
+    en: "If our future child's identity, orientation, or career path is completely unexpected, how do you want us to support and love them?",
+    hint_tw: "無論世界如何變換，家永遠是孩子最無條件接納的避風港；我們做孩子最溫暖堅實的後盾。",
+    hint_cn: "无论世界如何变换，家永远是孩子最无条件接纳的避风港；我们做孩子最温暖坚实的后盾。",
+    hint_en: "Home must be an unconditional refuge for your child, backed by your unwavering love and respect.",
   },
   {
     tw: "在你看來，幸福的婚姻是靠天生默契，還是靠兩個人每週花時間有意識地經營和溝通？",
     cn: "在你看来，幸福的婚姻是靠天生默契，还是靠两个人每周花时间有意识地经营和沟通？",
-    en: "Do you believe lasting marriages thrive on natural compatibility, or deliberate weekly check-ins and intentional effort?"
+    en: "Do you believe lasting marriages thrive on natural compatibility, or deliberate weekly check-ins and intentional effort?",
+    hint_tw: "默契不是天下掉下來的，而是無數次坦誠對話、互相妥協與刻意經營所澆灌出來的盛開花朵。",
+    hint_cn: "默契不是天下掉下来的，而是无数次坦诚对话、互相妥协与刻意经营所浇灌出来的盛开花朵。",
+    hint_en: "Blissful marriage isn't luck; it's a garden cultivated by weekly talks, forgiveness, and care.",
   },
   {
     tw: "如果我們能訂一條『吵架黃金法則』（例如絕對不翻舊帳、不提離婚兩個字），你最想訂哪一條？",
     cn: "如果我们能订一条『吵架黄金法则』（例如绝对不翻旧账、不提离婚两个字），你最想订哪一条？",
-    en: "If we could set one unbreakable rule during fights—like never bringing up the past or never saying 'divorce'—what would it be?"
+    en: "If we could set one unbreakable rule during fights—like never bringing up the past or never saying 'divorce'—what would it be?",
+    hint_tw: "寫下你們的爭吵防護牆：不翻舊帳、不攻擊人格、不甩門離去，把每次摩擦化為理解契機。",
+    hint_cn: "写下你们的争吵防护墙：不翻旧账、不攻击人格、不甩门离去，把每次摩擦化为理解契机。",
+    hint_en: "Build a moat around conflict: no dragging up old history, no insults, no slammed doors.",
   },
   {
     tw: "走進婚姻之後，你最希望我們十年後依然能像熱戀期一樣擁有的習慣是什麼？",
     cn: "走进婚姻之后，你最希望我们十年后依然能像热恋期一样拥有的习惯是什么？",
-    en: "Ten years into marriage, what sweet habit from our dating days do you hope we still faithfully keep?"
+    en: "Ten years into marriage, what sweet habit from our dating days do you hope we still faithfully keep?",
+    hint_tw: "出門前的親吻、睡前的十指緊扣、每天至少一句由衷的讚美……守住熱戀時那些微小火苗。",
+    hint_cn: "出门前的亲吻、睡前的十指紧扣、每天至少一句由衷的赞美……守住热恋时那些微小火苗。",
+    hint_en: "A doorstep kiss, intertwined hands at night, daily praise: guard the tiny sparks of romance.",
   },
   {
     tw: "如果現在要對未來的婚姻生活說一句最重要的誓言，你最想對我說哪一句真心話？",
     cn: "如果现在要对未来的婚姻生活说一句最重要的誓言，你最想对我讲哪一句真心话？",
-    en: "If you could whisper one definitive vow right now for our future together, what honest promise would you make?"
-  }
+    en: "If you could whisper one definitive vow right now for our future together, what honest promise would you make?",
+    hint_tw: "凝視彼此的雙眼，把這句話當作這輩子對愛人最真摯、最堅定的一記靈魂烙印。",
+    hint_cn: "凝视彼此的双眼，把这句话当作这辈子对爱人最真挚、最坚定的一记灵魂烙印。",
+    hint_en: "Gaze into their eyes and speak your sacred vow—an unshakeable soul promise for all the days ahead.",
+  },
 ];

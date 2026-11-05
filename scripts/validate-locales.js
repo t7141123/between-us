@@ -49,10 +49,16 @@ LOCALES.forEach((loc) => {
       errors.push(`${loc}/${catKey}: Expected 50 questions, got ${cat.questions.length}`);
     }
 
-    if (Array.isArray(cat.hints)) {
-      if (cat.hints.length !== cat.questions.length) {
-        errors.push(`${loc}/${catKey}: hints count (${cat.hints.length}) does not match questions count (${cat.questions.length})`);
-      }
+    if (!Array.isArray(cat.hints)) {
+      errors.push(`${loc}/${catKey}: Missing hints array`);
+    } else if (cat.hints.length !== cat.questions.length) {
+      errors.push(`${loc}/${catKey}: hints count (${cat.hints.length}) does not match questions count (${cat.questions.length})`);
+    } else {
+      cat.hints.forEach((h, hIdx) => {
+        if (typeof h !== 'string' || h.trim().length === 0) {
+          errors.push(`${loc}/${catKey}[${hIdx}]: Hint must be non-empty string`);
+        }
+      });
     }
 
     cat.questions.forEach((q, idx) => {
@@ -100,10 +106,33 @@ if (totalQuestions !== 1050) {
   errors.push(`Total questions should be 1050, got ${totalQuestions}`);
 }
 
+// Validate expansion packs
+const PACK_FILES = ['sensual', 'marriage', 'parenting'];
+PACK_FILES.forEach((pName) => {
+  const pPath = path.join(__dirname, 'questions-data', `${pName}.js`);
+  if (!fs.existsSync(pPath)) {
+    errors.push(`Missing pack file: ${pPath}`);
+    return;
+  }
+  const packData = require(pPath);
+  if (!Array.isArray(packData) || packData.length !== 50) {
+    errors.push(`Pack ${pName}: Expected 50 items, got ${packData ? packData.length : 0}`);
+    return;
+  }
+  packData.forEach((item, idx) => {
+    ['tw', 'cn', 'en', 'hint_tw', 'hint_cn', 'hint_en'].forEach((k) => {
+      if (typeof item[k] !== 'string' || item[k].trim().length === 0) {
+        errors.push(`Pack ${pName}[${idx}]: ${k} must be non-empty string`);
+      }
+    });
+  });
+  console.log(`  ✓ Pack ${pName}: 50 questions with 3-locale prompts & hints`);
+});
+
 if (errors.length > 0) {
   console.error('\n❌ Locale validation failed:');
   errors.forEach((e) => console.error(`  - ${e}`));
   process.exit(1);
 }
 
-console.log('\n✅ Locale validation passed: 3 locales x 7 categories x 50 authoritative questions = 1050 total questions with reflection hints.\n');
+console.log('\n✅ Locale validation passed: 3 locales x 7 categories x 50 authoritative questions = 1050 total questions + 150 expansion pack questions (500 total unique questions) 100% equipped with reflection hints.\n');
