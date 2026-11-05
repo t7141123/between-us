@@ -12,7 +12,10 @@ import { buildDeckCore, migrateFavoriteKeys, PACK_IDS } from './deckCore';
 import type { BuildDeckResult, FavoriteMigration, PendingPaid, ShareTarget } from './deckCore';
 import { customEntries } from './customCore';
 import type { CustomQuestion } from './customCore';
+import { sessionById } from '../constants/sessions';
 import { I18nService } from './i18n';
+import { dayKey } from './progressCore';
+import { pickSessionQids, sessionIdOfCategory } from './sessionCore';
 
 export * from './deckCore';
 
@@ -56,6 +59,21 @@ export function getAllQuestions(locale: LocaleKey, custom: CustomQuestion[] = []
   ];
 }
 
+/** The ten questions of today's Date Night session (same on both partners' phones). */
+export function buildSessionQuestions(sessionId: string, locale: LocaleKey, day: string = dayKey(new Date())): QuestionEntry[] {
+  const def = sessionById(sessionId);
+  if (!def) return [];
+  const all = I18nService.getQuestions(locale, 'all');
+  const byQid = new Map(all.map((q) => [q.qid, q]));
+  const poolByCategory: Record<string, string[]> = {};
+  for (const q of all) (poolByCategory[q.categoryKey] ??= []).push(q.qid);
+  const label = I18nService.t(locale, `session_${sessionId}_title`);
+  return pickSessionQids(def, poolByCategory, day).flatMap((qid) => {
+    const q = byQid.get(qid);
+    return q ? [{ ...q, categoryLabel: label }] : [];
+  });
+}
+
 export function shuffleQuestions(items: QuestionEntry[]): QuestionEntry[] {
   const arr = [...items];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -78,10 +96,13 @@ export function buildDeck(input: {
     category: input.category,
     unlockedPacks: input.unlockedPacks,
     shuffle: shuffleQuestions,
-    baseQuestions: (cat) =>
-      cat === 'custom'
+    baseQuestions: (cat) => {
+      const sessionId = sessionIdOfCategory(String(cat));
+      if (sessionId) return buildSessionQuestions(sessionId, locale);
+      return cat === 'custom'
         ? customEntries(input.custom ?? [], I18nService.t(locale, 'custom_label'))
-        : I18nService.getQuestions(locale, cat),
+        : I18nService.getQuestions(locale, cat);
+    },
     packQuestions: (packId) => buildPackQuestions(packId, locale),
     makeLockCard: (packId, sharedLocked) => ({
       id: `${packId}-lock`,

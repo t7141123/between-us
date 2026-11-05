@@ -15,6 +15,9 @@ interface DeckEndModalProps {
   isDark: boolean;
   /** The deck ended on a locked pack's lock card (free trial finished). */
   isLockedPack: boolean;
+  /** The deck was a Date Night session. */
+  isSession?: boolean;
+  onOpenSessions?: () => void;
   /** At least one expansion pack is still locked (to offer a gentle pointer). */
   hasLockedPacks: boolean;
   onPlayAgain: () => void;
@@ -28,6 +31,8 @@ export const DeckEndModal: React.FC<DeckEndModalProps> = ({
   colors,
   isDark,
   isLockedPack,
+  isSession = false,
+  onOpenSessions,
   hasLockedPacks,
   onPlayAgain,
   onClose,
@@ -48,12 +53,12 @@ export const DeckEndModal: React.FC<DeckEndModalProps> = ({
             },
           ]}
         >
-          <Text style={styles.emoji}>{isLockedPack ? '🔒' : '🎉'}</Text>
+          <Text style={styles.emoji}>{isLockedPack ? '🔒' : isSession ? '🌙' : '🎉'}</Text>
           <Text style={[styles.title, { color: colors.ink }]}>
-            {t(isLockedPack ? 'deck_end_locked_title' : 'deck_end_title')}
+            {t(isLockedPack ? 'deck_end_locked_title' : isSession ? 'deck_end_session_title' : 'deck_end_title')}
           </Text>
           <Text style={[styles.desc, { color: colors.muted }]}>
-            {t(isLockedPack ? 'deck_end_locked_desc' : 'deck_end_desc')}
+            {t(isLockedPack ? 'deck_end_locked_desc' : isSession ? 'deck_end_session_desc' : 'deck_end_desc')}
           </Text>
 
           {isLockedPack ? (
@@ -63,6 +68,14 @@ export const DeckEndModal: React.FC<DeckEndModalProps> = ({
               style={[styles.primaryBtn, { backgroundColor: colors.clay }]}
             >
               <Text style={styles.primaryText}>{t('deck_end_store')}</Text>
+            </Pressable>
+          ) : isSession ? (
+            <Pressable
+              accessibilityRole="button"
+              onPress={onOpenSessions}
+              style={[styles.primaryBtn, { backgroundColor: colors.clay }]}
+            >
+              <Text style={styles.primaryText}>{t('deck_end_sessions')}</Text>
             </Pressable>
           ) : (
             <Pressable
@@ -75,10 +88,10 @@ export const DeckEndModal: React.FC<DeckEndModalProps> = ({
           )}
 
           <Pressable accessibilityRole="button" onPress={onClose} style={styles.secondaryBtn}>
-            <Text style={[styles.secondaryText, { color: colors.ink }]}>{t('deck_end_close')}</Text>
+            <Text style={[styles.secondaryText, { color: colors.ink }]}>{t(isSession ? 'close' : 'deck_end_close')}</Text>
           </Pressable>
 
-          {!isLockedPack && hasLockedPacks && (
+          {!isLockedPack && !isSession && hasLockedPacks && (
             <Pressable accessibilityRole="link" onPress={onOpenStore} style={styles.linkBtn}>
               <Text style={[styles.linkText, { color: colors.clay }]}>{t('deck_end_explore')}</Text>
             </Pressable>

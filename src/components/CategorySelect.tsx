@@ -7,6 +7,7 @@ import { Layers } from 'lucide-react-native';
 import { CategoryFilter, LocaleKey, ThemeColors } from '../types';
 import { CATEGORY_KEYS } from '../constants/categories';
 import { I18nService } from '../services/i18n';
+import { sessionIdOfCategory } from '../services/sessionCore';
 import { SelectPicker, SelectOption } from './SelectPicker';
 
 interface CategorySelectProps {
@@ -70,11 +71,18 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
     ];
   }, [locale, unlockedPacks, isPlus, customCount]);
 
+  // While a Date Night session is active it is shown as the current choice.
+  const optionsWithSession = useMemo(() => {
+    const sessionId = sessionIdOfCategory(String(currentCategory));
+    if (!sessionId) return options;
+    return [{ value: currentCategory, label: `🌙 ${I18nService.t(locale, `session_${sessionId}_title`)}`, badge: '10' }, ...options];
+  }, [options, currentCategory, locale]);
+
   return (
     <View style={[styles.container, isMobile && styles.containerMobile]}>
       <SelectPicker<CategoryFilter>
         icon={<Layers size={16} color={colors.clay} />}
-        options={options}
+        options={optionsWithSession}
         selectedValue={currentCategory}
         onSelect={onSelectCategory}
         colors={colors}

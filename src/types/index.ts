@@ -17,6 +17,7 @@ export type CategoryFilter =
   | CategoryKey
   | 'all'
   | 'custom'
+  | `session_${string}`
   | 'pack_sensual'
   | 'pack_marriage'
   | 'pack_parenting';

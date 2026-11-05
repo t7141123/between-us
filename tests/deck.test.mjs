@@ -103,3 +103,15 @@ test('room validators accept only known categories and qids', () => {
   assert.equal(normalizeQid('vision:12; DROP TABLE'), '');
   assert.equal(normalizeQid('anything else'), '');
 });
+
+test('session categories keep their order (no shuffle)', () => {
+  const ordered = Array.from({ length: 4 }, (_, i) => entry(`soul:${i}`));
+  const r = buildDeckCore(input({ category: 'session_warmup', baseQuestions: () => ordered, shuffle: (a) => [...a].reverse() }));
+  assert.deepEqual(r.deck.map((q) => q.qid), ['soul:0', 'soul:1', 'soul:2', 'soul:3']);
+});
+
+test('rooms accept session categories only in the expected format', () => {
+  assert.equal(normalizeRoomCategory('session_warmup'), 'session_warmup');
+  assert.equal(normalizeRoomCategory('session_'), null);
+  assert.equal(normalizeRoomCategory('session_a b'), null);
+});

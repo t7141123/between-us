@@ -23,6 +23,8 @@ import { OnboardingModal } from './components/OnboardingModal';
 import { DailyModal } from './components/DailyModal';
 import { CARD_SKINS } from './constants/packs';
 import { NotesModal } from './components/NotesModal';
+import { SessionsModal } from './components/SessionsModal';
+import { sessionIdOfCategory } from './services/sessionCore';
 import { CustomQuestionsModal } from './components/CustomQuestionsModal';
 import { addCustom, CustomQuestion, makeCustomQuestion, removeCustom, sanitizeCustom } from './services/customCore';
 import { NoteMap, sanitizeNotes, saveNote } from './services/notesCore';
@@ -154,6 +156,7 @@ export const MainApp: React.FC = () => {
   const [notes, setNotes] = useState<NoteMap>({});
   const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
   const [isCustomOpen, setIsCustomOpen] = useState(false);
+  const [isSessionsOpen, setIsSessionsOpen] = useState(false);
   const [reminder, setReminder] = useState<ReminderSettings>(DEFAULT_REMINDER);
   const [permissionDenied, setPermissionDenied] = useState(false);
   const progress = useProgress();
@@ -263,7 +266,10 @@ export const MainApp: React.FC = () => {
     });
     initialShareTargetRef.current = null;
     pendingPaidTargetRef.current = result.pendingPaid;
-    const ordered = prioritizeUnseen(result.deck, progress.seenRef.current, hasTarget);
+    // Guided sessions keep their order; everything else draws unseen questions first.
+    const ordered = sessionIdOfCategory(String(currentCategory))
+      ? result.deck
+      : prioritizeUnseen(result.deck, progress.seenRef.current, hasTarget);
 
     const jumpQid = pendingJumpQidRef.current;
     pendingJumpQidRef.current = null;
@@ -956,6 +962,25 @@ export const MainApp: React.FC = () => {
         onClose={() => setIsNotesOpen(false)}
       />
 
+      <SessionsModal
+        visible={isSessionsOpen}
+        locale={locale}
+        colors={colors}
+        isDark={isDark}
+        isPlus={isPlus}
+        onStart={(id) => {
+          playClick();
+          setIsSessionsOpen(false);
+          setCurrentCategory(`session_${id}`);
+          setReshuffleKey((k) => k + 1);
+        }}
+        onOpenStore={() => {
+          setIsSessionsOpen(false);
+          setIsStoreOpen(true);
+        }}
+        onClose={() => setIsSessionsOpen(false)}
+      />
+
       <CustomQuestionsModal
         visible={isCustomOpen}
         locale={locale}
@@ -1005,6 +1030,11 @@ export const MainApp: React.FC = () => {
         colors={colors}
         isDark={isDark}
         isLockedPack={isLockCard(currentQuestion)}
+        isSession={sessionIdOfCategory(String(currentCategory)) !== null}
+        onOpenSessions={() => {
+          setIsDeckEndOpen(false);
+          setIsSessionsOpen(true);
+        }}
         hasLockedPacks={PACK_IDS.some((id) => !unlockedPacks.includes(id))}
         onPlayAgain={() => {
           playClick();
@@ -1107,6 +1137,10 @@ export const MainApp: React.FC = () => {
             else if (!currentUser) setIsAuthOpen(true);
             else void cloud.syncNow();
           },
+        }}
+        onOpenSessions={() => {
+          playClick();
+          setIsSessionsOpen(true);
         }}
         onOpenCustom={() => {
           playClick();

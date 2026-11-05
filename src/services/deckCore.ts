@@ -87,6 +87,8 @@ export function buildDeckCore(input: BuildDeckInput): BuildDeckResult {
 
   if (!packId) {
     const all = input.baseQuestions(category);
+    // Guided sessions keep their light-to-deep order.
+    if (String(category).startsWith('session_')) return { deck: all, startIndex: 0, pendingPaid };
     const target = initialTarget?.category === category ? initialTarget : null;
     if (target && target.q >= 1 && target.q <= all.length) {
       return { deck: withTargetFirst(all, target.q - 1, shuffle), startIndex: 0, pendingPaid };

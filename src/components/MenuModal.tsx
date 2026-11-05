@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import {
   CalendarHeart,
+  MoonStar,
   ListPlus,
   CloudUpload,
   NotebookPen,
@@ -48,6 +49,7 @@ interface MenuModalProps {
   onOpenDaily?: () => void;
   onOpenNotes?: () => void;
   onOpenCustom?: () => void;
+  onOpenSessions?: () => void;
   customLocked?: boolean;
   cloudBackup?: { state: 'locked' | 'needs_login' | 'idle' | 'syncing' | 'ok' | 'error' | 'plus_required'; onPress: () => void };
 }
@@ -73,6 +75,7 @@ export const MenuModal: React.FC<MenuModalProps> = ({
   onOpenDaily,
   onOpenNotes,
   onOpenCustom,
+  onOpenSessions,
   customLocked = false,
   cloudBackup,
 }) => {
@@ -359,6 +362,37 @@ export const MenuModal: React.FC<MenuModalProps> = ({
                         </Text>
                         <Text style={[styles.itemSub, { color: colors.muted }]}>
                           {I18nService.t(locale, `menu_cloud_${cloudBackup.state}`)}
+                        </Text>
+                      </View>
+                    </View>
+                    <Text style={[styles.arrowText, { color: colors.muted }]}>›</Text>
+                  </TouchableOpacity>
+                )}
+
+                {onOpenSessions && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      onClose();
+                      onOpenSessions();
+                    }}
+                    style={[
+                      styles.cardRow,
+                      {
+                        marginTop: 10,
+                        backgroundColor: isDark ? '#292524' : '#FFFFFF',
+                        borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                      },
+                    ]}
+                    activeOpacity={0.8}
+                  >
+                    <View style={styles.rowLeft}>
+                      <MoonStar size={20} color={colors.clay} />
+                      <View style={styles.textStack}>
+                        <Text style={[styles.itemTitle, { color: colors.ink }]}>
+                          {I18nService.t(locale, 'menu_sessions')}
+                        </Text>
+                        <Text style={[styles.itemSub, { color: colors.muted }]}>
+                          {I18nService.t(locale, 'menu_sessions_sub')}
                         </Text>
                       </View>
                     </View>

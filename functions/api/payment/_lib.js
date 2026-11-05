@@ -460,7 +460,9 @@ const ROOM_CATEGORIES = new Set([
 export function normalizeRoomCategory(value) {
   if (typeof value !== 'string') return null;
   const cat = value.trim().toLowerCase().slice(0, 32);
-  return ROOM_CATEGORIES.has(cat) ? cat : null;
+  if (ROOM_CATEGORIES.has(cat)) return cat;
+  // Guided Date Night sessions: session_<id>
+  return /^session_[a-z0-9]{1,16}$/.test(cat) ? cat : null;
 }
 
 /**
