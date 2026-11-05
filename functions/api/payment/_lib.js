@@ -236,6 +236,24 @@ export async function ensureOrdersTable(db) {
       );
     `),
     db.prepare(`
+      CREATE TABLE IF NOT EXISTS room_answers (
+        code TEXT NOT NULL,
+        qid TEXT NOT NULL,
+        client_id TEXT NOT NULL,
+        answer TEXT NOT NULL,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (code, qid, client_id)
+      );
+    `),
+    db.prepare(`
+      CREATE TABLE IF NOT EXISTS room_attempts (
+        ip_hash TEXT NOT NULL,
+        bucket INTEGER NOT NULL,
+        fails INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (ip_hash, bucket)
+      );
+    `),
+    db.prepare(`
       CREATE TABLE IF NOT EXISTS sync_rooms (
         code TEXT PRIMARY KEY,
         category TEXT NOT NULL,
@@ -255,6 +273,7 @@ export async function ensureOrdersTable(db) {
     await db.prepare('ALTER TABLE users ADD COLUMN apple_sub TEXT').run().catch(() => {});
     await db.prepare('ALTER TABLE users ADD COLUMN apple_refresh_token TEXT').run().catch(() => {});
     await db.prepare('ALTER TABLE sync_rooms ADD COLUMN qid TEXT').run().catch(() => {});
+    await db.prepare("ALTER TABLE sync_rooms ADD COLUMN mode TEXT DEFAULT 'sync'").run().catch(() => {});
   } catch {
     // Ignore if columns already exist
   }
@@ -445,7 +464,12 @@ const memoryRooms = new Map();
 export function generateRoomCode() {
   const buf = new Uint32Array(1);
   crypto.getRandomValues(buf);
-  return String(1000 + (buf[0] % 9000));
+  return String(100000 + (buf[0] % 900000)); // 6 digits (4-digit rooms created by older apps still work)
+}
+
+/** New rooms use 6 digits; 4-digit codes from older clients are still accepted until they expire. */
+export function isValidRoomCode(code) {
+  return typeof code === 'string' && /^(?:\d{4}|\d{6})$/.test(code);
 }
 
 /** Categories a room may be switched to (base categories, 'all', and expansion packs). */
@@ -523,6 +547,7 @@ export async function getRoomState(db, code) {
       .first();
     if (row && Date.now() - row.updated_at > ROOM_TTL_MS) {
       await db.prepare('DELETE FROM sync_rooms WHERE code = ?').bind(code).run();
+      await db.prepare('DELETE FROM room_answers WHERE code = ?').bind(code).run();
       memoryRooms.delete(code);
       return null;
     }
@@ -532,6 +557,7 @@ export async function getRoomState(db, code) {
         category: row.category,
         questionText: row.question_text,
         qid: row.qid || '',
+        mode: row.mode === 'reveal' ? 'reveal' : 'sync',
         isFlipped: Boolean(row.is_flipped),
         version: row.version,
         updatedAt: row.updated_at,
@@ -554,6 +580,7 @@ export async function createRoom(db, code, category, questionText, qid = '') {
     category,
     questionText,
     qid,
+    mode: 'sync',
     isFlipped: false,
     version: 1,
     updatedAt: now,
@@ -562,13 +589,15 @@ export async function createRoom(db, code, category, questionText, qid = '') {
     await ensureOrdersTable(db);
     // Opportunistic cleanup of expired rooms.
     await db.prepare('DELETE FROM sync_rooms WHERE updated_at < ?').bind(now - ROOM_TTL_MS).run();
+    await db.prepare('DELETE FROM room_answers WHERE updated_at < ?').bind(now - ROOM_TTL_MS).run();
     await db.prepare(`
-      INSERT INTO sync_rooms (code, category, question_text, qid, is_flipped, version, updated_at)
-      VALUES (?, ?, ?, ?, 0, 1, ?)
+      INSERT INTO sync_rooms (code, category, question_text, qid, mode, is_flipped, version, updated_at)
+      VALUES (?, ?, ?, ?, 'sync', 0, 1, ?)
       ON CONFLICT(code) DO UPDATE SET
         category = excluded.category,
         question_text = excluded.question_text,
         qid = excluded.qid,
+        mode = 'sync',
         is_flipped = 0,
         version = version + 1,
         updated_at = excluded.updated_at
@@ -592,14 +621,15 @@ export async function updateRoomState(db, code, updates) {
     const questionText = updates.questionText !== undefined ? updates.questionText : current.questionText;
     // An older client that only sends text must not leave a stale qid behind.
     const qid = updates.qid !== undefined ? updates.qid : updates.questionText !== undefined ? '' : current.qid || '';
+    const mode = updates.mode === 'reveal' || updates.mode === 'sync' ? updates.mode : current.mode || 'sync';
     const isFlipped = updates.isFlipped !== undefined ? (updates.isFlipped ? 1 : 0) : (current.isFlipped ? 1 : 0);
 
     await db.prepare(`
       UPDATE sync_rooms
-      SET category = ?, question_text = ?, qid = ?, is_flipped = ?, version = ?, updated_at = ?
+      SET category = ?, question_text = ?, qid = ?, mode = ?, is_flipped = ?, version = ?, updated_at = ?
       WHERE code = ?
     `)
-      .bind(category, questionText, qid, isFlipped, nextVersion, now, code)
+      .bind(category, questionText, qid, mode, isFlipped, nextVersion, now, code)
       .run();
 
     return {
@@ -607,6 +637,7 @@ export async function updateRoomState(db, code, updates) {
       category,
       questionText,
       qid,
+      mode,
       isFlipped: Boolean(isFlipped),
       version: nextVersion,
       updatedAt: now,
@@ -623,4 +654,91 @@ export async function updateRoomState(db, code, updates) {
   };
   memoryRooms.set(code, updated);
   return updated;
+}
+
+
+/* ------------------------------------------------------------------ */
+/* Room abuse protection and "answer together" support                 */
+/* ------------------------------------------------------------------ */
+
+const ATTEMPT_WINDOW_MS = 10 * 60 * 1000;
+export const MAX_ROOM_FAILURES = 30;
+
+async function sha256Hex(input) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
+  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/** A short, non-reversible tag for a caller (never the raw IP address). */
+export async function callerTag(request) {
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  return (await sha256Hex(`between-us-room:${ip}`)).slice(0, 24);
+}
+
+/** True when this caller guessed wrong codes too often in the last 10 minutes. */
+export async function isRoomRateLimited(db, tag, now = Date.now()) {
+  if (!db) return false;
+  const bucket = Math.floor(now / ATTEMPT_WINDOW_MS);
+  const row = await db.prepare('SELECT fails FROM room_attempts WHERE ip_hash = ? AND bucket = ?').bind(tag, bucket).first();
+  return Boolean(row && row.fails >= MAX_ROOM_FAILURES);
+}
+
+export async function recordRoomFailure(db, tag, now = Date.now()) {
+  if (!db) return;
+  const bucket = Math.floor(now / ATTEMPT_WINDOW_MS);
+  await db.prepare(
+    'INSERT INTO room_attempts (ip_hash, bucket, fails) VALUES (?, ?, 1) ON CONFLICT(ip_hash, bucket) DO UPDATE SET fails = fails + 1'
+  ).bind(tag, bucket).run();
+  await db.prepare('DELETE FROM room_attempts WHERE bucket < ?').bind(bucket - 1).run();
+}
+
+/** Whether the bearer token belongs to a Plus member (checked server-side, never trusting the client). */
+export async function isPlusSession(request, env) {
+  const authHeader = request.headers.get('Authorization') || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  const session = await verifyAuthToken(token, env);
+  if (!session?.uid || !env.DB) return false;
+  await ensureOrdersTable(env.DB);
+  const row = await env.DB.prepare('SELECT 1 AS ok FROM user_entitlements WHERE user_id = ? AND item_key = ? LIMIT 1')
+    .bind(String(session.uid), 'plus')
+    .first();
+  return Boolean(row);
+}
+
+const CLIENT_ID_PATTERN = /^[A-Za-z0-9_-]{8,40}$/;
+export const isValidClientId = (v) => typeof v === 'string' && CLIENT_ID_PATTERN.test(v);
+
+/**
+ * Stores one partner's answer. A room has exactly two participants: a third client id is refused,
+ * so someone who learns the code later cannot join an answering session that is already running.
+ */
+export async function submitRoomAnswer(db, code, qid, clientId, text, now = Date.now()) {
+  await ensureOrdersTable(db);
+  const known = await db.prepare('SELECT DISTINCT client_id FROM room_answers WHERE code = ?').bind(code).all();
+  const ids = new Set((known.results || []).map((r) => r.client_id));
+  if (!ids.has(clientId) && ids.size >= 2) return { ok: false, error: 'room_full' };
+  const answer = String(text).replace(/[\u0000-\u001F\u007F]/g, ' ').trim().slice(0, 500);
+  if (answer === '') return { ok: false, error: 'empty' };
+  await db.prepare(
+    `INSERT INTO room_answers (code, qid, client_id, answer, updated_at) VALUES (?, ?, ?, ?, ?)
+     ON CONFLICT(code, qid, client_id) DO UPDATE SET answer = excluded.answer, updated_at = excluded.updated_at`
+  ).bind(code, qid, clientId, answer, now).run();
+  return { ok: true };
+}
+
+/**
+ * What this client may see: its own answer, whether the partner answered, and the partner's text
+ * ONLY once both have answered (so nobody is influenced by the other's answer).
+ */
+export async function getRoomAnswers(db, code, qid, clientId) {
+  await ensureOrdersTable(db);
+  const rows = await db.prepare('SELECT client_id, answer FROM room_answers WHERE code = ? AND qid = ?').bind(code, qid).all();
+  const list = rows.results || [];
+  const mine = list.find((r) => r.client_id === clientId);
+  const partner = list.find((r) => r.client_id !== clientId);
+  return {
+    mine: mine ? mine.answer : null,
+    partnerSubmitted: Boolean(partner),
+    partner: mine && partner ? partner.answer : null,
+  };
 }

@@ -23,6 +23,7 @@ import { OnboardingModal } from './components/OnboardingModal';
 import { DailyModal } from './components/DailyModal';
 import { CARD_SKINS } from './constants/packs';
 import { NotesModal } from './components/NotesModal';
+import { RevealModal } from './components/RevealModal';
 import { ShareSheet } from './components/ShareSheet';
 import { SessionsModal } from './components/SessionsModal';
 import { sessionIdOfCategory } from './services/sessionCore';
@@ -159,6 +160,8 @@ export const MainApp: React.FC = () => {
   const [isCustomOpen, setIsCustomOpen] = useState(false);
   const [isSessionsOpen, setIsSessionsOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isRevealOpen, setIsRevealOpen] = useState(false);
+  const [roomClientId, setRoomClientId] = useState('');
   const [reminder, setReminder] = useState<ReminderSettings>(DEFAULT_REMINDER);
   const [permissionDenied, setPermissionDenied] = useState(false);
   const progress = useProgress();
@@ -448,6 +451,39 @@ export const MainApp: React.FC = () => {
     dataKey: cloudDataKey,
   });
 
+  // Each phone has a random id inside a room so answers can be told apart without accounts.
+  const roomCode = currentRoom?.code ?? null;
+  useEffect(() => {
+    if (!roomCode) return;
+    let cancelled = false;
+    StorageService.getRoomClientId(roomCode).then((id) => {
+      if (!cancelled) setRoomClientId(id);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [roomCode]);
+
+  const handleToggleReveal = useCallback(async (next: boolean) => {
+    if (!currentRoom) return;
+    if (next && !isPlus) {
+      setIsRoomOpen(false);
+      setIsStoreOpen(true);
+      return;
+    }
+    if (next && !currentUser) {
+      setIsRoomOpen(false);
+      setIsAuthOpen(true); // the server checks Plus on the account
+      return;
+    }
+    const res = await RoomService.syncAction(currentRoom.code, { mode: next ? 'reveal' : 'sync' });
+    if (res.room) setCurrentRoom(res.room);
+    else if (res.plusRequired) {
+      setIsRoomOpen(false);
+      setIsStoreOpen(true);
+    }
+  }, [currentRoom, currentUser, isPlus]);
+
   const lastNavTimeRef = useRef(0);
 
   const handleNextQuestion = useCallback((skipSync = false) => {
@@ -633,7 +669,7 @@ export const MainApp: React.FC = () => {
 
     const urlParams = new URLSearchParams(window.location.search);
     const roomParam = urlParams.get('room');
-    if (roomParam && roomParam.length === 4) {
+    if (roomParam && (roomParam.length === 4 || roomParam.length === 6)) {
       RoomService.joinRoom(roomParam).then((res) => {
         if (res.success && res.room) {
           setCurrentRoom(res.room);
@@ -831,6 +867,20 @@ export const MainApp: React.FC = () => {
           />
         )}
 
+        {currentRoom?.mode === 'reveal' && currentQuestion && !isLockCard(currentQuestion) && !currentQuestion.qid.startsWith('custom:') && roomClientId !== '' && (
+          <TouchableOpacity
+            accessibilityRole="button"
+            onPress={() => {
+              playClick();
+              setIsRevealOpen(true);
+            }}
+            style={[styles.revealPill, { backgroundColor: colors.clay }]}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.revealPillText}>{I18nService.t(locale, 'reveal_pill')}</Text>
+          </TouchableOpacity>
+        )}
+
         {/* 3D Flippable Question Card */}
         <View style={[styles.cardWrapper, isMobile && styles.cardWrapperMobile]}>
           <Card3D
@@ -967,6 +1017,20 @@ export const MainApp: React.FC = () => {
         onOpenStore={() => setIsStoreOpen(true)}
         onClose={() => setIsNotesOpen(false)}
       />
+
+      {currentRoom && currentQuestion && !isLockCard(currentQuestion) && (
+        <RevealModal
+          visible={isRevealOpen}
+          locale={locale}
+          colors={colors}
+          isDark={isDark}
+          roomCode={currentRoom.code}
+          clientId={roomClientId}
+          qid={currentQuestion.qid}
+          questionText={currentQuestion.text}
+          onClose={() => setIsRevealOpen(false)}
+        />
+      )}
 
       <ShareSheet
         visible={isShareOpen}
@@ -1132,6 +1196,8 @@ export const MainApp: React.FC = () => {
         currentCategory={currentCategory}
         currentQuestionText={currentQuestion?.text || ''}
         currentQuestionQid={currentQuestion?.qid || ''}
+        isPlus={isPlus}
+        onToggleReveal={handleToggleReveal}
         onClose={() => setIsRoomOpen(false)}
         onRoomConnected={(room) => setCurrentRoom(room)}
         onLeaveRoom={() => setCurrentRoom(null)}
@@ -1269,6 +1335,19 @@ const styles = StyleSheet.create({
     fontSize: 15.5,
     fontWeight: '600',
     letterSpacing: 0.5,
+  },
+  revealPill: {
+    alignSelf: 'center',
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    borderRadius: 999,
+    marginTop: 8,
+  },
+  revealPillText: {
+    color: '#FFFFFF',
+    fontSize: 13.5,
+    fontWeight: '600',
+    letterSpacing: 0.4,
   },
   hintContainer: {
     alignItems: 'center',

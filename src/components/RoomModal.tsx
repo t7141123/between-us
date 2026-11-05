@@ -28,6 +28,8 @@ interface RoomModalProps {
   currentCategory: string;
   currentQuestionText: string;
   currentQuestionQid?: string;
+  isPlus?: boolean;
+  onToggleReveal?: (next: boolean) => void;
   onClose: () => void;
   onRoomConnected: (room: RoomState) => void;
   onLeaveRoom: () => void;
@@ -42,6 +44,8 @@ export const RoomModal: React.FC<RoomModalProps> = ({
   currentCategory,
   currentQuestionText,
   currentQuestionQid = '',
+  isPlus = false,
+  onToggleReveal,
   onClose,
   onRoomConnected,
   onLeaveRoom,
@@ -67,7 +71,7 @@ export const RoomModal: React.FC<RoomModalProps> = ({
 
   const handleJoinRoom = async () => {
     const code = inputCode.trim();
-    if (code.length !== 4) {
+    if (code.length !== 4 && code.length !== 6) {
       setFeedback(I18nService.t(locale, 'room_code_placeholder'));
       return;
     }
@@ -200,6 +204,24 @@ export const RoomModal: React.FC<RoomModalProps> = ({
                 </Text>
               </Pressable>
 
+              {/* Answer together (Plus) */}
+              {onToggleReveal && (
+                <Pressable
+                  accessibilityRole="switch"
+                  accessibilityState={{ checked: currentRoom.mode === 'reveal' }}
+                  onPress={() => onToggleReveal(currentRoom.mode !== 'reveal')}
+                  style={[styles.revealRow, { borderColor: currentRoom.mode === 'reveal' ? colors.clay : colors.line }]}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.revealTitle, { color: colors.ink }]}>
+                      {`${isPlus ? '' : '🔒 '}${currentRoom.mode === 'reveal' ? '◉' : '○'}  ${I18nService.t(locale, 'room_reveal_toggle')}`}
+                    </Text>
+                    <Text style={[styles.revealDesc, { color: colors.muted }]}>{I18nService.t(locale, 'room_reveal_desc')}</Text>
+                  </View>
+                  {!isPlus && <Text style={[styles.revealBadge, { color: colors.clay }]}>Plus</Text>}
+                </Pressable>
+              )}
+
               {/* Leave Button */}
               <Pressable
                 onPress={onLeaveRoom}
@@ -243,11 +265,11 @@ export const RoomModal: React.FC<RoomModalProps> = ({
               <View style={styles.joinRow}>
                 <TextInput
                   value={inputCode}
-                  onChangeText={(val) => setInputCode(val.replace(/\D/g, '').slice(0, 4))}
+                  onChangeText={(val) => setInputCode(val.replace(/\D/g, '').slice(0, 6))}
                   placeholder={I18nService.t(locale, 'room_code_placeholder')}
                   placeholderTextColor={colors.muted}
                   keyboardType="number-pad"
-                  maxLength={4}
+                  maxLength={6}
                   style={[
                     styles.joinInput,
                     {
@@ -259,12 +281,12 @@ export const RoomModal: React.FC<RoomModalProps> = ({
                 />
                 <Pressable
                   onPress={handleJoinRoom}
-                  disabled={loading || inputCode.length !== 4}
+                  disabled={loading || (inputCode.length !== 4 && inputCode.length !== 6)}
                   style={[
                     styles.joinBtn,
                     {
                       backgroundColor:
-                        inputCode.length === 4 ? colors.clay : colors.card,
+                        inputCode.length === 4 || inputCode.length === 6 ? colors.clay : colors.card,
                       borderColor: colors.clay,
                     },
                   ]}
@@ -272,7 +294,7 @@ export const RoomModal: React.FC<RoomModalProps> = ({
                   <Text
                     style={[
                       styles.joinBtnText,
-                      { color: inputCode.length === 4 ? '#FFFFFF' : colors.muted },
+                      { color: inputCode.length === 4 || inputCode.length === 6 ? '#FFFFFF' : colors.muted },
                     ]}
                   >
                     {I18nService.t(locale, 'room_join_btn')}
@@ -294,6 +316,10 @@ export const RoomModal: React.FC<RoomModalProps> = ({
 };
 
 const styles = StyleSheet.create({
+  revealRow: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 14, padding: 12, marginTop: 14, alignSelf: 'stretch' },
+  revealTitle: { fontSize: 14.5, fontWeight: '600' },
+  revealDesc: { fontSize: 12, lineHeight: 17, marginTop: 3 },
+  revealBadge: { fontSize: 12, fontWeight: '700', marginLeft: 8 },
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.74)',

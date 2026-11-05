@@ -2,7 +2,14 @@
  * GET /api/room/poll?code=1234&version=1
  * Polls the room for remote partner's state updates.
  */
-import { getRoomState, getCorsHeaders } from '../payment/_lib.js';
+import {
+  callerTag,
+  getCorsHeaders,
+  getRoomState,
+  isRoomRateLimited,
+  isValidRoomCode,
+  recordRoomFailure,
+} from '../payment/_lib.js';
 
 export async function onRequestOptions(context) {
   return new Response(null, {
@@ -20,7 +27,7 @@ export async function onRequestGet({ request, env }) {
     const rawVersion = parseInt(url.searchParams.get('version') || '0', 10);
     const clientVersion = Math.max(0, Math.min(1000000, isNaN(rawVersion) ? 0 : rawVersion));
 
-    if (!/^\d{4}$/.test(code)) {
+    if (!isValidRoomCode(code)) {
       return new Response(JSON.stringify({ error: 'Missing or invalid 4-digit room code' }), {
         status: 400,
         headers: {
@@ -30,8 +37,17 @@ export async function onRequestGet({ request, env }) {
       });
     }
 
+    const tag = await callerTag(request);
+    if (await isRoomRateLimited(env.DB, tag)) {
+      return new Response(JSON.stringify({ error: 'Too many attempts, try again later' }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
+
     const room = await getRoomState(env.DB, code);
     if (!room) {
+      await recordRoomFailure(env.DB, tag);
       return new Response(JSON.stringify({ active: false, error: 'Room expired' }), {
         headers: {
           'Content-Type': 'application/json',

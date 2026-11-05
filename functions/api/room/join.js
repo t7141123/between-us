@@ -2,7 +2,14 @@
  * POST /api/room/join
  * Joins an existing room using the 4-digit room code.
  */
-import { getRoomState, getCorsHeaders } from '../payment/_lib.js';
+import {
+  callerTag,
+  getCorsHeaders,
+  getRoomState,
+  isRoomRateLimited,
+  isValidRoomCode,
+  recordRoomFailure,
+} from '../payment/_lib.js';
 
 export async function onRequestOptions(context) {
   return new Response(null, {
@@ -18,7 +25,7 @@ export async function onRequestPost({ request, env }) {
     const body = await request.json().catch(() => ({}));
     const code = String(body.code || '').trim();
 
-    if (!/^\d{4}$/.test(code)) {
+    if (!isValidRoomCode(code)) {
       return new Response(JSON.stringify({ error: 'Invalid 4-digit room code' }), {
         status: 400,
         headers: {
@@ -28,8 +35,17 @@ export async function onRequestPost({ request, env }) {
       });
     }
 
+    const tag = await callerTag(request);
+    if (await isRoomRateLimited(env.DB, tag)) {
+      return new Response(JSON.stringify({ error: 'Too many attempts, try again later' }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
+
     const room = await getRoomState(env.DB, code);
     if (!room) {
+      await recordRoomFailure(env.DB, tag);
       return new Response(JSON.stringify({ error: 'Room not found or expired' }), {
         status: 404,
         headers: {

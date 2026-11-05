@@ -2,7 +2,14 @@
  * POST /api/room/sync
  * Syncs the latest card action (next question, flip, category change) across partners.
  */
-import { updateRoomState, getCorsHeaders, normalizeRoomCategory, normalizeQid } from '../payment/_lib.js';
+import {
+  getCorsHeaders,
+  isPlusSession,
+  isValidRoomCode,
+  normalizeQid,
+  normalizeRoomCategory,
+  updateRoomState,
+} from '../payment/_lib.js';
 
 export async function onRequestOptions(context) {
   return new Response(null, {
@@ -18,7 +25,7 @@ export async function onRequestPost({ request, env }) {
     const body = await request.json().catch(() => ({}));
     const code = String(body.code || '').trim();
 
-    if (!/^\d{4}$/.test(code)) {
+    if (!isValidRoomCode(code)) {
       return new Response(JSON.stringify({ error: 'Missing or invalid 4-digit room code' }), {
         status: 400,
         headers: {
@@ -36,6 +43,19 @@ export async function onRequestPost({ request, env }) {
 
     if (typeof body.questionText === 'string') {
       updates.questionText = body.questionText.replace(/[\u0000-\u001F\u007F]/g, ' ').slice(0, 500);
+    }
+
+    if (body.mode === 'reveal') {
+      // Starting "answer together" is a Plus feature, enforced here (the partner joins for free).
+      if (!(await isPlusSession(request, env))) {
+        return new Response(JSON.stringify({ error: 'Plus required', code: 'plus_required' }), {
+          status: 403,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        });
+      }
+      updates.mode = 'reveal';
+    } else if (body.mode === 'sync') {
+      updates.mode = 'sync';
     }
 
     if (body.isFlipped !== undefined) {

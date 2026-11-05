@@ -31,6 +31,7 @@ const STORAGE_KEYS = {
   REMINDER: 'betweenus.reminder',
   NOTES: 'betweenus.notes',
   CUSTOM: 'betweenus.custom',
+  ROOM_CLIENT: 'betweenus.room_client',
   SYNC_STATE: 'betweenus.sync_state',
 } as const;
 
@@ -322,6 +323,23 @@ export const StorageService = {
       await AsyncStorage.setItem(STORAGE_KEYS.CUSTOM, JSON.stringify(list));
     } catch {
       // Storage write error
+    }
+  },
+
+  /** A random id that identifies this phone inside one room (stable across app restarts). */
+  async getRoomClientId(code: string): Promise<string> {
+    try {
+      const raw = await AsyncStorage.getItem(STORAGE_KEYS.ROOM_CLIENT);
+      if (raw) {
+        const p = JSON.parse(raw) as { code?: string; id?: string };
+        if (p.code === code && typeof p.id === 'string') return p.id;
+      }
+      const { randomUUID } = await import('expo-crypto');
+      const id = randomUUID();
+      await AsyncStorage.setItem(STORAGE_KEYS.ROOM_CLIENT, JSON.stringify({ code, id }));
+      return id;
+    } catch {
+      return `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
     }
   },
 

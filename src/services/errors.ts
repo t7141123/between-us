@@ -18,6 +18,7 @@ export type ErrorCode =
   | 'err_room_create'
   | 'err_room_join'
   | 'err_room_not_found'
+  | 'err_room_full'
   | 'err_checkout'
   | 'err_iap_sync'
   | 'err_transaction_claimed';
