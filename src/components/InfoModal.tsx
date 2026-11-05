@@ -22,7 +22,7 @@ import { I18nService } from '../services/i18n';
 import { TelemetryService } from '../services/telemetry';
 
 const SITE_URL = 'https://between-us.ark-studio.app';
-const SUPPORT_EMAIL = 'support@lovebetweenus.app';
+const SUPPORT_EMAIL = 'support@ark-studio.app';
 
 interface InfoModalProps {
   visible: boolean;

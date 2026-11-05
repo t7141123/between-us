@@ -25,7 +25,7 @@ export class ErrorBoundary extends React.Component<{ children: React.ReactNode }
     return (
       <View style={styles.container}>
         <Text style={styles.title}>發生未預期的錯誤 · Something went wrong</Text>
-        <Text style={styles.body}>請重試一次。若問題持續，請聯絡 support@lovebetweenus.app{'\n'}Please try again.</Text>
+        <Text style={styles.body}>請重試一次。若問題持續，請聯絡 support@ark-studio.app{'\n'}Please try again.</Text>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="重試 Retry"
