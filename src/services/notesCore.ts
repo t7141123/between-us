@@ -56,3 +56,29 @@ export function sanitizeNotes(value: unknown): NoteMap {
   }
   return out;
 }
+
+/** Case-insensitive search over the note text and the question text. */
+export function filterNotes(
+  list: NoteListItem[],
+  query: string,
+  textOf: (qid: string) => string | undefined
+): NoteListItem[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return list;
+  return list.filter((n) => n.text.toLowerCase().includes(q) || (textOf(n.qid) ?? '').toLowerCase().includes(q));
+}
+
+/** Plain-text export (newest first): date, the question, then the note. */
+export function formatNotesExport(
+  list: NoteListItem[],
+  textOf: (qid: string) => string | undefined,
+  title: string
+): string {
+  const lines: string[] = [title, ''];
+  for (const n of list) {
+    const d = new Date(n.updatedAt);
+    const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    lines.push(`${date}`, `Q: ${textOf(n.qid) ?? n.qid}`, n.text, '');
+  }
+  return lines.join('\n').trimEnd() + '\n';
+}

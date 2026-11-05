@@ -949,6 +949,8 @@ export const MainApp: React.FC = () => {
         visible={isTimerOpen}
         locale={locale}
         colors={colors}
+        isPlus={isPlus}
+        onOpenStore={() => setIsStoreOpen(true)}
         onClose={() => setIsTimerOpen(false)}
         onPlaySuccessSound={playSuccess}
       />

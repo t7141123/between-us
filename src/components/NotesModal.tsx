@@ -16,7 +16,8 @@ import {
 } from 'react-native';
 import { FREE_NOTE_LIMIT, canUse } from '../constants/entitlements';
 import { I18nService } from '../services/i18n';
-import { listNotes, NOTE_MAX_LENGTH, NoteMap, visibleNotes } from '../services/notesCore';
+import { filterNotes, formatNotesExport, listNotes, NOTE_MAX_LENGTH, NoteMap, visibleNotes } from '../services/notesCore';
+import { shareTextFile } from '../services/exportText';
 import { LocaleKey, ThemeColors } from '../types';
 
 interface NotesModalProps {
@@ -46,10 +47,21 @@ const NotesSheet: React.FC<NotesModalProps> = ({
   const [draft, setDraft] = useState(() => (currentQid ? notes[currentQid]?.text ?? '' : ''));
 
   // The sheet is mounted only while the modal is open, so these start fresh on every open.
-  const { visible: shown, hiddenCount } = useMemo(
+  const [query, setQuery] = useState('');
+  const canSearch = canUse('note_search_export', { isPlus });
+  const { visible: windowed, hiddenCount } = useMemo(
     () => visibleNotes(listNotes(notes), canUse('full_note_history', { isPlus }), FREE_NOTE_LIMIT),
     [notes, isPlus]
   );
+  const shown = useMemo(
+    () => (canSearch ? filterNotes(windowed, query, textOf) : windowed),
+    [canSearch, windowed, query, textOf]
+  );
+
+  const handleExport = () => {
+    const all = listNotes(notes);
+    void shareTextFile('between-us-notes.txt', formatNotesExport(all, textOf, t('notes_export_title')));
+  };
   const total = Object.keys(notes).length;
   const border = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)';
 
@@ -97,7 +109,27 @@ const NotesSheet: React.FC<NotesModalProps> = ({
               </Pressable>
             </View>
           ) : (
-            <ScrollView style={styles.list} contentContainerStyle={{ paddingBottom: 8 }}>
+            <ScrollView style={styles.list} contentContainerStyle={{ paddingBottom: 8 }} keyboardShouldPersistTaps="handled">
+              {total > 0 && canSearch && (
+                <View style={styles.tools}>
+                  <TextInput
+                    value={query}
+                    onChangeText={setQuery}
+                    placeholder={t('notes_search')}
+                    placeholderTextColor={colors.muted}
+                    style={[styles.search, { color: colors.ink, borderColor: border, backgroundColor: isDark ? '#292524' : '#FFFFFF' }]}
+                    accessibilityLabel={t('notes_search')}
+                  />
+                  <Pressable accessibilityRole="button" onPress={handleExport} style={[styles.exportBtn, { borderColor: colors.clay }]}>
+                    <Text style={[styles.exportText, { color: colors.clay }]}>{t('notes_export')}</Text>
+                  </Pressable>
+                </View>
+              )}
+              {total > 0 && !canSearch && (
+                <Pressable accessibilityRole="button" onPress={() => { onClose(); onOpenStore(); }} style={styles.lockedTools}>
+                  <Text style={[styles.exportText, { color: colors.muted }]}>{`🔒 ${t('notes_search_locked')}`}</Text>
+                </Pressable>
+              )}
               {shown.length === 0 && <Text style={[styles.empty, { color: colors.muted }]}>{t('notes_empty')}</Text>}
               {shown.map((n) => (
                 <Pressable key={n.qid} accessibilityRole="button" onPress={() => { onClose(); onOpenQuestion(n.qid); }}
@@ -145,6 +177,11 @@ const styles = StyleSheet.create({
   primaryBtn: { height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
   primaryText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
   list: { flexGrow: 0 },
+  tools: { flexDirection: 'row', gap: 10, marginBottom: 12, alignItems: 'center' },
+  search: { flex: 1, borderWidth: 1, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 9, fontSize: 14.5 },
+  exportBtn: { borderWidth: 1, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 9 },
+  exportText: { fontSize: 13.5, fontWeight: '600' },
+  lockedTools: { alignItems: 'center', paddingBottom: 12 },
   empty: { textAlign: 'center', paddingVertical: 28, fontSize: 14, lineHeight: 22 },
   item: { borderWidth: 1, borderRadius: 14, padding: 14, marginBottom: 10 },
   itemQ: { fontSize: 12.5, lineHeight: 18, marginBottom: 6 },

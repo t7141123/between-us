@@ -37,3 +37,23 @@ test('sanitizeNotes drops malformed entries', () => {
   assert.deepEqual(sanitizeNotes(null), {});
   assert.deepEqual(sanitizeNotes([1, 2]), {});
 });
+
+import { filterNotes, formatNotesExport } from '../src/services/notesCore.ts';
+
+test('search matches note text or question text, case-insensitively', () => {
+  const list = [
+    { qid: 'a:1', text: 'Dinner was lovely', updatedAt: 3 },
+    { qid: 'b:2', text: 'short', updatedAt: 2 },
+  ];
+  const textOf = (qid) => ({ 'a:1': 'Where shall we travel?', 'b:2': 'What is TRUST?' })[qid];
+  assert.deepEqual(filterNotes(list, 'dinner', textOf).map((n) => n.qid), ['a:1']);
+  assert.deepEqual(filterNotes(list, 'trust', textOf).map((n) => n.qid), ['b:2']);
+  assert.equal(filterNotes(list, '  ', textOf).length, 2);
+  assert.equal(filterNotes(list, 'zzz', textOf).length, 0);
+});
+
+test('export formats newest first with question and note', () => {
+  const d = new Date(2026, 10, 5, 12).getTime();
+  const out = formatNotesExport([{ qid: 'a:1', text: 'my note', updatedAt: d }], () => 'The question?', 'Notes');
+  assert.equal(out, 'Notes\n\n2026-11-05\nQ: The question?\nmy note\n');
+});

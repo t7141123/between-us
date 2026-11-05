@@ -1,7 +1,7 @@
 /**
  * TimerModal Component: 5-minute conversation timer with audio chimes and confetti.
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -14,12 +14,15 @@ import { X, Clock, Play, Pause, RotateCcw } from 'lucide-react-native';
 import confetti from 'canvas-confetti';
 import { LocaleKey, ThemeColors } from '../types';
 import { I18nService } from '../services/i18n';
+import { afterCompletion, allowedDuration, DURATION_OPTIONS, FREE_DURATION, Turn } from '../services/timerCore';
 
 interface TimerModalProps {
   visible: boolean;
   locale: LocaleKey;
   colors: ThemeColors;
+  isPlus: boolean;
   onClose: () => void;
+  onOpenStore: () => void;
   onPlaySuccessSound?: () => void;
 }
 
@@ -27,53 +30,82 @@ export const TimerModal: React.FC<TimerModalProps> = ({
   visible,
   locale,
   colors,
+  isPlus,
   onClose,
+  onOpenStore,
   onPlaySuccessSound,
 }) => {
-  const [timeLeft, setTimeLeft] = useState(300);
+  const [duration, setDuration] = useState<number>(FREE_DURATION);
+  const [timeLeft, setTimeLeft] = useState<number>(FREE_DURATION);
   const [isRunning, setIsRunning] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [turnMode, setTurnMode] = useState(false);
+  const [turn, setTurn] = useState<Turn>(1);
+  const [sessionDone, setSessionDone] = useState(false);
+  const remainingRef = useRef<number>(FREE_DURATION);
+
+  const effectiveDuration = allowedDuration(duration, isPlus);
+  const effectiveTurnMode = isPlus && turnMode;
+
+  const handleComplete = useCallback(() => {
+    setIsRunning(false);
+    setIsCompleted(true);
+    onPlaySuccessSound?.();
+    if (Platform.OS === 'web' && typeof confetti === 'function') {
+      confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 }, colors: ['#C87D65', '#D4AF37', '#78726D'] });
+    }
+    const result = afterCompletion(effectiveTurnMode, turn);
+    setTurn(result.nextTurn);
+    setSessionDone(result.sessionDone);
+    remainingRef.current = effectiveDuration;
+    setTimeLeft(effectiveDuration);
+  }, [effectiveDuration, effectiveTurnMode, turn, onPlaySuccessSound]);
 
   useEffect(() => {
-    if (isRunning) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current as ReturnType<typeof setTimeout>);
-            setIsRunning(false);
-            setIsCompleted(true);
-            onPlaySuccessSound?.();
-            if (Platform.OS === 'web' && typeof confetti === 'function') {
-              confetti({
-                particleCount: 80,
-                spread: 60,
-                origin: { y: 0.6 },
-                colors: ['#C87D65', '#D4AF37', '#78726D'],
-              });
-            }
-            return 300;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isRunning, onPlaySuccessSound]);
+    if (!isRunning) return;
+    const id = setInterval(() => {
+      remainingRef.current -= 1;
+      setTimeLeft(remainingRef.current);
+      if (remainingRef.current <= 0) {
+        clearInterval(id);
+        handleComplete();
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [isRunning, handleComplete]);
+
+  const resetTo = (seconds: number) => {
+    setIsRunning(false);
+    setIsCompleted(false);
+    setSessionDone(false);
+    setTurn(1);
+    remainingRef.current = seconds;
+    setTimeLeft(seconds);
+  };
 
   const toggleStart = () => {
     if (isCompleted) setIsCompleted(false);
     setIsRunning((prev) => !prev);
   };
 
-  const resetTimer = () => {
-    setIsRunning(false);
-    setIsCompleted(false);
-    setTimeLeft(300);
+  const pickDuration = (seconds: number) => {
+    if (!isPlus) {
+      onClose();
+      onOpenStore();
+      return;
+    }
+    setDuration(seconds);
+    resetTo(seconds);
+  };
+
+  const toggleTurnMode = () => {
+    if (!isPlus) {
+      onClose();
+      onOpenStore();
+      return;
+    }
+    setTurnMode((prev) => !prev);
+    resetTo(effectiveDuration);
   };
 
   const formatTime = (seconds: number) => {
@@ -82,8 +114,14 @@ export const TimerModal: React.FC<TimerModalProps> = ({
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
-  const timerTitle = I18nService.t(locale, 'timer_title', '5 分鐘計時器');
-  const timerPrompt = I18nService.t(locale, 'timer_prompt', '給彼此五分鐘，一個人說，另一個人只聽。');
+  const minutes = Math.round(effectiveDuration / 60);
+  const t = (key: string) => I18nService.t(locale, key);
+  const timerTitle = effectiveDuration === FREE_DURATION
+    ? I18nService.t(locale, 'timer_title', '5 分鐘計時器')
+    : t('timer_title_n').replace('{min}', String(minutes));
+  const timerPrompt = effectiveTurnMode
+    ? t(turn === 1 ? 'timer_turn_1' : 'timer_turn_2')
+    : I18nService.t(locale, 'timer_prompt', '給彼此五分鐘，一個人說，另一個人只聽。');
   const startText = I18nService.t(locale, 'timer_start', '開始');
   const pauseText = I18nService.t(locale, 'timer_pause', '暫停');
   const resetText = I18nService.t(locale, 'timer_reset', '重設');
@@ -108,12 +146,37 @@ export const TimerModal: React.FC<TimerModalProps> = ({
           <Text style={[styles.title, { color: colors.ink }]}>{timerTitle}</Text>
           <Text style={[styles.prompt, { color: colors.muted }]}>{timerPrompt}</Text>
 
+          <View style={styles.chipRow}>
+            {DURATION_OPTIONS.map((sec) => {
+              const active = effectiveDuration === sec;
+              return (
+                <TouchableOpacity
+                  key={sec}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: active }}
+                  onPress={() => pickDuration(sec)}
+                  style={[styles.chip, { borderColor: active ? colors.clay : colors.line, backgroundColor: active ? colors.clay : 'transparent' }]}
+                >
+                  <Text style={{ color: active ? '#FFFFFF' : colors.ink, fontSize: 12.5, fontWeight: '600' }}>
+                    {`${isPlus || sec === FREE_DURATION ? '' : '🔒 '}${sec / 60}'`}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          <TouchableOpacity accessibilityRole="switch" accessibilityState={{ checked: effectiveTurnMode }} onPress={toggleTurnMode} style={styles.turnRow}>
+            <Text style={{ color: effectiveTurnMode ? colors.clay : colors.muted, fontSize: 12.5, fontWeight: '600' }}>
+              {`${isPlus ? '' : '🔒 '}${effectiveTurnMode ? '◉' : '○'}  ${t('timer_turn_mode')}`}
+            </Text>
+          </TouchableOpacity>
+
           <Text style={[styles.digits, { color: colors.clay }]}>{formatTime(timeLeft)}</Text>
 
           {isCompleted && (
             <View style={[styles.completedBadge, { backgroundColor: colors.badgeBg, borderColor: colors.clay }]}>
               <Text style={[styles.completedText, { color: colors.clay }]}>
-                ✨ {I18nService.t(locale, 'timer_end', '時間到')}
+                ✨ {sessionDone ? t('timer_all_done') : I18nService.t(locale, 'timer_end', '時間到')}
               </Text>
             </View>
           )}
@@ -133,7 +196,7 @@ export const TimerModal: React.FC<TimerModalProps> = ({
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={resetTimer}
+              onPress={() => resetTo(effectiveDuration)}
               style={[styles.secondaryBtn, { borderColor: colors.line, backgroundColor: colors.card }]}
               activeOpacity={0.8}
             >
@@ -226,6 +289,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     letterSpacing: 0.5,
+  },
+  chipRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 10,
+  },
+  chip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  turnRow: {
+    paddingVertical: 6,
+    marginBottom: 6,
   },
   actionsRow: {
     flexDirection: 'row',
