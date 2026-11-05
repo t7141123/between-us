@@ -4,6 +4,13 @@
  */
 
 export const STORE_ITEMS = {
+  plus: {
+    id: 'plus',
+    name: '在我們之間 - Plus 全部解鎖',
+    amount: 290,
+    type: 'plus',
+    target: 'plus',
+  },
   pack_sensual: {
     id: 'pack_sensual',
     name: '在我們之間 - 深夜私語擴充包',
@@ -456,6 +463,41 @@ export function normalizeQid(value) {
   return /^(?:pack:(?:sensual|marriage|parenting)|vision|soul|finance|intimacy|fun|growth|faith):\d{1,3}$/.test(value)
     ? value
     : '';
+}
+
+/** Packs and skins that Plus unlocks (kept in sync with the client's PACK_IDS / skin ids). */
+export const PLUS_PACKS = ['sensual', 'marriage', 'parenting'];
+export const PLUS_SKINS = ['noir_gold', 'rose_wine', 'forest_sage'];
+
+/**
+ * Expands a user's entitlement item keys into what the client should unlock.
+ * Plus unlocks every pack and skin (including packs added later: the client treats isPlus as "all").
+ */
+export function resolveEntitlements(entitlementKeys) {
+  const unlockedPacks = [];
+  const unlockedSkins = ['classic'];
+  let isSupporter = false;
+  let isPlus = false;
+  const addPack = (id) => { if (!unlockedPacks.includes(id)) unlockedPacks.push(id); };
+  const addSkin = (id) => { if (!unlockedSkins.includes(id)) unlockedSkins.push(id); };
+
+  for (const key of entitlementKeys) {
+    const meta = STORE_ITEMS[key];
+    if (meta?.type === 'plus') {
+      isPlus = true;
+      PLUS_PACKS.forEach(addPack);
+      PLUS_SKINS.forEach(addSkin);
+    } else if (meta?.type === 'pack' && meta.target) {
+      addPack(meta.target);
+    } else if (meta?.type === 'skin' && meta.target) {
+      addSkin(meta.target);
+    } else if (meta?.type === 'bundle_skins') {
+      PLUS_SKINS.forEach(addSkin);
+    } else if (meta?.type === 'supporter' || key.includes('tip_') || key === 'supporter') {
+      isSupporter = true;
+    }
+  }
+  return { unlockedPacks, unlockedSkins, isSupporter, isPlus };
 }
 
 /** Rooms are temporary: anything not updated for this long is treated as expired and removed. */

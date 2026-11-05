@@ -105,3 +105,19 @@ test('sync entitlements requires a Bearer token', async () => {
   const res = await syncGet({ request: new Request('https://t.test/s?userId=u1'), env });
   assert.equal(res.status, 401);
 });
+
+test('Plus unlocks every pack and skin and sets isPlus; single items stay single', async () => {
+  const { resolveEntitlements } = await import('../functions/api/payment/_lib.js');
+  const plus = resolveEntitlements(['plus']);
+  assert.equal(plus.isPlus, true);
+  assert.deepEqual(plus.unlockedPacks.sort(), ['marriage', 'parenting', 'sensual']);
+  assert.deepEqual(plus.unlockedSkins.sort(), ['classic', 'forest_sage', 'noir_gold', 'rose_wine']);
+  const single = resolveEntitlements(['pack_sensual', 'skin_noir_gold', 'tip_coffee']);
+  assert.equal(single.isPlus, false);
+  assert.deepEqual(single.unlockedPacks, ['sensual']);
+  assert.deepEqual(single.unlockedSkins, ['classic', 'noir_gold']);
+  assert.equal(single.isSupporter, true);
+  const bundle = resolveEntitlements(['bundle_skins']);
+  assert.equal(bundle.unlockedSkins.length, 4);
+  assert.equal(resolveEntitlements(['unknown_item']).isPlus, false);
+});

@@ -21,6 +21,7 @@ const STORAGE_KEYS = {
   CARD_SKIN: 'betweenus.card_skin',
   UNLOCKED_SKINS: 'betweenus.unlocked_skins',
   SUPPORTER: 'betweenus.supporter',
+  PLUS: 'betweenus.plus',
   AUTH_USER: 'betweenus.auth_user',
   SEEN: 'betweenus.seen',
   STREAK: 'betweenus.streak',
@@ -308,6 +309,22 @@ export const StorageService = {
   async setOnboarded(done: boolean): Promise<void> {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDED, done ? '1' : '0');
+    } catch {
+      // Storage write error
+    }
+  },
+
+  async getIsPlus(): Promise<boolean> {
+    try {
+      return (await AsyncStorage.getItem(STORAGE_KEYS.PLUS)) === '1';
+    } catch {
+      return false;
+    }
+  },
+
+  async setIsPlus(isPlus: boolean): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.PLUS, isPlus ? '1' : '0');
     } catch {
       // Storage write error
     }

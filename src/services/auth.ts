@@ -13,6 +13,7 @@ export interface SyncResult {
   unlockedPacks: string[];
   unlockedSkins?: CardSkinId[];
   isSupporter: boolean;
+  isPlus: boolean;
 }
 
 /** Authorization header for the currently signed-in user (empty when signed out). */
@@ -108,6 +109,7 @@ export const AuthService = {
         unlockedPacks: string[];
         unlockedSkins?: CardSkinId[];
         isSupporter: boolean;
+        isPlus?: boolean;
       };
 
       // Merge into local storage
@@ -127,10 +129,15 @@ export const AuthService = {
         await StorageService.setIsSupporter(true);
       }
 
+      // The server is the source of truth for Plus (covers refunds as well as purchases).
+      const isPlus = data.isPlus === true;
+      await StorageService.setIsPlus(isPlus);
+
       return {
         unlockedPacks: mergedPacks,
         unlockedSkins: data.unlockedSkins || [],
         isSupporter: data.isSupporter,
+        isPlus,
       };
     } catch {
       return null;

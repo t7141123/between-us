@@ -17,6 +17,7 @@ import { AuthService, AuthUser } from '../services/auth';
 import { I18nService } from '../services/i18n';
 import { IapService } from '../services/iap';
 import { PaymentService, StoreItemKey } from '../services/payment';
+import { PLUS_FEATURE_KEYS } from '../constants/entitlements';
 import { CardSkinId, LocaleKey, ThemeColors, ThemeMode } from '../types';
 
 interface StoreModalProps {
@@ -29,6 +30,8 @@ interface StoreModalProps {
   unlockedSkins?: CardSkinId[];
   selectedSkin: CardSkinId;
   isSupporter: boolean;
+  isPlus: boolean;
+  onSetPlus: (isPlus: boolean) => void;
   currentUser?: AuthUser | null;
   onSelectSkin: (skinId: CardSkinId) => void;
   onUnlockSkin?: (skinId: CardSkinId) => void;
@@ -39,13 +42,13 @@ interface StoreModalProps {
   onLogout?: () => void;
 }
 
-type TabKey = 'packs' | 'skins' | 'support';
+type TabKey = 'plus' | 'packs' | 'skins' | 'support';
 
 interface PendingCheckout {
   itemKey: StoreItemKey;
   title: string;
   amountText: string;
-  type: 'pack' | 'skin' | 'bundle_skins' | 'supporter';
+  type: 'pack' | 'skin' | 'bundle_skins' | 'supporter' | 'plus';
   targetId?: string;
 }
 
@@ -59,6 +62,8 @@ export const StoreModal: React.FC<StoreModalProps> = ({
   unlockedSkins = ['classic'],
   selectedSkin,
   isSupporter,
+  isPlus,
+  onSetPlus,
   currentUser,
   onSelectSkin,
   onUnlockSkin,
@@ -68,7 +73,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
   onOpenAuth,
   onLogout,
 }) => {
-  const [activeTab, setActiveTab] = useState<TabKey>('packs');
+  const [activeTab, setActiveTab] = useState<TabKey>(isPlus ? 'packs' : 'plus');
   const [redeemFeedback, setRedeemFeedback] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [storePrices, setStorePrices] = useState<Record<string, string>>({});
@@ -104,6 +109,11 @@ export const StoreModal: React.FC<StoreModalProps> = ({
         setTimeout(() => setRedeemFeedback(null), 3500);
         return;
       }
+      if (target.type === 'plus' && isPlus) {
+        setRedeemFeedback(I18nService.t(locale, 'plus_owned_msg'));
+        setTimeout(() => setRedeemFeedback(null), 3500);
+        return;
+      }
       if (target.type === 'supporter' && isSupporter) {
         setRedeemFeedback(I18nService.t(locale, 'item_already_owned', '您已是金色支持者，感謝您的陪伴！'));
         setTimeout(() => setRedeemFeedback(null), 3500);
@@ -112,7 +122,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
 
       setPendingCheckout(target);
     }
-  }, [currentUser, queuedCheckout, unlockedPacks, unlockedSkins, isSupporter, locale]);
+  }, [currentUser, queuedCheckout, unlockedPacks, unlockedSkins, isSupporter, isPlus, locale]);
 
   const guardAuthForCheckout = (checkout: PendingCheckout): boolean => {
     if (!currentUser) {
@@ -121,6 +131,18 @@ export const StoreModal: React.FC<StoreModalProps> = ({
       return false;
     }
     return true;
+  };
+
+  const requestPlusCheckout = () => {
+    const checkout: PendingCheckout = {
+      itemKey: 'plus',
+      title: I18nService.t(locale, 'plus_title'),
+      amountText: priceFor('plus', 'NT$ 290'),
+      type: 'plus',
+    };
+    if (guardAuthForCheckout(checkout)) {
+      setPendingCheckout(checkout);
+    }
   };
 
   const requestPackCheckout = (pack: typeof EXPANSION_PACKS[0]) => {
@@ -203,6 +225,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
           cloud.unlockedPacks.forEach((p) => onUnlockPack(p));
           cloud.unlockedSkins?.forEach((sk) => onUnlockSkin?.(sk));
           if (cloud.isSupporter) onSetSupporter(true);
+          if (cloud.isPlus && !isPlus) onSetPlus(true);
         }
       }
       setRedeemFeedback(I18nService.t(locale, 'restore_completed', '已完成購買項目恢復與同步'));
@@ -241,6 +264,8 @@ export const StoreModal: React.FC<StoreModalProps> = ({
             cloud.unlockedPacks.forEach((p) => onUnlockPack(p));
             cloud.unlockedSkins?.forEach((sk) => onUnlockSkin?.(sk));
             if (cloud.isSupporter) onSetSupporter(true);
+            if (cloud.isPlus && !isPlus) onSetPlus(true);
+          if (cloud.isPlus && !isPlus) onSetPlus(true);
           }
           setRedeemFeedback(I18nService.t(locale, 'redeem_success'));
         } else if (result.status === 'unavailable') {
@@ -309,7 +334,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
               { borderBottomColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' },
             ]}
           >
-            {(['packs', 'skins', 'support'] as TabKey[]).map((tab) => {
+            {(['plus', 'packs', 'skins', 'support'] as TabKey[]).map((tab) => {
               const active = activeTab === tab;
               return (
                 <Pressable
@@ -330,6 +355,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                       active && styles.tabTextActive,
                     ]}
                   >
+                    {tab === 'plus' && 'Plus'}
                     {tab === 'packs' && I18nService.t(locale, 'tab_packs')}
                     {tab === 'skins' && I18nService.t(locale, 'tab_skins')}
                     {tab === 'support' && I18nService.t(locale, 'tab_support')}
@@ -362,6 +388,52 @@ export const StoreModal: React.FC<StoreModalProps> = ({
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
+            {/* Tab: Plus (one-time unlock of everything) */}
+            {activeTab === 'plus' && (
+              <View>
+                <View
+                  style={[
+                    styles.thankBox,
+                    {
+                      backgroundColor: isDark ? '#292524' : '#FFFFFF',
+                      borderColor: isPlus ? colors.clay : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                    },
+                  ]}
+                >
+                  <Text style={[styles.thankTitle, { color: colors.ink }]}>
+                    {isPlus ? I18nService.t(locale, 'plus_owned_title') : I18nService.t(locale, 'plus_title')}
+                  </Text>
+                  <Text style={[styles.thankDesc, { color: colors.muted }]}>
+                    {isPlus ? I18nService.t(locale, 'plus_owned_msg') : I18nService.t(locale, 'plus_subtitle')}
+                  </Text>
+                  <View style={{ marginTop: 14, gap: 8 }}>
+                    {PLUS_FEATURE_KEYS.map((key) => (
+                      <Text key={key} style={[styles.thankDesc, { color: colors.ink }]}>
+                        {'✦  '}
+                        {I18nService.t(locale, key)}
+                      </Text>
+                    ))}
+                  </View>
+                </View>
+                {!isPlus && (
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={requestPlusCheckout}
+                    style={[styles.unlockBtn, { backgroundColor: colors.clay, alignSelf: 'stretch', marginTop: 14 }]}
+                  >
+                    <Text style={styles.unlockBtnText}>
+                      {`${I18nService.t(locale, 'plus_buy')} · ${priceFor('plus', 'NT$ 290')}`}
+                    </Text>
+                  </Pressable>
+                )}
+                {!isPlus && (
+                  <Text style={[styles.thankDesc, { color: colors.muted, textAlign: 'center', marginTop: 10 }]}>
+                    {I18nService.t(locale, 'plus_one_time')}
+                  </Text>
+                )}
+              </View>
+            )}
+
             {/* Tab: Expansion Packs */}
             {activeTab === 'packs' && (
               <View>

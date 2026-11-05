@@ -3,7 +3,7 @@
  * Allows client to fetch and claim unlocked expansion packs and supporter perks across platforms.
  */
 import {
-  STORE_ITEMS,
+  resolveEntitlements,
   ensureOrdersTable,
   grantEntitlement,
   getCorsHeaders,
@@ -61,28 +61,7 @@ export async function onRequestGet(context) {
       .all();
 
     const entitlements = (rows.results || []).map((r) => r.item_key);
-    const unlockedPacks = [];
-    const unlockedSkins = ['classic'];
-    let isSupporter = false;
-
-    for (const key of entitlements) {
-      const meta = STORE_ITEMS[key];
-      if (meta?.type === 'pack' && meta.target) {
-        if (!unlockedPacks.includes(meta.target)) {
-          unlockedPacks.push(meta.target);
-        }
-      } else if (meta?.type === 'skin' && meta.target) {
-        if (!unlockedSkins.includes(meta.target)) {
-          unlockedSkins.push(meta.target);
-        }
-      } else if (meta?.type === 'bundle_skins') {
-        if (!unlockedSkins.includes('noir_gold')) unlockedSkins.push('noir_gold');
-        if (!unlockedSkins.includes('rose_wine')) unlockedSkins.push('rose_wine');
-        if (!unlockedSkins.includes('forest_sage')) unlockedSkins.push('forest_sage');
-      } else if (meta?.type === 'supporter' || key.includes('tip_') || key === 'supporter') {
-        isSupporter = true;
-      }
-    }
+    const { unlockedPacks, unlockedSkins, isSupporter, isPlus } = resolveEntitlements(entitlements);
 
     return new Response(
       JSON.stringify({
@@ -91,6 +70,7 @@ export async function onRequestGet(context) {
         unlockedPacks,
         unlockedSkins,
         isSupporter,
+        isPlus,
       }),
       { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
     );

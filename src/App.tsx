@@ -21,6 +21,7 @@ import { LocaleKey, CategoryFilter, QuestionEntry, CardSkinId } from './types';
 import { DeckEndModal } from './components/DeckEndModal';
 import { OnboardingModal } from './components/OnboardingModal';
 import { DailyModal } from './components/DailyModal';
+import { CARD_SKINS } from './constants/packs';
 import { NotesModal } from './components/NotesModal';
 import { NoteMap, saveNote } from './services/notesCore';
 import { ReminderService } from './services/reminders';
@@ -117,8 +118,15 @@ export const MainApp: React.FC = () => {
   const [isDeckEndOpen, setIsDeckEndOpen] = useState(false);
 
   const [isStorageLoaded, setIsStorageLoaded] = useState(false);
-  const [unlockedPacks, setUnlockedPacks] = useState<string[]>([]);
-  const [unlockedSkins, setUnlockedSkins] = useState<CardSkinId[]>(['classic']);
+  // What was bought individually (or synced from the account). Plus adds everything on top: see below.
+  const [ownedPacks, setOwnedPacks] = useState<string[]>([]);
+  const [ownedSkins, setOwnedSkins] = useState<CardSkinId[]>(['classic']);
+  const [isPlus, setIsPlus] = useState(false);
+  const unlockedPacks = useMemo(() => (isPlus ? [...PACK_IDS] : ownedPacks), [isPlus, ownedPacks]);
+  const unlockedSkins = useMemo<CardSkinId[]>(
+    () => (isPlus ? CARD_SKINS.map((skin) => skin.id) : ownedSkins),
+    [isPlus, ownedSkins]
+  );
   const [selectedSkin, setSelectedSkin] = useState<CardSkinId>('classic');
   const [isSupporter, setIsSupporter] = useState(false);
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
@@ -137,8 +145,6 @@ export const MainApp: React.FC = () => {
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const [notesBrowseOnly, setNotesBrowseOnly] = useState(false);
   const [notes, setNotes] = useState<NoteMap>({});
-  // Plus (one-time unlock of everything) arrives in a later release; free limits apply until then.
-  const isPlus = false;
   const [reminder, setReminder] = useState<ReminderSettings>(DEFAULT_REMINDER);
   const [permissionDenied, setPermissionDenied] = useState(false);
   const progress = useProgress();
@@ -158,9 +164,10 @@ export const MainApp: React.FC = () => {
       if (cancelled || recovered === 0) return;
       const cloud = await AuthService.syncCloudEntitlements();
       if (cancelled || !cloud) return;
-      if (cloud.unlockedPacks.length > 0) setUnlockedPacks(cloud.unlockedPacks);
-      if (cloud.unlockedSkins && cloud.unlockedSkins.length > 0) setUnlockedSkins(cloud.unlockedSkins);
+      if (cloud.unlockedPacks.length > 0) setOwnedPacks(cloud.unlockedPacks);
+      if (cloud.unlockedSkins && cloud.unlockedSkins.length > 0) setOwnedSkins(cloud.unlockedSkins);
       if (cloud.isSupporter) setIsSupporter(true);
+      setIsPlus(cloud.isPlus);
     });
     return () => {
       cancelled = true;
@@ -183,8 +190,10 @@ export const MainApp: React.FC = () => {
       StorageService.getOnboarded(),
       StorageService.getReminder(),
       StorageService.getNotes(),
-    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter, savedUser, savedSkins, savedSeen, savedStreak, onboarded, savedReminder, savedNotes]) => {
+      StorageService.getIsPlus(),
+    ]).then(([savedLocale, savedFavs, savedPacks, savedSkin, savedSupporter, savedUser, savedSkins, savedSeen, savedStreak, onboarded, savedReminder, savedNotes, savedPlus]) => {
       if (!mounted) return;
+      setIsPlus(savedPlus);
       setNotes(savedNotes);
       setReminder(savedReminder);
       hydrateProgress(savedSeen, savedStreak);
@@ -194,11 +203,11 @@ export const MainApp: React.FC = () => {
       const migrated = migrateFavorites(savedFavs);
       if (migrated.changed) StorageService.setFavorites(migrated.favorites);
       setFavorites(migrated.favorites);
-      setUnlockedPacks(savedPacks);
+      setOwnedPacks(savedPacks);
       setSelectedSkin(savedSkin);
       setIsSupporter(savedSupporter);
       if (savedSkins && savedSkins.length > 0) {
-        setUnlockedSkins(savedSkins);
+        setOwnedSkins(savedSkins);
       }
       if (savedUser) {
         setCurrentUser(savedUser);
@@ -206,14 +215,15 @@ export const MainApp: React.FC = () => {
         AuthService.syncCloudEntitlements(savedUser.id).then((cloud) => {
           if (!mounted || !cloud) return;
           if (cloud.unlockedPacks.length > 0) {
-            setUnlockedPacks(cloud.unlockedPacks);
+            setOwnedPacks(cloud.unlockedPacks);
           }
           if (cloud.unlockedSkins && cloud.unlockedSkins.length > 0) {
-            setUnlockedSkins(cloud.unlockedSkins);
+            setOwnedSkins(cloud.unlockedSkins);
           }
           if (cloud.isSupporter) {
             setIsSupporter(true);
           }
+          setIsPlus(cloud.isPlus);
         });
       }
       setIsStorageLoaded(true);
@@ -432,8 +442,15 @@ export const MainApp: React.FC = () => {
     playSuccess();
     triggerNotification();
     StorageService.unlockPack(packId).then((updated) => {
-      setUnlockedPacks(updated);
+      setOwnedPacks(updated);
     });
+  }, [playSuccess, triggerNotification]);
+
+  const handleSetPlus = useCallback((plus: boolean) => {
+    playSuccess();
+    triggerNotification();
+    setIsPlus(plus);
+    StorageService.setIsPlus(plus);
   }, [playSuccess, triggerNotification]);
 
   const handleSetSupporter = useCallback((supporter: boolean) => {
@@ -447,7 +464,7 @@ export const MainApp: React.FC = () => {
     playSuccess();
     triggerNotification();
     StorageService.unlockSkin(skinId).then((updated) => {
-      setUnlockedSkins(updated);
+      setOwnedSkins(updated);
     });
   }, [playSuccess, triggerNotification]);
 
@@ -489,11 +506,12 @@ export const MainApp: React.FC = () => {
     setCurrentUser(user);
   }, []);
 
-  const handleSyncComplete = useCallback((packs: string[], supporter: boolean, skins?: CardSkinId[]) => {
-    setUnlockedPacks(packs);
+  const handleSyncComplete = useCallback((packs: string[], supporter: boolean, skins?: CardSkinId[], plus?: boolean) => {
+    if (plus !== undefined) setIsPlus(plus);
+    setOwnedPacks(packs);
     setIsSupporter(supporter);
     if (skins && skins.length > 0) {
-      setUnlockedSkins(skins);
+      setOwnedSkins(skins);
     }
     if (Platform.OS === 'web' && typeof confetti === 'function') {
       confetti({
@@ -576,6 +594,8 @@ export const MainApp: React.FC = () => {
         if (res && res.paid) {
           if (res.type === 'pack' && res.target) {
             handleUnlockPack(res.target);
+          } else if (res.type === 'plus') {
+            handleSetPlus(true);
           } else if (res.type === 'supporter') {
             handleSetSupporter(true);
           } else if (res.type === 'skin' && res.target) {
@@ -604,7 +624,7 @@ export const MainApp: React.FC = () => {
     } else if (payment === 'cancelled' || payment === 'failed') {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [currentUser, handleSelectSkin, handleSetSupporter, handleUnlockPack, handleUnlockSkin]);
+  }, [currentUser, handleSelectSkin, handleSetPlus, handleSetSupporter, handleUnlockPack, handleUnlockSkin]);
 
   // Global keyboard shortcuts for web desktop
   useEffect(() => {
@@ -892,6 +912,8 @@ export const MainApp: React.FC = () => {
         unlockedSkins={unlockedSkins}
         selectedSkin={selectedSkin}
         isSupporter={isSupporter}
+        isPlus={isPlus}
+        onSetPlus={handleSetPlus}
         currentUser={currentUser}
         onSelectSkin={handleSelectSkin}
         onUnlockSkin={handleUnlockSkin}

@@ -28,7 +28,7 @@ interface AuthModalProps {
   purchaseGateNotice?: boolean;
   onClose: () => void;
   onUserChanged: (user: AuthUser | null) => void;
-  onSyncComplete: (unlockedPacks: string[], isSupporter: boolean, unlockedSkins?: CardSkinId[]) => void;
+  onSyncComplete: (unlockedPacks: string[], isSupporter: boolean, unlockedSkins?: CardSkinId[], isPlus?: boolean) => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
@@ -71,7 +71,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       onUserChanged(res.user);
       const syncRes = await AuthService.syncCloudEntitlements(res.user.id);
       if (syncRes) {
-        onSyncComplete(syncRes.unlockedPacks, syncRes.isSupporter, syncRes.unlockedSkins);
+        onSyncComplete(syncRes.unlockedPacks, syncRes.isSupporter, syncRes.unlockedSkins, syncRes.isPlus);
       }
       setFeedback(
         authMode === 'register'
@@ -110,7 +110,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       onUserChanged(res.user);
       const syncRes = await AuthService.syncCloudEntitlements(res.user.id);
       if (syncRes) {
-        onSyncComplete(syncRes.unlockedPacks, syncRes.isSupporter, syncRes.unlockedSkins);
+        onSyncComplete(syncRes.unlockedPacks, syncRes.isSupporter, syncRes.unlockedSkins, syncRes.isPlus);
       }
       setFeedback(I18nService.t(locale, 'sync_success'));
       setTimeout(() => {

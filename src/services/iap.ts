@@ -15,6 +15,7 @@ import type { StoreItemKey } from './payment';
 import { PaymentService } from './payment';
 
 export const IAP_PRODUCT_IDS: StoreItemKey[] = [
+  'plus',
   'pack_sensual',
   'pack_marriage',
   'pack_parenting',

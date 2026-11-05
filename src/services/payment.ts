@@ -8,6 +8,7 @@ import { StorageService } from './storage';
 import { API_BASE_URL } from '../constants/api';
 
 export type StoreItemKey =
+  | 'plus'
   | 'pack_sensual'
   | 'pack_marriage'
   | 'pack_parenting'
@@ -27,7 +28,7 @@ export interface VerifyOrderResponse {
   itemKey?: string;
   amount?: number;
   target?: string | null;
-  type?: 'pack' | 'supporter' | 'skin' | 'bundle_skins' | null;
+  type?: 'pack' | 'supporter' | 'skin' | 'bundle_skins' | 'plus' | null;
   error?: string;
 }
 
