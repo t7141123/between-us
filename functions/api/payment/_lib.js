@@ -227,6 +227,15 @@ export async function ensureOrdersTable(db) {
       );
     `),
     db.prepare(`
+      CREATE TABLE IF NOT EXISTS user_data (
+        user_id TEXT NOT NULL,
+        kind TEXT NOT NULL,
+        payload TEXT NOT NULL,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (user_id, kind)
+      );
+    `),
+    db.prepare(`
       CREATE TABLE IF NOT EXISTS sync_rooms (
         code TEXT PRIMARY KEY,
         category TEXT NOT NULL,

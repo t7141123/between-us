@@ -23,7 +23,10 @@ import { OnboardingModal } from './components/OnboardingModal';
 import { DailyModal } from './components/DailyModal';
 import { CARD_SKINS } from './constants/packs';
 import { NotesModal } from './components/NotesModal';
-import { NoteMap, saveNote } from './services/notesCore';
+import { NoteMap, sanitizeNotes, saveNote } from './services/notesCore';
+import { contentHash, mergeFavorites, mergeNotes, mergeSeen } from './services/syncCore';
+import type { KindAdapter } from './services/cloudSync';
+import { useCloudSync } from './hooks/useCloudSync';
 import { ReminderService } from './services/reminders';
 import { dailyQid, DEFAULT_REMINDER, ReminderSettings } from './services/dailyCore';
 import { ProgressBadge } from './components/ProgressBadge';
@@ -343,6 +346,55 @@ export const MainApp: React.FC = () => {
       return next;
     });
   }, []);
+
+  // ---- Cloud backup (Plus + signed in) ----
+  const seenSorted = useMemo(() => [...progress.seen].sort(), [progress.seen]);
+  const replaceSeen = progress.replaceSeen;
+  const cloudAdapters = useMemo<KindAdapter<any>[]>(
+    () => [
+      {
+        kind: 'favorites',
+        read: () => favorites,
+        normalize: (raw: unknown) =>
+          raw && typeof raw === 'object' && !Array.isArray(raw)
+            ? Object.fromEntries(Object.keys(raw as object).map((k) => [k, true]))
+            : {},
+        apply: (v: Record<string, boolean>) => {
+          setFavorites(v);
+          void StorageService.setFavorites(v);
+        },
+        merge: mergeFavorites,
+        isEmpty: (v: Record<string, boolean>) => Object.keys(v).length === 0,
+      },
+      {
+        kind: 'notes',
+        read: () => notes,
+        normalize: sanitizeNotes,
+        apply: (v: NoteMap) => {
+          setNotes(v);
+          void StorageService.setNotes(v);
+        },
+        merge: mergeNotes,
+        isEmpty: (v: NoteMap) => Object.keys(v).length === 0,
+      },
+      {
+        kind: 'seen',
+        read: () => seenSorted,
+        normalize: (raw: unknown) => (Array.isArray(raw) ? raw.filter((x): x is string => typeof x === 'string').sort() : []),
+        apply: (v: string[]) => replaceSeen(v),
+        merge: mergeSeen,
+        isEmpty: (v: string[]) => v.length === 0,
+      },
+    ],
+    [favorites, notes, seenSorted, replaceSeen]
+  );
+  const cloudDataKey = useMemo(() => contentHash([favorites, notes, seenSorted]), [favorites, notes, seenSorted]);
+  const cloud = useCloudSync({
+    enabled: isPlus && currentUser !== null && isStorageLoaded,
+    userId: currentUser?.id ?? null,
+    adapters: cloudAdapters,
+    dataKey: cloudDataKey,
+  });
 
   const lastNavTimeRef = useRef(0);
 
@@ -972,6 +1024,14 @@ export const MainApp: React.FC = () => {
         onOpenTimer={() => {
           playClick();
           setIsTimerOpen(true);
+        }}
+        cloudBackup={{
+          state: !isPlus ? 'locked' : currentUser ? cloud.status : 'needs_login',
+          onPress: () => {
+            if (!isPlus) setIsStoreOpen(true);
+            else if (!currentUser) setIsAuthOpen(true);
+            else void cloud.syncNow();
+          },
         }}
         onOpenNotes={() => {
           playClick();

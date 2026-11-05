@@ -42,6 +42,7 @@ export async function onRequestPost(context) {
 
     await env.DB.batch([
       env.DB.prepare('DELETE FROM user_entitlements WHERE user_id = ?').bind(userId),
+      env.DB.prepare('DELETE FROM user_data WHERE user_id = ?').bind(userId),
       // Keep financial records but detach them from the person.
       env.DB.prepare('UPDATE orders SET user_id = NULL WHERE user_id = ?').bind(userId),
       env.DB.prepare('DELETE FROM users WHERE id = ?').bind(userId),

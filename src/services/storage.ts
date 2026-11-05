@@ -7,6 +7,7 @@ import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { AuthUser, CardSkinId, LocaleKey, ThemeMode } from '../types';
 import { EMPTY_STREAK, StreakState } from './progressCore';
+import type { SyncState } from './cloudSync';
 import { NoteMap, sanitizeNotes } from './notesCore';
 import { DEFAULT_REMINDER, ReminderSettings, sanitizeReminder } from './dailyCore';
 
@@ -28,6 +29,7 @@ const STORAGE_KEYS = {
   ONBOARDED: 'betweenus.onboarded',
   REMINDER: 'betweenus.reminder',
   NOTES: 'betweenus.notes',
+  SYNC_STATE: 'betweenus.sync_state',
 } as const;
 
 export const StorageService = {
@@ -275,6 +277,29 @@ export const StorageService = {
   async setNotes(notes: NoteMap): Promise<void> {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
+    } catch {
+      // Storage write error
+    }
+  },
+
+  async getSyncState(): Promise<SyncState> {
+    try {
+      const raw = await AsyncStorage.getItem(STORAGE_KEYS.SYNC_STATE);
+      if (raw) {
+        const p = JSON.parse(raw) as Partial<SyncState>;
+        if (typeof p.userId === 'string' && p.kinds && typeof p.kinds === 'object') {
+          return { userId: p.userId, kinds: p.kinds };
+        }
+      }
+    } catch {
+      // Ignore parse failure
+    }
+    return { userId: '', kinds: {} };
+  },
+
+  async setSyncState(state: SyncState): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.SYNC_STATE, JSON.stringify(state));
     } catch {
       // Storage write error
     }

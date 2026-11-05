@@ -100,6 +100,7 @@ open ios/BetweenUs.xcworkspace
 | Contact Info → Email Address | 是 | 否 | App Functionality（帳號、跨裝置同步） |
 | Identifiers → User ID | 是 | 否 | App Functionality |
 | Purchases → Purchase History | 是 | 否 | App Functionality（恢復購買） |
+| User Content → Other User Content（Plus 雲端備份：收藏、筆記、自訂題目） | 是 | 否 | App Functionality（僅 Plus 且已登入時上傳） |
 | Usage Data → Product Interaction（匿名裝置編號、時長、平台） | 否 | 否 | Analytics（可在 App 內關閉） |
 
 - 「Do you use data for tracking?」→ **否**（無廣告 SDK、不與第三方共享）。

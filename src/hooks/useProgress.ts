@@ -47,5 +47,12 @@ export function useProgress() {
     void StorageService.setSeen([...next]);
   }, []);
 
-  return { seen, seenRef, streak, hydrate, markSeen, resetSeen };
+  /** Replace everything (used when a cloud backup is adopted or merged). */
+  const replaceSeen = useCallback((qids: string[]) => {
+    seenRef.current = new Set(qids);
+    setSeen(seenRef.current);
+    void StorageService.setSeen(qids);
+  }, []);
+
+  return { seen, seenRef, streak, hydrate, markSeen, resetSeen, replaceSeen };
 }
