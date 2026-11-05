@@ -23,6 +23,7 @@ import { OnboardingModal } from './components/OnboardingModal';
 import { DailyModal } from './components/DailyModal';
 import { CARD_SKINS } from './constants/packs';
 import { NotesModal } from './components/NotesModal';
+import { ShareSheet } from './components/ShareSheet';
 import { SessionsModal } from './components/SessionsModal';
 import { sessionIdOfCategory } from './services/sessionCore';
 import { CustomQuestionsModal } from './components/CustomQuestionsModal';
@@ -157,6 +158,7 @@ export const MainApp: React.FC = () => {
   const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
   const [isCustomOpen, setIsCustomOpen] = useState(false);
   const [isSessionsOpen, setIsSessionsOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [reminder, setReminder] = useState<ReminderSettings>(DEFAULT_REMINDER);
   const [permissionDenied, setPermissionDenied] = useState(false);
   const progress = useProgress();
@@ -845,6 +847,10 @@ export const MainApp: React.FC = () => {
               playClick();
               setIsTimerOpen(true);
             }}
+            onShare={() => {
+              playClick();
+              setIsShareOpen(true);
+            }}
             onOpenNote={() => {
               playClick();
               setNotesBrowseOnly(false);
@@ -960,6 +966,22 @@ export const MainApp: React.FC = () => {
         }}
         onOpenStore={() => setIsStoreOpen(true)}
         onClose={() => setIsNotesOpen(false)}
+      />
+
+      <ShareSheet
+        visible={isShareOpen}
+        locale={locale}
+        colors={colors}
+        isDark={isDark}
+        isPlus={isPlus}
+        question={currentQuestion}
+        skin={CARD_SKINS.find((s) => s.id === selectedSkin) ?? CARD_SKINS[0]}
+        onShareText={() => {
+          setIsShareOpen(false);
+          cardRef.current?.shareText();
+        }}
+        onOpenStore={() => setIsStoreOpen(true)}
+        onClose={() => setIsShareOpen(false)}
       />
 
       <SessionsModal

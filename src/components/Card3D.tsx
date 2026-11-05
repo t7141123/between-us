@@ -24,6 +24,8 @@ export interface Card3DHandle {
   flip: () => void;
   setFlipped: (flipped: boolean) => void;
   isFlipped: () => boolean;
+  /** Share the current question as text (used by the share sheet). */
+  shareText: () => void;
 }
 
 interface Card3DProps {
@@ -37,6 +39,8 @@ interface Card3DProps {
   onToggleFavorite: () => void;
   onOpenTimer: () => void;
   onOpenNote?: () => void;
+  /** When set, the share button asks the parent (share sheet) instead of sharing text directly. */
+  onShare?: () => void;
   hasNote?: boolean;
   onNextQuestion: () => void;
   onPrevQuestion?: () => void;
@@ -56,6 +60,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
   onToggleFavorite,
   onOpenTimer,
   onOpenNote,
+  onShare,
   hasNote = false,
   onNextQuestion,
   onPrevQuestion,
@@ -226,6 +231,9 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
     flip: flipCard,
     setFlipped: setCardFlipped,
     isFlipped: () => isFlippedRef.current,
+    shareText: () => {
+      void handleShare();
+    },
   }));
 
   const handleSwipeAction = (diffX: number) => {
@@ -432,7 +440,7 @@ export const Card3D = forwardRef<Card3DHandle, Card3DProps>(({
             <View style={styles.headerActions}>
               {!isLocked && (
                 <TouchableOpacity
-                  onPress={handleShare}
+                  onPress={onShare ?? handleShare}
                   style={styles.actionBtn}
                   activeOpacity={0.7}
                   accessibilityLabel={I18nService.t(locale, 'a11y_share')}
