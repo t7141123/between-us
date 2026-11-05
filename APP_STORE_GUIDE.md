@@ -26,11 +26,12 @@ open ios/BetweenUs.xcworkspace
 
 ### 送審前檢查清單
 - [ ] Apple Developer Program 已啟用；App Store Connect 已建立 App
-- [ ] 建立 IAP 商品，Product ID 與 `functions/api/payment/_lib.js` 的 `STORE_ITEMS` key 完全一致（`pack_sensual`、`pack_marriage`、`pack_parenting`、`skin_noir_gold`、`skin_rose_wine`、`skin_forest_sage`、`bundle_skins`、`tip_coffee`、`tip_afternoon`）；贊助項目（`tip_*`）設為 Consumable，其餘 Non-Consumable
+- [ ] 建立 IAP 商品，Product ID 與 `functions/api/payment/_lib.js` 的 `STORE_ITEMS` key 完全一致（`plus`、`pack_sensual`、`pack_marriage`、`pack_parenting`、`skin_noir_gold`、`skin_rose_wine`、`skin_forest_sage`、`bundle_skins`、`tip_coffee`、`tip_afternoon`）；贊助項目（`tip_*`）設為 Consumable，其餘（含 `plus`，建議價 NT$290）設為 Non-Consumable。共 10 個商品
 - [ ] App Store Connect → Integrations → In-App Purchase 產生 API Key，設定 Cloudflare 變數 `APPLE_IAP_ISSUER_ID`、`APPLE_IAP_KEY_ID`、`APPLE_IAP_PRIVATE_KEY`
 - [ ] Apple 登入（程式已完成）：在 Apple Developer 為 App ID 啟用 *Sign in with Apple*（EAS 會自動同步）。要在刪除帳號時撤銷 Apple 授權，另建一把 *Sign in with Apple* Key，設定 `APPLE_TEAM_ID`、`APPLE_SIGNIN_KEY_ID`、`APPLE_SIGNIN_PRIVATE_KEY`
 - [ ] Google 登入（選填，程式已完成）：在 Google Cloud 建立 OAuth Client（類型 iOS，Bundle ID `com.lovebetweenus.app`），把 Client ID 設為 `GOOGLE_CLIENT_IDS`（Cloudflare）與 `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`（EAS 環境變數）。未設定時只顯示 Apple 登入
 - [ ] 以 TestFlight + Sandbox 帳號實機測試：購買、恢復購買、Apple 登入、刪除帳號
+- [ ] 第一次 `eas build` 後在 TestFlight 實測：每日提醒（通知權限）、卡片圖片分享（需 Plus）、Plus 購買與恢復購買、換裝置後雲端備份還原
 - [ ] 確認 Apple 目前要求的最低 Xcode / iOS SDK 版本，必要時升級 Expo SDK
 - [ ] 填寫隱私問卷、年齡分級、審核備註（見第三部分）
 
@@ -126,3 +127,12 @@ open ios/BetweenUs.xcworkspace
 ---
 
 祝上架順利！若有任何 Xcode 憑證或審查回覆問題，可隨時提出討論。
+
+
+---
+
+## ✨ 功能與付費層一覽（審核備註可直接引用）
+
+- **免費**：7 個分類共 350 題、題包各 3 題試玩、翻牌與收藏、已看過進度、每日一題與本機提醒、對話筆記（最近 10 則）、5 分鐘計時器、雙人同步房間、1 組「約會之夜」、文字分享。
+- **Plus（一次買斷，非訂閱）**：全部題包與主題（含未來新題包）、無限筆記與搜尋匯出、雲端備份、自訂計時與輪流發言、卡片圖片分享、自訂題目、全部約會之夜、雙人「同時作答、一起揭曉」。
+- 審核提醒：Plus 為 Non-Consumable，App 內有「恢復購買」；刪除帳號會一併刪除雲端備份；通知權限只在使用者開啟每日提醒時才詢問。
